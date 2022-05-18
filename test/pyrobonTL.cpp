@@ -15,11 +15,14 @@ int read_point(){
 	return 0;
 }
 
-
 PYBIND11_MODULE(pyrobonTL, m) {
-	py::class_<RobonTL::Point>(m, "RobonTL::Point")
+	//Class Point
+	py::class_<RobonTL::Point>(m, "Point")
 		.def(py::init<double,double>())
-		.def("print_point",&RobonTL::Point::print_point);
+		.def("print_point",&RobonTL::Point::print_point)
+		.def_readwrite("time",&RobonTL::Point::time)
+		.def_readwrite("value",&RobonTL::Point::time);
 
+	
 	m.def("read_point",&read_point,"A function that reads and print a point");
 }
