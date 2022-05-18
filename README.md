@@ -42,8 +42,13 @@ make
 
 In the build folder, execute
 ```
+<<<<<<< HEAD
 python3
 c
 import pyrobonTL
 pyrobonTL.read_point()
+=======
+python test_prog.py
+
+>>>>>>> 94101fab5877b254d90be1392872a3c7e026ec5c
 ```
