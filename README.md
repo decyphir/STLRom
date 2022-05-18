@@ -31,18 +31,19 @@ pyRobonTL is a python library for Robust online monitoring of temporal logic pro
 RobonTL is written in C++ with no special requirement. A makefile is provided that compiles every source file in `src` folder, and creates a simple static library file called `robonlib.a`. 
 ```
 make all
+mkdir build
+cd build
+cmake ..
+make
 ```
+
 
 ## Testing
 
-A simple program is given in the `test` folder. To compile: 
-
+In the build folder, execute
 ```
-c++ -O3 -Wall -shared -std=c++11 -fPIC $(python3 -m pybind11 --includes) ../lib/robonlib.a -I ../include pyrobonTL.cpp -o pyrobonTL$(python3-config --extension-suffix)
-```
-A python script in given in the same folder, do
-
-```
-py testprog.py
-
+python3
+c
+import pyrobonTL
+pyrobonTL.read_point()
 ```

@@ -1,82 +1,41 @@
 #include <iostream>
 #include <stdlib.h>
-#include <stdio.h>
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include "stl_driver.h"
+#include "signal.h"
+#include <pybind11/pybind11.h>
 
 using namespace std;
-using namespace RobonTL;
+namespace py = pybind11;
 
-/** This is RobonTL default executable. It reads a test plan and output a report.
-* For each test in the test plan, a data file is read, and a set of stl tests are
-* executed. */
-int main(int argc, char** argv) {
-
-	/* Command line options:
-	 *
-	 * 	 -p sets parser debugger on
-	 *   -s sets scanning debugger on
-	 *   -t filename uses filename as trace file
-	 */
-
-	bool debug_parsing(false), debug_scanning(false);
-	bool random_trace(false); int len_trace(0);
-
-	for (int ai = 1; ai < argc; ++ai) {
-		if (argv[ai] == std::string("-p")) {
-			debug_parsing = true;
-		} else if (argv[ai] == std::string("-s")) {
-			debug_scanning = true;
-		} else if (argv[ai] == std::string("-r")) {
-			random_trace = true;
-			ai++;
-			len_trace = atoi(argv[ai]);
-		}
-	}
-
-	// instantiates the STLDriver
-	STLDriver stl_driver = STLDriver();
-	stl_driver.trace_parsing = debug_parsing;
-	stl_driver.trace_scanning = debug_scanning;
-
-	// read a file with expressions (last command line argument is stl file)
-	std::fstream infile(argv[argc - 1]);
-	if (!infile.good()) {
-		cout << "Could not open file: " << argv[argc - 1] << endl;
-		return 0;
-	}
-
-	bool result = stl_driver.parse_stream(infile, argv[argc - 1]);
-
-	if (result) {
-		stl_driver.print();
-		while (!stl_driver.trace_test_queue_empty()) {
-			string trace_file_name = stl_driver.get_next_trace_test_env();
-			bool success = stl_driver.read_trace_file(trace_file_name);
-			if (success)
-				stl_driver.run_next_trace_test();
-			else {
-				stl_driver.report = stl_driver.report + "Skipped test " + stl_driver.get_next_trace_test()->id +"\n";
-				stl_driver.pop_next_trace_test();
-			}
-		}
-		cout << "Report:" << endl;
-		cout << stl_driver.report << endl;
-		cout << "Test log:" << endl;
-		cout << stl_driver.test_log << endl;
-	}
-	else
-		cout << "Problem parsing test_plan file." << endl;
-
-	cout << "done." << endl;
-
+int read_point(){
+	double time,value;
+	cout<<"Enter time and value"<<endl;
+	cin>>time>>value;
+	RobonTL::Point p(time,value);
+	p.print_point();
 	return 0;
-
 }
 
+PYBIND11_MODULE(pyrobonTL, m) {
+	//Class Point
+	py::class_<RobonTL::Point>(m, "Point")
+		.def(py::init<double,double>())
+		.def("print_point",&RobonTL::Point::print_point)
+		.def_readwrite("time",&RobonTL::Point::time)
+		.def_readwrite("value",&RobonTL::Point::time);
+
+	
+	m.def("read_point",&read_point,"A function that reads and print a point");
+}
+
+
+	/*Class STLDriver
+	py::class_<RobonTL::STLDriver>(m, "STLDriver")
+		.def(py::init<>());
+		.def("parse_file",&RobonTL::STLDriver::parse_file)
+		.def("get_monitor",&RobonTL::STLDriver::get_monitor);
+	
+	//Class STLMonitor
+	py::class_<RobonTL::Point>(m, "Point")
+		.def(py::init<>())
+		.def("get_lower_rob",&RobonTL::STLMonitor::get_lower_rob)
+		.def("get_upper_rob",&RobonTL::STLMonitor::get_upper_rob)*/
