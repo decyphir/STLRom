@@ -19,8 +19,8 @@ file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/i
 # Set up such that XCode organizes the files
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES} ${HEADER_FILES} )
 
-# include(pybind11.cmake)
-pybind11_add_module(pyrobontl 
+add_subdirectory(${CMAKE_SOURCE_DIR}/pybind11)
+pybind11_add_module(pyrobonTL 
   ${SOURCE_FILES}
 	${HEADER_FILES}
 )
