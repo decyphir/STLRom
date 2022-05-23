@@ -1,11 +1,26 @@
-cmake_minimum_required(VERSION 3.4...3.18)
+cmake_minimum_required(VERSION 3.1)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 project(pyrobonTL)
 
-add_subdirectory(pybind11)
-pybind11_add_module(pyrobonTL src/main.cpp)
+include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories("${CMAKE_SOURCE_DIR}/pybind11")
 
-add_subdirectory(src)
 
-include_directories(include)
+file (GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/include/*.hh")
 
-target_compile_definitions(pyrobonTL PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+# Set up such that XCode organizes the files
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES} ${HEADER_FILES} )
+
+# include(pybind11.cmake)
+pybind11_add_module(pyrobontl 
+  ${SOURCE_FILES}
+	${HEADER_FILES}
+)
