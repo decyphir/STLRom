@@ -31,7 +31,7 @@ namespace RobonTL {
 
         inline void reset_signal_data() {
             data.clear();            
-        }; 
+        };
         inline double get_lower_rob(){return lower_rob;};            
         inline double get_upper_rob(){return upper_rob;};
         inline double get_rob(){return rob;};

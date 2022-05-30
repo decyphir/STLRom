@@ -36,12 +36,12 @@ namespace RobonTL {
 
         transducer(): start_time(0.), end_time(0.) {};
         
-        virtual transducer * clone() const =0;
+        virtual transducer * clone() const {return NULL;};
 
         virtual ~transducer() {};
 
         // Initializes horizons
-        virtual void init_horizon()=0;
+        virtual void init_horizon();
 
         inline void set_horizon(double s, double e) {
             start_time = s;
@@ -56,7 +56,7 @@ namespace RobonTL {
         }
 
         // compute quantitative semantics for current data
-        virtual double compute_robustness()=0;
+        virtual double compute_robustness(){return 0;};
         virtual double compute_lower_rob();
         virtual double compute_upper_rob();
 
@@ -71,8 +71,8 @@ namespace RobonTL {
         virtual double get_end_complete_up();
 
         //TODO fix print mess
-        virtual void print() const =0;
-        virtual void print(ostream &os) const =0;
+        virtual void print() const {};
+        virtual void print(ostream &os) const {};
 
         void print_trace(); 
 
