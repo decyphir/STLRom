@@ -28,5 +28,5 @@ pybind11_add_module(pyrobonTL
 )
 
 add_test(NAME pyrobonTLtest
-          COMMAND python test_prog.py
+          COMMAND python ../test_prog.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
