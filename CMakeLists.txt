@@ -9,6 +9,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 project(pyrobonTL)
 
+enable_testing()
+
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/pybind11")
 
@@ -24,3 +26,7 @@ pybind11_add_module(pyrobonTL
   ${SOURCE_FILES}
 	${HEADER_FILES}
 )
+
+add_test(NAME pyrobonTLtest
+          COMMAND python test_prog.py
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
