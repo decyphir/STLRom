@@ -18,17 +18,6 @@
 using namespace std;
 namespace py = pybind11;
 
-class transducerTrampoline : public RobonTL::transducer {
-    public:
-   
-    double compute_robustness() override {
-        PYBIND11_OVERLOAD_PURE(
-            double, /* Return type */
-            transducer,      /* Parent class */
-            compute_robustness          /* Name of function in C++ (must match Python name) */
-        );
-    }
-};
 
 int read_point(){
 	double time,value;
@@ -67,21 +56,5 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def_readwrite("data",&RobonTL::STLMonitor::data)
 		.def_readwrite("current_time",&RobonTL::STLMonitor::current_time);
 
-	//Class transducer
-/*	py::class_<RobonTL::transducer>(m,"transducer");
-		.def(py::init<>())
-		.def("compute_robustness",&RobonTL::transducer::compute_robustness)
-		.def("compute_lower_rob",&RobonTL::transducer::compute_lower_rob)
-		.def("compute_upper_rob",&RobonTL::transducer::compute_upper_rob);
-*/
-	py::class_<RobonTL::transducer, transducerTrampoline>(m, "transducer")
-		.def(py::init<>())
-		.def("compute_robustness",(&RobonTL::transducer::compute_robustness));
-		
-		/*.def("clone",(&RobonTL::transducer::clone))
-		.def("init_horizon",(&RobonTL::transducer::init_horizon))
-		.def("print",(&RobonTL::transducer::print))
-		.def("print",(&RobonTL::transducer::print),py::arg("os"));
-*/
 	m.def("read_point",&read_point,"A function that reads and print a point");
 }
