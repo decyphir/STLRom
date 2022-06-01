@@ -1,2 +1,3 @@
-*.so,*.o,*.a
+.so,.o,.a
 build/
+*.o
