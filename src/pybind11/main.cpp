@@ -40,6 +40,7 @@ PYBIND11_MODULE(pyrobonTL, m) {
 	py::class_<RobonTL::STLDriver>(m, "STLDriver")
 		.def(py::init<>())
 		.def("parse_file",&RobonTL::STLDriver::parse_file)
+		.def("disp",&RobonTL::STLDriver::disp)		
 		.def("get_monitor",&RobonTL::STLDriver::get_monitor)
 		.def("get_signals_names",&RobonTL::STLDriver::get_signals_names);
 
@@ -49,7 +50,8 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def("add_sample",&RobonTL::STLMonitor::add_sample)
 		.def("get_lower_rob",&RobonTL::STLMonitor::get_lower_rob)
 		.def("get_upper_rob",&RobonTL::STLMonitor::get_upper_rob)
- 		.def_readwrite("rob",&RobonTL::STLMonitor::rob)
+ 		.def("display_formula",&RobonTL::STLMonitor::display_formula) 		
+		.def_readwrite("rob",&RobonTL::STLMonitor::rob)
 		.def_readwrite("lower_rob",&RobonTL::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&RobonTL::STLMonitor::upper_rob)
 		.def_readwrite("formula",&RobonTL::STLMonitor::formula)

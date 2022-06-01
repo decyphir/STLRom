@@ -10,13 +10,11 @@
 #include <limits>
 #include "tools.h"
 #include "transducer.h"
-#include "signal.h"
 #include "stl_driver.h"
+#include "signal.h"
 
 using namespace std;
 using namespace RobonTL;
-
-
 
 int main(int argc, char** argv) {
 
@@ -34,16 +32,22 @@ int main(int argc, char** argv) {
     // STLDriver is the class implementing the parser.            
     
     STLDriver stl_driver = STLDriver();	  
-    string s ="signal x";
-    bool parse_success = stl_driver.parse_file("spec.stl"); // parse_string is possible too, instead of file
+    string s ="signal x\nphi:=x[t]>0";
+
+    bool parse_success = stl_driver.parse_string(s); // parse_string is possible too, instead of file
     
     if (parse_success) {
-        cout << "Formula parsed successfully." << endl;
-            }
+        cout << "Formula parsed successfully" << endl;    
+        stl_driver.print();        
+            
+        }
     else {
         cout << "Something went wrong." <<endl;
         return 1; 
     }  
+
+    
+    
 
     return 0;
 

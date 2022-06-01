@@ -42,12 +42,16 @@ namespace RobonTL {
             if (s[0]> current_time || s[0]==0.) {
                 current_time = s[0];
                 data.push_back(s);
-                rob    = formula->compute_robustness();
-                lower_rob= formula->compute_lower_rob();
+                rob       = formula->compute_robustness();
+                lower_rob = formula->compute_lower_rob();
                 upper_rob = formula->compute_upper_rob();
             }
         };
         
+        inline void display_formula() {            
+            cout << *formula << endl;
+        };
+
         ~STLMonitor() {                        
             delete formula;
         };
@@ -141,7 +145,6 @@ namespace RobonTL {
         bool error_flag;
 
         string get_signals_names() const;
-
         
         /// CONSTRUCTORS
 
@@ -288,7 +291,7 @@ namespace RobonTL {
 
         /** Prints driver to standard output */
         inline void print() const { print(cout); };
-
+        inline void disp() { print(cout); };
 
         /** Read a trace file */
         inline bool read_trace_file(string trace_file_name) {

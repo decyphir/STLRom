@@ -21,6 +21,7 @@ file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/i
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES} ${HEADER_FILES} )
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/pybind11)
+add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 pybind11_add_module(pyrobonTL 
   "${CMAKE_SOURCE_DIR}/src/pybind11/main.cpp"
@@ -28,17 +29,3 @@ pybind11_add_module(pyrobonTL
 	${HEADER_FILES}
 )
 
-add_executable(test_driver
-  "${CMAKE_SOURCE_DIR}/test/test_driver.cpp"
-  ${SOURCE_FILES}
-	${HEADER_FILES}
-)
-
-add_test(NAME test_driver
-          COMMAND test_driver
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-)
-
-add_test(NAME pyrobonTLtest
-          COMMAND python test_prog.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
