@@ -65,4 +65,5 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def("print_bigM",&RobonTL::Signal::print_bigM);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
+	m.def("rand_trace_data",&rand_trace_data,"fuction generating random traces");
 }
