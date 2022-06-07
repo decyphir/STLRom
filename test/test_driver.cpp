@@ -45,8 +45,9 @@ int main(int argc, char** argv) {
         cout << "Something went wrong." <<endl;
         return 1; 
     }  
+    STLMonitor phi = stl_driver.get_monitor("phi");     
+    cout << *phi.formula << endl;  // displays formula of the monitor
 
-    
     
 
     return 0;

@@ -3,5 +3,6 @@ sys.path.append('../build')
 import pyrobonTL
 
 driver=pyrobonTL.STLDriver()
-driver.parse_file("spec.stl")
+s="signal x\nphi:=x[t]>2"
+driver.parse_string(s)
 driver.disp()

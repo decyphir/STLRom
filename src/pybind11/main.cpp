@@ -40,6 +40,7 @@ PYBIND11_MODULE(pyrobonTL, m) {
 	py::class_<RobonTL::STLDriver>(m, "STLDriver")
 		.def(py::init<>())
 		.def("parse_file",&RobonTL::STLDriver::parse_file)
+		.def("parse_string",&RobonTL::STLDriver::parse_string)
 		.def("disp",&RobonTL::STLDriver::disp)		
 		.def("get_monitor",&RobonTL::STLDriver::get_monitor)
 		.def("get_signals_names",&RobonTL::STLDriver::get_signals_names);

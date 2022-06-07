@@ -41,9 +41,8 @@ STLDriver::STLDriver(trace_data _trace)
 
     
     
-bool STLDriver::parse_stream(std::istream& in, const std::string& sname)
+bool STLDriver::parse_stream(std::istream& in)
 {
-	streamname = sname;
 	Scanner scanner(&in);
 	scanner.set_debug(trace_scanning);
 	this->lexer = &scanner;
@@ -59,13 +58,13 @@ bool STLDriver::parse_file(const std::string &filename)
 {
 	std::ifstream in(filename.c_str());
 	if (!in.good()) return false;
-	return parse_stream(in, filename);
+	return parse_stream(in);
 }
 
-bool STLDriver::parse_string(const std::string &input, const std::string& sname)
+bool STLDriver::parse_string(const std::string &input)
 {
 	std::istringstream iss(input);
-	return parse_stream(iss, sname);
+	return parse_stream(iss);
 }
 
 /** Error handling with associated line number. This can be modified to
