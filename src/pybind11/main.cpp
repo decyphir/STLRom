@@ -58,6 +58,11 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def_readwrite("formula",&RobonTL::STLMonitor::formula)
 		.def_readwrite("data",&RobonTL::STLMonitor::data)
 		.def_readwrite("current_time",&RobonTL::STLMonitor::current_time);
+	//Class Signal
+	py::class_<RobonTL::Signal>(m, "Signal")
+		.def(py::init<>())
+		.def("set_bigM",&RobonTL::Signal::set_bigM)
+		.def("print_bigM",&RobonTL::Signal::print_bigM);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 }
