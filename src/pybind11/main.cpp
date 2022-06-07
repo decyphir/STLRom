@@ -16,6 +16,7 @@
 #include <pybind11/stl.h>
 
 using namespace std;
+using namespace RobonTL;
 namespace py = pybind11;
 
 
@@ -26,6 +27,37 @@ int read_point(){
 	RobonTL::Point p(time,value);
 	p.print_point();
 	return 0;
+}
+
+class pySTL_monitor {
+	STLDriver driver;
+
+
+
+};
+
+void print_monitor(STLDriver& d) {
+	stringstream os; 
+	
+	/*
+	auto it = d.formula_map.find("phi");
+	transducer *phi;
+	if (it != d.formula_map.end())
+	{
+		//phi = (it->second)->clone();
+		phi = (it->second);
+		py::print(" found, yeah.");
+	}
+	else
+	{
+		py::print(" undefined.");
+	}
+	*/
+	STLMonitor m = d.get_monitor("phi");
+	transducer* phi = m.formula;
+	os << "Monitor lower rob:" << m.lower_rob <<endl;
+	phi->print(os);
+	py::print(os.str());
 }
 
 PYBIND11_MODULE(pyrobonTL, m) {
@@ -42,9 +74,12 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def("parse_file",&RobonTL::STLDriver::parse_file)
 		.def("parse_string",&RobonTL::STLDriver::parse_string)
 		.def("disp",&RobonTL::STLDriver::disp)		
+		.def("add_sample",&RobonTL::STLDriver::add_sample)
 		.def("get_monitor",&RobonTL::STLDriver::get_monitor)
-		.def("get_signals_names",&RobonTL::STLDriver::get_signals_names);
-
+		.def("get_signals_names",&RobonTL::STLDriver::get_signals_names)
+		.def("get_online_rob",&RobonTL::STLDriver::get_online_rob)
+		.def_readwrite("data",&RobonTL::STLDriver::data);
+	
 	//Class STLMonitor
 	py::class_<RobonTL::STLMonitor>(m, "STLMonitor")
 		.def(py::init<>())
@@ -60,4 +95,5 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def_readwrite("current_time",&RobonTL::STLMonitor::current_time);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
+	m.def("print_monitor",&print_monitor,"Prints a monitor. Questions ?");
 }

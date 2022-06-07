@@ -131,11 +131,16 @@ namespace RobonTL {
         /** formulas defined by the driver */
         map<string, transducer*> formula_map;
     
-        /** tests (sets of formulas)  */
-        map<string, stl_test> stl_test_map;
 
         /** data array - time is first column */
         trace_data data;
+        // append new sample to data and update robustness
+        inline void add_sample(vector<double> s) { // doesn't check time and size consistency (TODO)
+                data.push_back(s);    
+        };
+
+        /** tests (sets of formulas)  */
+        map<string, stl_test> stl_test_map;
         deque<trace_test> trace_test_queue;
 
         string report;
@@ -214,7 +219,9 @@ namespace RobonTL {
         bool run_tests();
 
         /** monitor a single formula requires data is not empty */
-        double test_formula(const string &);
+        double test_formula(const string &);    
+        vector<double> get_online_rob(const string & phi_in);
+
 
         /** gets next formula to test */
         inline transducer * get_next_formula() const {

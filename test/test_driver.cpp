@@ -45,9 +45,13 @@ int main(int argc, char** argv) {
         cout << "Something went wrong." <<endl;
         return 1; 
     }  
-    STLMonitor phi = stl_driver.get_monitor("phi");     
-    cout << *phi.formula << endl;  // displays formula of the monitor
-
+    stl_driver.add_sample({0., 3.});
+    stl_driver.add_sample({0.1, 2.});
+    
+    auto out_rob = stl_driver.get_online_rob("phi");
+    cout << out_rob[0] << " " << out_rob[1] << " " << out_rob[2] << endl;
+    
+   
     
 
     return 0;
