@@ -266,8 +266,13 @@ namespace RobonTL {
             STLMonitor phi;
             map<string,transducer*>::const_iterator it;
             it = formula_map.find(id);
-            if (it != formula_map.end())
+            if (it != formula_map.end()) {
                 phi.formula = (it->second)->clone();
+                cout << "Formula " << id << " found." << endl;
+            }
+            else {
+                cout << "Formula " << id << " undefined." << endl;
+            }
             phi.formula->set_horizon(0.,0.);
             phi.formula->set_trace_data_ptr(phi.data);                                   
             phi.current_time =0.;
