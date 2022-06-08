@@ -220,7 +220,7 @@ namespace RobonTL {
 
         /** monitor a single formula requires data is not empty */
         double test_formula(const string &);    
-        vector<double> get_online_rob(const string & phi_in);
+        vector<double>& get_online_rob(const string & phi_in);
 
 
         /** gets next formula to test */

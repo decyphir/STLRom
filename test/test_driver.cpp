@@ -1,17 +1,7 @@
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include "tools.h"
-#include "transducer.h"
+    #include <stdio.h>
 #include "stl_driver.h"
-#include "signal.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace RobonTL;
@@ -32,26 +22,29 @@ int main(int argc, char** argv) {
     // STLDriver is the class implementing the parser.            
     
     STLDriver stl_driver = STLDriver();	  
-    string s ="signal x\nphi:=x[t]>0";
+    string s ="signal x\nphi:=x[t]>2";
 
     bool parse_success = stl_driver.parse_string(s); // parse_string is possible too, instead of file
     
     if (parse_success) {
         cout << "Formula parsed successfully" << endl;    
-        stl_driver.print();        
-            
+        stl_driver.print();                    
         }
     else {
         cout << "Something went wrong." <<endl;
         return 1; 
     }  
-    stl_driver.add_sample({0., 3.});
-    stl_driver.add_sample({0.1, 2.});
+
+    // Testing one sample
+    vector<double> v = {0,3.2};
+    stl_driver.add_sample(v);    
+    v = {.5, 2};        
+    stl_driver.add_sample(v);
     
-    auto out_rob = stl_driver.get_online_rob("phi");
-    cout << out_rob[0] << " " << out_rob[1] << " " << out_rob[2] << endl;
-    
-   
+    vector<double> robs;
+    robs = stl_driver.get_online_rob("phi");
+
+    cout << robs[0] << " " << robs[1] << endl;
     
 
     return 0;
