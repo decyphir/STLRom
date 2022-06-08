@@ -37,8 +37,6 @@ STLDriver::STLDriver(trace_data _trace)
 {
 	data = _trace;
 };
-
-
     
     
 bool STLDriver::parse_stream(std::istream& in)
@@ -82,7 +80,7 @@ void STLDriver::error(const std::string& m)
 	std::cerr << m << std::endl;
 }
 
-    string STLDriver::get_signals_names() const {
+string STLDriver::get_signals_names() const {
 
      // get number of signals
 
@@ -124,7 +122,6 @@ void STLDriver::clear() {
 		}
 	}
 
-
 	formula_map.clear();
 	param_map.clear();
 	stl_test_map.clear();
@@ -146,8 +143,6 @@ void STLDriver::clear() {
 	nb_test_pos = 0;
 
 }
-
-
 
 void STLDriver::print(ostream &out) const {
 
@@ -349,6 +344,35 @@ double STLDriver::test_formula(const string & phi_in) {
 	else {
 		cout << "Couldn't parse formula: " << phi_in << endl;
 		return 0.;
+	}
+}
+
+vector<double> STLDriver::get_online_rob(const string & phi_in) {
+	//transducer->param_map = param_map;
+	vector<double> out_rob;	
+	if (data.empty()){
+		cout << "Empty data" << endl;
+		return out_rob;
+	}
+	string funky_name = "f_u_n_k_y_p_h__i_n_a_m_e"; // seriously?
+	string str_to_parse = funky_name + ":=" + phi_in;
+	if (parse_string(str_to_parse)){
+		transducer * phi = formula_map[funky_name]->clone();
+		formula_map.erase(funky_name);
+		phi->trace_data_ptr = &data;
+		phi->init_horizon();
+		double rob       = phi->compute_robustness();
+        double lower_rob = phi->compute_lower_rob();
+    	double upper_rob = phi->compute_upper_rob();
+
+		delete phi;
+		vector<double> out_rob = {rob, lower_rob, upper_rob};
+
+		return out_rob;
+	}
+	else {
+		cout << "Couldn't parse formula: " << phi_in << endl;
+		return out_rob;
 	}
 }
 
