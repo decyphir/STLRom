@@ -29,13 +29,6 @@ int read_point(){
 	return 0;
 }
 
-class pySTL_monitor {
-	STLDriver driver;
-
-
-
-};
-
 void print_monitor(STLDriver& d) {
 	stringstream os; 
 	
@@ -100,9 +93,6 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def("print_bigM",&RobonTL::Signal::print_bigM);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
-<<<<<<< HEAD
-	m.def("print_monitor",&print_monitor,"Prints a monitor. Questions ?");
-=======
+	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
 	m.def("rand_trace_data",&rand_trace_data,"fuction generating random traces");
->>>>>>> origin/jeremy_seban
 }
