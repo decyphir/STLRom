@@ -347,9 +347,9 @@ double STLDriver::test_formula(const string & phi_in) {
 	}
 }
 
-vector<double> STLDriver::get_online_rob(const string & phi_in) {
+vector<double>& STLDriver::get_online_rob(const string & phi_in) {
 	//transducer->param_map = param_map;
-	vector<double> out_rob;	
+	static vector<double> out_rob;	
 	if (data.empty()){
 		cout << "Empty data" << endl;
 		return out_rob;
@@ -359,15 +359,13 @@ vector<double> STLDriver::get_online_rob(const string & phi_in) {
 	if (parse_string(str_to_parse)){
 		transducer * phi = formula_map[funky_name]->clone();
 		formula_map.erase(funky_name);
-		phi->trace_data_ptr = &data;
+		phi->set_trace_data_ptr(data);
 		phi->init_horizon();
 		double rob       = phi->compute_robustness();
         double lower_rob = phi->compute_lower_rob();
-    	double upper_rob = phi->compute_upper_rob();
-
+    	double upper_rob = phi->compute_upper_rob();		
+		out_rob = {rob, lower_rob, upper_rob};
 		delete phi;
-		vector<double> out_rob = {rob, lower_rob, upper_rob};
-
 		return out_rob;
 	}
 	else {
