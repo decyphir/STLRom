@@ -89,8 +89,8 @@ PYBIND11_MODULE(pyrobonTL, m) {
 	//Class Signal
 	py::class_<RobonTL::Signal>(m, "Signal")
 		.def(py::init<>())
-		.def("set_bigM",&RobonTL::Signal::set_bigM)
-		.def("print_bigM",&RobonTL::Signal::print_bigM);
+		.def("set_BigM",&RobonTL::Signal::set_BigM)
+		.def("get_BigM",&RobonTL::Signal::get_BigM);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");

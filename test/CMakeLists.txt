@@ -11,24 +11,27 @@ add_test(NAME test_driver
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
 )
 
-add_test(NAME pyrobonTLtest1
+add_test(NAME test_>
           COMMAND python test_prog1.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME pyrobonTLtest2
+add_test(NAME test_<
           COMMAND python test_prog2.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME pyrobonTLtest3
+add_test(NAME test_or
           COMMAND python test_prog3.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME pyrobonTLtest4
+add_test(NAME test_always
           COMMAND python test_prog4.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME pyrobonTLtest5
+add_test(NAME test_eventually
           COMMAND python test_prog5.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME pyrobonTLtest6
+add_test(NAME test_implies
           COMMAND python test_prog6.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME pyrobonTLtest7
+add_test(NAME test_until
           COMMAND python test_prog7.py
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
+add_test(NAME test_SetBigM
+          COMMAND python test_prog8.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")

@@ -89,12 +89,13 @@ public:
     void addLastSample(); // add a sample at endTime. 
 	void removeInf();
 
-	inline void set_bigM(double val){
+	inline void set_BigM(double val){
 		BigM=val;
 	}
 
-	inline void print_bigM(){
+	inline int get_BigM(){
 		cout<<BigM<<endl;
+		return BigM;
 	}
 
 	// write signal to file
