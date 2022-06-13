@@ -2,7 +2,6 @@
 #include "robustness.h"
 #include <list>
 #include <algorithm>
-
 // needed sometimes when compiling under windows 
 #undef min
 #undef max
@@ -282,7 +281,6 @@ void Signal::compute_timed_globally(const Signal& x, double a, double b) {
 #endif
 }
 
-
 void Signal::compute_timed_until(const Signal& x , const Signal& y, double a, double b) {
 
 	Signal y1 = x;
@@ -446,7 +444,6 @@ void Signal::compute_plateau_max(const Signal &x, double a) {
 
 }
 
-
 //copy of plateauMax, operator < switched with operator >, TOP replaces BOTTOM
 void Signal::compute_plateau_min(const Signal &x, double a) {
 	bool new_candidate, end_candidate;
@@ -602,7 +599,6 @@ Signal * computeAnd(Signal * x, Signal * y) {
 	return z;
 }
 
-
 Signal * computeOr(Signal * x, Signal * y) {
 
 #ifdef DEBUG__
@@ -612,15 +608,31 @@ Signal * computeOr(Signal * x, Signal * y) {
 	Signal::const_reverse_iterator i = x->rbegin();
 	Signal::const_reverse_iterator j = y->rbegin();
 
+#ifdef DEBUG__
+	cout << "IN: x " << *x <<  endl;
+	cout << "IN: y " << *y <<  endl;
+#endif
+
 	Signal * z = new Signal();
 
 	z->beginTime = fmax(x->beginTime, y->beginTime);
 	z->endTime = fmin(x->endTime, y->endTime);
 
+#ifdef DEBUG__
+	cout << "IN: z " << *z <<  endl;
+#endif
+
+
 	while (i->time >= z->endTime)
 		i++;
 	while (j->time >= z->endTime)
 		j++;
+
+
+#ifdef DEBUG__
+	cout << "Post................."<<  endl;
+#endif
+
 
 	computePartialOr(z, i, j, z->beginTime, z->endTime);
 	z->simplify();
@@ -633,6 +645,11 @@ Signal * computeOr(Signal * x, Signal * y) {
 }
 
 Signal * computeImplies(Signal * x, Signal * y) {
+
+#ifdef DEBUG__
+	cout << "IN:   computeImplies "  <<  endl;
+#endif
+
 
 	Signal *not_x = computeNot(x);
 	Signal *z = computeOr(not_x, y);
@@ -1023,6 +1040,12 @@ void computeSegmentOr(Signal * z, const Sample & i, double t,
 void computePartialOr(Signal * z, Signal::const_reverse_iterator & i,
 		Signal::const_reverse_iterator & j, double s, double t) {
 
+#ifdef DEBUG__
+	cout << "IN: " << *z << endl;
+	cout << ">>>  computePartialOR:                  IN." << endl;
+#endif
+
+
 	while (i->time > s) {
 		computeSegmentOr(z, *i, t, j);
 		if (j->time == i->time)
@@ -1036,6 +1059,11 @@ void computePartialOr(Signal * z, Signal::const_reverse_iterator & i,
 	else
 		computeSegmentOr(z, Sample(s, i->valueAt(s), i->derivative), t, j);
 
+
+#ifdef DEBUG__
+	cout << "OUT: " << *z << endl;
+	cout << "<<<  computePartialOR:                  OUT." << endl;
+#endif
 }
 
 /*---------------------------------------------------------------------------*

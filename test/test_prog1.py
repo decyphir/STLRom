@@ -13,6 +13,5 @@ for i in range (2) :
 
 robs = driver.get_online_rob("phi")
 print(robs)
-assert(robs[0]==-1) #, "Robustness is wrong.")
-assert(robs[1]==-1)  # "Lower robustness is wrong.")
-assert(robs[2]==-1)  # "Upper robustness is wrong.")
+assert(robs[0]<=robs[1]) #, "Robustness is wrong.")
+assert(robs[1]<= robs[2])  # "Lower robustness is wrong.")

@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     // STLDriver is the class implementing the parser.            
     
     STLDriver stl_driver = STLDriver();	  
-    string s ="signal x\nphi:=x[t]>2";
+    string s ="signal x,y\nphi:=x[t]>2=>y[t]>0";
 
     bool parse_success = stl_driver.parse_string(s); // parse_string is possible too, instead of file
     
@@ -36,9 +36,9 @@ int main(int argc, char** argv) {
     }  
 
     // Testing one sample
-    vector<double> v = {0,3.2};
+    vector<double> v = {0,3.2, 4};
     stl_driver.add_sample(v);    
-    v = {.5, 2};        
+    v = {.5, 2, 4};        
     stl_driver.add_sample(v);
     
     vector<double> robs;
