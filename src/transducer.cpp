@@ -202,9 +202,7 @@ namespace RobonTL {
         Signal z2= childR->z;
         double et = max(z1.endTime, z2.endTime);
 
-        Signal *rob = computeImplies(&z1, &z2);
-        z = *rob;
-        delete rob;
+        z.compute_implies(z1,z2);
 
         return z.front().value;
     }

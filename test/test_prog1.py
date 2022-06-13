@@ -25,4 +25,6 @@ for i in range (nb_sample) :
 	driver.add_sample(signal[i]);
 
 robs = driver.get_online_rob("phi")
-quit()
+print(robs)
+assert(robs[0]<=robs[1]) #, "Robustness is wrong.")
+assert(robs[1]<= robs[2])  # "Lower robustness is wrong.")
