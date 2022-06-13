@@ -2,6 +2,9 @@ import sys
 sys.path.append('../build')
 import pyrobonTL
 
+nb_sample=15
+nb_signal=1
+
 driver=pyrobonTL.STLDriver()
 s="signal x\nphi:=x[t]<2"
 driver.parse_string(s)

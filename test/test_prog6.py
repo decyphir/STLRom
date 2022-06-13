@@ -7,7 +7,10 @@ s="signal x,y\nphi:=x[t]>0 => y[t]>2"
 driver.parse_string(s)
 sig_names= driver.get_signals_names()
 
-driver.add_sample([0, 1])
+nb_sample=15
+nb_signal=1
+
+driver.add_sample([0, 1,2])
 #driver.add_sample([0.5, -1])
 
 robs = driver.get_online_rob("phi")

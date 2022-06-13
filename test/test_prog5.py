@@ -7,6 +7,9 @@ s="signal x\nphi:=ev_[3, 4] x[t]<5"
 driver.parse_string(s)
 sig_names= driver.get_signals_names()
 
+nb_sample=15
+nb_signal=1
+
 driver.add_sample([0, 1])
 #driver.add_sample([0.5, -1])
 
