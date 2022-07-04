@@ -150,7 +150,8 @@ namespace RobonTL {
         bool error_flag;
 
         string get_signals_names() const;
-        
+
+
         /// CONSTRUCTORS
 
         /** construct a new parser driver context */
@@ -172,6 +173,11 @@ namespace RobonTL {
         /** adds an stl_test to the current trace_tests - does nothing if the queue is empty */
         void add_stl_test(const string &test_id,  const map<string,double> &local_param_map, transducer* formula, const string &report_pos,
                           const string &report_neg, bool is_err);
+
+        /** returns value of parameter param */
+        double get_parameter(const string &param);
+        
+        void set_parameter(const string &param,double n);
 
         /// PARSER
 

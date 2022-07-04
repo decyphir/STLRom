@@ -261,6 +261,19 @@ void STLDriver::add_trace_test(const string &test_id, const string &trace_cfg, d
 	trace_test_queue.push_back(T);
 }
 
+double STLDriver::get_parameter (const string & param){
+	if (param_map.find(param)!= param_map.end()){
+		return param_map[param];
+		}
+	return 0;
+}
+
+void STLDriver::set_parameter(const string &param,double n){
+	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=n;
+	}
+}
+
 /** Note: test inserted in the stl_test_map have no local parameters */
 void STLDriver::add_stl_test(const string & test_id) {
 
