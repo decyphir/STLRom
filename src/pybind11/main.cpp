@@ -71,8 +71,8 @@ PYBIND11_MODULE(pyrobonTL, m) {
 		.def("get_monitor",&RobonTL::STLDriver::get_monitor)
 		.def("get_signals_names",&RobonTL::STLDriver::get_signals_names)
 		.def("get_online_rob",&RobonTL::STLDriver::get_online_rob)
-		.def("get_parameter",&RobonTL::STLDriver::get_parameter)
-		.def("set_parameter",&RobonTL::STLDriver::set_parameter)
+		.def("get_param",&RobonTL::STLDriver::get_param)
+		.def("set_param",&RobonTL::STLDriver::set_param)
 		.def_readwrite("data",&RobonTL::STLDriver::data);
 	
 	//Class STLMonitor

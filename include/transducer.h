@@ -78,6 +78,7 @@ namespace RobonTL {
 
         // looks into param_map for a parameter value - returns success
         bool get_param(const string&, double &);
+        virtual void set_param(const string&, double); 
         Signal get_signal() const;
 
     };
@@ -95,6 +96,8 @@ namespace RobonTL {
         };
 
         void init_horizon();
+        void set_param(const string&, double); 
+        
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;
             child->set_trace_data_ptr(trace);
@@ -130,7 +133,8 @@ namespace RobonTL {
         };
 
         void init_horizon();
-
+        void set_param(const string&, double); 
+        
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;
             childL->set_trace_data_ptr(trace);
@@ -169,7 +173,8 @@ namespace RobonTL {
         };
 
         void init_horizon();
-
+        void set_param(const string&, double); 
+        
         virtual double get_end_complete();
         virtual double get_end_complete_low();
         virtual double get_end_complete_up();
@@ -201,7 +206,8 @@ namespace RobonTL {
         };
 
         void init_horizon();
-
+        void set_param(const string&, double); 
+        
         // TODO
         //virtual double get_end_time_complete();
         //virtual double get_end_time_complete_low();

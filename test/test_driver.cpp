@@ -22,8 +22,14 @@ int main(int argc, char** argv) {
     // STLDriver is the class implementing the parser.            
     
     STLDriver stl_driver = STLDriver();	  
-    string s ="signal x,y\nphi:=x[t]>2=>y[t]>0";
-
+    string s ="signal x,y\n";
+    s+="param p=3\n";
+    s+="phi:=";
+    s+="x[t]>p\n";
+    s+="param t1=10\n";
+    s+="aphi:=";
+    s+="alw_[0, t1] phi\n";
+ 
     bool parse_success = stl_driver.parse_string(s); // parse_string is possible too, instead of file
     
     if (parse_success) {
@@ -43,9 +49,13 @@ int main(int argc, char** argv) {
     
     vector<double> robs;
     robs = stl_driver.get_online_rob("phi");
-
     cout << robs[0] << " " << robs[1] << endl;
-    
+
+    // set param 
+    stl_driver.set_param("p", -5);
+    robs = stl_driver.get_online_rob("aphi");
+    cout << robs[0] << " " << robs[1] << endl;
+
 
     return 0;
 

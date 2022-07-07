@@ -47,6 +47,44 @@ namespace RobonTL {
         childR->init_horizon();
     }
 
+    /* set param */
+    void transducer::set_param(const string &param, double val) {
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+    
+    }
+
+    void unary_transducer::set_param(const string &param, double val) {        
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+        child->set_param(param, val);
+    }
+
+    void binary_transducer::set_param(const string &param, double val) {        
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+        childL->set_param(param, val);
+        childR->set_param(param, val);
+    }
+
+    void timed_unary_transducer::set_param(const string &param, double val) {
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+        child->set_param(param, val);
+    }
+
+    void timed_binary_transducer::set_param(const string &param, double val) {
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+        childL->set_param(param, val);
+        childR->set_param(param, val);
+    }
+
     // get end time complete for transducers
     double transducer::get_end_complete() {
         return z.endTime;

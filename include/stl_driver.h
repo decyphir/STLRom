@@ -175,9 +175,9 @@ namespace RobonTL {
                           const string &report_neg, bool is_err);
 
         /** returns value of parameter param */
-        double get_parameter(const string &param);
+        double get_param(const string &param);
         
-        void set_parameter(const string &param,double n);
+        void set_param(const string &param,double n);
 
         /// PARSER
 
