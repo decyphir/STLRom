@@ -24,8 +24,10 @@ namespace RobonTL {
     public:
 
         const trace_data *trace_data_ptr; // signal data to monitor vector of vector of double
-
+        const map<string, double> *param_map_ptr;   //  parameter values    
+        
         map<string, double> param_map;   //  parameter values
+        
         map<string, int>  signal_map;    //  maps signal name to index in trace data 
 
         // interval of time for which the transducer needs to provide values
@@ -34,7 +36,7 @@ namespace RobonTL {
         // z is neutral semantics, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
 
-        transducer(): start_time(0.), end_time(0.) {};
+        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
         
         virtual transducer * clone() const {return NULL;};
 
@@ -51,12 +53,19 @@ namespace RobonTL {
 
         // set trace data 
         // TODO should be done at the constructor, parser and cloning level...
-        virtual void set_trace_data_ptr(const trace_data &trace) {
+        virtual void set_trace_data_ptr(const trace_data &trace) 
+        {
             trace_data_ptr= &trace;
         }
-
+        virtual void set_param_map_ptr(const map<string, double> &map)
+        {
+            cout << "Looking for shit transducer, wtf I am doing here ?????" << endl;
+            param_map_ptr= &map;
+        }
+                        
         // compute quantitative semantics for current data
-        virtual double compute_robustness(){return 0;};
+        virtual double compute_robustness(){    
+            return 0;};
         virtual double compute_lower_rob();
         virtual double compute_upper_rob();
 
@@ -102,6 +111,10 @@ namespace RobonTL {
             trace_data_ptr= &trace;
             child->set_trace_data_ptr(trace);
         }
+        virtual void set_param_map_ptr(const map<string, double> &map) {
+            param_map_ptr= &map;
+            child->set_param_map_ptr(map);            
+        }
 
         // update quantitative semantics based on new data
         virtual double update_robustness();
@@ -136,9 +149,15 @@ namespace RobonTL {
         void set_param(const string&, double); 
         
         virtual void set_trace_data_ptr(const trace_data &trace) {
-            trace_data_ptr= &trace;
+            trace_data_ptr= &trace;            
             childL->set_trace_data_ptr(trace);
             childR->set_trace_data_ptr(trace);
+        }
+
+        virtual void set_param_map_ptr(const map<string, double> &map) {
+            param_map_ptr= &map;
+            childL->set_param_map_ptr(map);
+            childR->set_param_map_ptr(map);
         }
 
         virtual ~binary_transducer() {

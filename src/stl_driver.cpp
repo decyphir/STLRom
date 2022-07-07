@@ -414,7 +414,8 @@ namespace RobonTL
 		{
 			transducer *phi = formula_map[funky_name]->clone();
 			formula_map.erase(funky_name);
-			phi->set_trace_data_ptr(data);
+			phi->set_trace_data_ptr(data);			
+			phi->set_param_map_ptr(param_map);
 			phi->init_horizon();
 			double rob = phi->compute_robustness();
 			double lower_rob = phi->compute_lower_rob();

@@ -267,9 +267,9 @@ namespace RobonTL {
     }
 
     bool transducer::get_param(const string & param, double & val) {
-
-        map<string, double>::iterator it;
-        if ( (it= param_map.find(param)) != param_map.end()) {
+        
+        map<string, double>::const_iterator it;            
+        if ((param_map_ptr!=NULL)&&( (it= param_map_ptr->find(param)) != param_map_ptr->end())) {            
             val = it->second;
             return true;
         }

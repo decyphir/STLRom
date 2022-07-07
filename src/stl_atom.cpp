@@ -20,6 +20,7 @@ namespace RobonTL {
         if (!s_to_d(p, value))  param = p;
 
     }
+       
 
     double stl_atom::compute_robustness() {
 #ifdef DEBUG__
@@ -28,6 +29,7 @@ namespace RobonTL {
 #endif
         // Assumes childL and childR have signals with same number of samples
         // TODO should be eventually improved with proper operations on signals
+    
         childL->compute_robustness();
         childR->compute_robustness();
         auto itL = childL->z.begin();
@@ -59,7 +61,6 @@ namespace RobonTL {
         printf(">> signal_transducer::compute_robustness:     IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
-
         short i = signal_map[variable];
         //double t0;  // now, we assume t0 = 0.; WARNING: THIS WILL BREAK CPSGRADER... 
         double t=0., v=0.;  
@@ -90,7 +91,6 @@ namespace RobonTL {
         return res;
     }
 
-
     double constant_transducer::compute_robustness() {
 
 #ifdef DEBUG__
@@ -99,8 +99,10 @@ namespace RobonTL {
 #endif
         
         // TODO exception if parameter not found for some reason ? For now, we get 0. as a default silent value.
-        if (!param.empty()) {
-            get_param(param, value);
+        if (!param.empty())
+        {
+            if (!get_param(param,value)) // should not be necessary
+                cout << "Parameter " << param << " not found (?)." << endl;                
         }
 
         double t=0.;  

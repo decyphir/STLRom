@@ -54,6 +54,11 @@ namespace RobonTL
             trace_data_ptr = &trace;
             td_idx = 0;
         };
+        virtual void set_param_map_ptr(const map<string, double> &map) {
+            param_map_ptr= &map;            
+        }
+
+
 
         void print(ostream &os) const
         {
@@ -112,6 +117,16 @@ namespace RobonTL
             trace_data_ptr = &trace;
             td_idx = 0;
         };
+
+        virtual void set_param_map_ptr(const map<string, double> &map) {
+            param_map_ptr= &map;
+            auto it = map.find(param);
+            if (it != map.end())
+            {
+                value = (*it).second;
+            }            
+        }
+
 
         virtual ~constant_transducer(){};
 
