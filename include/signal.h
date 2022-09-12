@@ -24,7 +24,7 @@ double fmax(double a,double b)
   return (b<a)?a:b;
 }
 */
-namespace RobonTL {
+namespace STLRom {
 
 class Point {
 public:

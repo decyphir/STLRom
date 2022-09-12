@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <math.h>
 
-namespace RobonTL {
+namespace STLRom {
 
     /* Interval robustness */
 

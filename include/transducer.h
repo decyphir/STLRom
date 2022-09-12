@@ -12,7 +12,7 @@ using namespace std;
 
 #pragma warning (disable : 4482)
 
-namespace RobonTL {
+namespace STLRom {
 
     typedef vector<vector<double> > trace_data;
 

@@ -12,7 +12,7 @@
 #include <minmax.h>
 #endif
 
-namespace RobonTL {
+namespace STLRom {
 
     constant_transducer::constant_transducer(const string &p) {
 

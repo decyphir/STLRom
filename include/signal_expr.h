@@ -10,7 +10,7 @@
 
 #include "transducer.h"
 
-namespace RobonTL
+namespace STLRom
 {
 
     typedef vector<vector<double>>::const_iterator trace_data_iterator;

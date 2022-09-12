@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../build')
-import pyrobonTL
+import STLRom
 
-s=pyrobonTL.Signal();
-s.set_bigM(1000);
+s=STLRom.Signal();
+s.set_BigM(1000);
 
 assert(s.get_BigM()==1000)

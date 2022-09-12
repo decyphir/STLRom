@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace RobonTL {
+namespace STLRom {
 
 interval::interval() {
 	begin = -1;

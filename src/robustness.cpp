@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace RobonTL { 
+namespace STLRom { 
 void Signal::compute_not(const Signal &y) {
 	clear();
 	beginTime = y.beginTime;

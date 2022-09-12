@@ -2,7 +2,7 @@
 #include "signal.h"
 #include "iomanip"
 
-namespace RobonTL {
+namespace STLRom {
 
     /* 
      * class Signal member functions

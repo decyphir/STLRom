@@ -32,7 +32,7 @@
 
 /**
  ** \file stl_parser.h
- ** Define the RobonTL::parser class.
+ ** Define the STLRom::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
@@ -117,7 +117,7 @@
 #endif  /* ! defined CPSGRADERDEBUG */
 
 #line 37 "stl_parser.ypp" // lalr1.cc:392
-namespace RobonTL {
+namespace STLRom {
 #line 122 "stl_parser.h" // lalr1.cc:392
 
 
@@ -139,8 +139,8 @@ namespace RobonTL {
     double                                 doubleVal;
     bool                                   boolVal;
     std::string*                           stringVal;
-    RobonTL::transducer*                 transducer_ptr;
-    RobonTL::interval*                   interval_ptr;
+    STLRom::transducer*                 transducer_ptr;
+    STLRom::interval*                   interval_ptr;
     std::map<string,double>*               param_map_ptr;
     Signal*                                signal_ptr;
 
@@ -521,7 +521,7 @@ namespace RobonTL {
 
 
 #line 37 "stl_parser.ypp" // lalr1.cc:392
-} // RobonTL
+} // STLRom
 #line 526 "stl_parser.h" // lalr1.cc:392
 
 

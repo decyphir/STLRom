@@ -13,10 +13,10 @@
 #include "tools.h"
 #include "signal.h"
 
-typedef RobonTL::Parser::token token;
-typedef RobonTL::Parser::token_type token_type;
+typedef STLRom::Parser::token token;
+typedef STLRom::Parser::token_type token_type;
 
-namespace RobonTL {
+namespace STLRom {
 
     /** A class for standalone STL monitor */
     class STLMonitor {
@@ -324,6 +324,6 @@ namespace RobonTL {
     }
         ;
 
-} // namespace RobonTL
+} // namespace STLRom
 
 #endif // STL_DRIVER_H

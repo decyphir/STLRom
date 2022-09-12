@@ -1,4 +1,4 @@
-project(pyrobonTLtest)
+project(STLRomtest)
 
 add_executable(test_driver
   "${CMAKE_SOURCE_DIR}/test/test_driver.cpp"

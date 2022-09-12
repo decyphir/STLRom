@@ -10,7 +10,7 @@
 #include <tools.h>
 
 using namespace std;
-using namespace RobonTL;
+using namespace STLRom;
 
 %}
 
@@ -33,9 +33,9 @@ using namespace RobonTL;
 %skeleton "lalr1.cc"
 
 /* namespace to enclose parser in */
-//%name-prefix="RobonTL"
-%define api.namespace {RobonTL}
-%define api.prefix {RobonTL}
+//%name-prefix="STLRom"
+%define api.namespace {STLRom}
+%define api.prefix {STLRom}
 
 /* set the parser's class identifier */
 %define parser_class_name {Parser}
@@ -64,8 +64,8 @@ using namespace RobonTL;
     double                                 doubleVal;
     bool                                   boolVal;
     std::string*                           stringVal;
-    RobonTL::transducer*                 transducer_ptr;
-    RobonTL::interval*                   interval_ptr;
+    STLRom::transducer*                 transducer_ptr;
+    STLRom::interval*                   interval_ptr;
     std::map<string,double>*               param_map_ptr;
     Signal*                                signal_ptr;
 }
@@ -522,7 +522,7 @@ start : assignement
       | start param_assignements
 %%
 
-void RobonTL::Parser::error(const Parser::location_type& l,
+void STLRom::Parser::error(const Parser::location_type& l,
 			    const std::string& m)
 {
     driver.error(l, m);

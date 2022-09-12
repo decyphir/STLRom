@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../build')
-import pyrobonTL
+import STLRom
 
-driver=pyrobonTL.STLDriver()
+driver=STLRom.STLDriver()
 s="signal x\nphi:=ev_[3, 4] x[t]<5"
 driver.parse_string(s)
 sig_names= driver.get_signals_names()

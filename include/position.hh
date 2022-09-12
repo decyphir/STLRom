@@ -32,11 +32,11 @@
 
 /**
  ** \file position.hh
- ** Define the RobonTL::position class.
+ ** Define the STLRom::position class.
  */
 
-#ifndef YY_ROBONTL_POSITION_HH_INCLUDED
-# define YY_ROBONTL_POSITION_HH_INCLUDED
+#ifndef YY_STLRom_POSITION_HH_INCLUDED
+# define YY_STLRom_POSITION_HH_INCLUDED
 
 # include <algorithm> // std::max
 # include <iostream>
@@ -51,7 +51,7 @@
 # endif
 
 #line 37 "stl_parser.ypp" // location.cc:337
-namespace RobonTL {
+namespace STLRom {
 #line 56 "position.hh" // location.cc:337
   /// Abstract a position.
   class position
@@ -175,6 +175,6 @@ namespace RobonTL {
   }
 
 #line 37 "stl_parser.ypp" // location.cc:337
-} // RobonTL
+} // STLRom
 #line 180 "position.hh" // location.cc:337
-#endif // !YY_ROBONTL_POSITION_HH_INCLUDED
+#endif // !YY_STLRom_POSITION_HH_INCLUDED

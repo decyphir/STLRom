@@ -9,10 +9,10 @@
 #ifndef YY_DECL
 
 #define	YY_DECL						\
-    RobonTL::Parser::token_type				\
-    RobonTL::Scanner::lex(				\
-	RobonTL::Parser::semantic_type* yylval,		\
-    RobonTL::Parser::location_type* yylloc,  \
+    STLRom::Parser::token_type				\
+    STLRom::Scanner::lex(				\
+	STLRom::Parser::semantic_type* yylval,		\
+    STLRom::Parser::location_type* yylloc,  \
 	class STLDriver& driver \
     )
 #endif
@@ -25,7 +25,7 @@
 
 #include "stl_parser.h"
 
-namespace RobonTL {
+namespace STLRom {
 
 /** Scanner is a derived class to add some extra function to the scanner
  * class. Flex itself creates a class named yyFlexLexer, which is renamed using

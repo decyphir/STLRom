@@ -31,7 +31,7 @@
 // version 2.2 of Bison.
 
 // Take the name prefix into account.
-#define yylex   RobonTLlex
+#define yylex   STLRomlex
 
 // First part of user declarations.
 #line 1 "stl_parser.ypp" // lalr1.cc:404
@@ -47,7 +47,7 @@
 #include <tools.h>
 
 using namespace std;
-using namespace RobonTL;
+using namespace STLRom;
 
 
 #line 54 "stl_parser.cpp" // lalr1.cc:404
@@ -161,7 +161,7 @@ using namespace RobonTL;
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 #line 37 "stl_parser.ypp" // lalr1.cc:479
-namespace RobonTL {
+namespace STLRom {
 #line 166 "stl_parser.cpp" // lalr1.cc:479
 
   /* Return YYSTR after stripping away unnecessary quotes and
@@ -1776,12 +1776,12 @@ namespace RobonTL {
   }
 
 #line 37 "stl_parser.ypp" // lalr1.cc:1167
-} // RobonTL
+} // STLRom
 #line 1781 "stl_parser.cpp" // lalr1.cc:1167
 #line 523 "stl_parser.ypp" // lalr1.cc:1168
 
 
-void RobonTL::Parser::error(const Parser::location_type& l,
+void STLRom::Parser::error(const Parser::location_type& l,
 			    const std::string& m)
 {
     driver.error(l, m);

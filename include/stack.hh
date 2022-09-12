@@ -32,16 +32,16 @@
 
 /**
  ** \file stack.hh
- ** Define the RobonTL::stack class.
+ ** Define the STLRom::stack class.
  */
 
-#ifndef YY_ROBONTL_STACK_HH_INCLUDED
-# define YY_ROBONTL_STACK_HH_INCLUDED
+#ifndef YY_STLRom_STACK_HH_INCLUDED
+# define YY_STLRom_STACK_HH_INCLUDED
 
 # include <vector>
 
 #line 37 "stl_parser.ypp" // stack.hh:151
-namespace RobonTL {
+namespace STLRom {
 #line 46 "stack.hh" // stack.hh:151
   template <class T, class S = std::vector<T> >
   class stack
@@ -151,7 +151,7 @@ namespace RobonTL {
   };
 
 #line 37 "stl_parser.ypp" // stack.hh:151
-} // RobonTL
+} // STLRom
 #line 156 "stack.hh" // stack.hh:151
 
-#endif // !YY_ROBONTL_STACK_HH_INCLUDED
+#endif // !YY_STLRom_STACK_HH_INCLUDED

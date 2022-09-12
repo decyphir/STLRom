@@ -32,16 +32,16 @@
 
 /**
  ** \file location.hh
- ** Define the RobonTL::location class.
+ ** Define the STLRom::location class.
  */
 
-#ifndef YY_ROBONTL_LOCATION_HH_INCLUDED
-# define YY_ROBONTL_LOCATION_HH_INCLUDED
+#ifndef YY_STLRom_LOCATION_HH_INCLUDED
+# define YY_STLRom_LOCATION_HH_INCLUDED
 
 # include "position.hh"
 
 #line 37 "stl_parser.ypp" // location.cc:337
-namespace RobonTL {
+namespace STLRom {
 #line 46 "location.hh" // location.cc:337
   /// Abstract a location.
   class location
@@ -187,6 +187,6 @@ namespace RobonTL {
   }
 
 #line 37 "stl_parser.ypp" // location.cc:337
-} // RobonTL
+} // STLRom
 #line 192 "location.hh" // location.cc:337
-#endif // !YY_ROBONTL_LOCATION_HH_INCLUDED
+#endif // !YY_STLRom_LOCATION_HH_INCLUDED

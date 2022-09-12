@@ -526,8 +526,8 @@ static yyconst flex_int16_t yy_rule_linenum[32] =
 #include "stl_driver.h"
 
 /* import the parser's token type into a local typedef */
-typedef RobonTL::Parser::token token;
-typedef RobonTL::Parser::token_type token_type;
+typedef STLRom::Parser::token token;
+typedef STLRom::Parser::token_type token_type;
 
 /* By default yylex returns int, we use token_type. Unfortunately yyterminate
  * by default returns 0, which is not of token_type. */
@@ -2098,7 +2098,7 @@ void STLfree (void * ptr )
 
 
 
-namespace RobonTL {
+namespace STLRom {
 
 
 Scanner::Scanner(std::istream* in,

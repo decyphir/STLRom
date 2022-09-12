@@ -2,7 +2,7 @@
 #include <transducer.h>
 #include <algorithm>
 
-namespace RobonTL {
+namespace STLRom {
 
     /* init horizon */
     void transducer::init_horizon() {

@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace RobonTL {
+namespace STLRom {
 
 /* Unary operators on signals */
 

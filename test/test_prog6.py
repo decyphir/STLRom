@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../build')
-import pyrobonTL
+import STLRom
 
-driver=pyrobonTL.STLDriver()
+driver=STLRom.STLDriver()
 s="signal x,y\nphi:=x[t]>0 => y[t]>2"
 driver.parse_string(s)
 

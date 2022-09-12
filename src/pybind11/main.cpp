@@ -16,7 +16,7 @@
 #include <pybind11/stl.h>
 
 using namespace std;
-using namespace RobonTL;
+using namespace STLRom;
 namespace py = pybind11;
 
 
@@ -24,7 +24,7 @@ int read_point(){
 	double time,value;
 	cout<<"Enter time and value"<<endl;
 	cin>>time>>value;
-	RobonTL::Point p(time,value);
+	STLRom::Point p(time,value);
 	p.print_point();
 	return 0;
 }
@@ -53,46 +53,46 @@ void print_monitor(STLDriver& d) {
 	py::print(os.str());
 }
 
-PYBIND11_MODULE(pyrobonTL, m) {
+PYBIND11_MODULE(STLRom, m) {
 	//Class Point
-	py::class_<RobonTL::Point>(m, "Point")
+	py::class_<STLRom::Point>(m, "Point")
 		.def(py::init<double,double>())
-		.def("print_point",&RobonTL::Point::print_point)
-		.def_readwrite("time",&RobonTL::Point::time)
-		.def_readwrite("value",&RobonTL::Point::value);
+		.def("print_point",&STLRom::Point::print_point)
+		.def_readwrite("time",&STLRom::Point::time)
+		.def_readwrite("value",&STLRom::Point::value);
 
 	//Class STLDriver
-	py::class_<RobonTL::STLDriver>(m, "STLDriver")
+	py::class_<STLRom::STLDriver>(m, "STLDriver")
 		.def(py::init<>())
-		.def("parse_file",&RobonTL::STLDriver::parse_file)
-		.def("parse_string",&RobonTL::STLDriver::parse_string)
-		.def("disp",&RobonTL::STLDriver::disp)		
-		.def("add_sample",&RobonTL::STLDriver::add_sample)
-		.def("get_monitor",&RobonTL::STLDriver::get_monitor)
-		.def("get_signals_names",&RobonTL::STLDriver::get_signals_names)
-		.def("get_online_rob",&RobonTL::STLDriver::get_online_rob)
-		.def("get_param",&RobonTL::STLDriver::get_param)
-		.def("set_param",&RobonTL::STLDriver::set_param)
-		.def_readwrite("data",&RobonTL::STLDriver::data);
+		.def("parse_file",&STLRom::STLDriver::parse_file)
+		.def("parse_string",&STLRom::STLDriver::parse_string)
+		.def("disp",&STLRom::STLDriver::disp)		
+		.def("add_sample",&STLRom::STLDriver::add_sample)
+		.def("get_monitor",&STLRom::STLDriver::get_monitor)
+		.def("get_signals_names",&STLRom::STLDriver::get_signals_names)
+		.def("get_online_rob",&STLRom::STLDriver::get_online_rob)
+		.def("get_param",&STLRom::STLDriver::get_param)
+		.def("set_param",&STLRom::STLDriver::set_param)
+		.def_readwrite("data",&STLRom::STLDriver::data);
 	
 	//Class STLMonitor
-	py::class_<RobonTL::STLMonitor>(m, "STLMonitor")
+	py::class_<STLRom::STLMonitor>(m, "STLMonitor")
 		.def(py::init<>())
-		.def("add_sample",&RobonTL::STLMonitor::add_sample)
-		.def("get_lower_rob",&RobonTL::STLMonitor::get_lower_rob)
-		.def("get_upper_rob",&RobonTL::STLMonitor::get_upper_rob)
- 		.def("display_formula",&RobonTL::STLMonitor::display_formula) 		
-		.def_readwrite("rob",&RobonTL::STLMonitor::rob)
-		.def_readwrite("lower_rob",&RobonTL::STLMonitor::lower_rob)
-		.def_readwrite("upper_rob",&RobonTL::STLMonitor::upper_rob)
-		.def_readwrite("formula",&RobonTL::STLMonitor::formula)
-		.def_readwrite("data",&RobonTL::STLMonitor::data)
-		.def_readwrite("current_time",&RobonTL::STLMonitor::current_time);
+		.def("add_sample",&STLRom::STLMonitor::add_sample)
+		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
+		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
+ 		.def("display_formula",&STLRom::STLMonitor::display_formula) 		
+		.def_readwrite("rob",&STLRom::STLMonitor::rob)
+		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
+		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
+		.def_readwrite("formula",&STLRom::STLMonitor::formula)
+		.def_readwrite("data",&STLRom::STLMonitor::data)
+		.def_readwrite("current_time",&STLRom::STLMonitor::current_time);
 	//Class Signal
-	py::class_<RobonTL::Signal>(m, "Signal")
+	py::class_<STLRom::Signal>(m, "Signal")
 		.def(py::init<>())
-		.def("set_BigM",&RobonTL::Signal::set_BigM)
-		.def("get_BigM",&RobonTL::Signal::get_BigM);
+		.def("set_BigM",&STLRom::Signal::set_BigM)
+		.def("get_BigM",&STLRom::Signal::get_BigM);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");

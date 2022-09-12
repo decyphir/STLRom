@@ -1,7 +1,7 @@
 #include <cmath>
 #include "signal.h"
 
-namespace RobonTL {
+namespace STLRom {
 
 /*
  * MAIN PROCEDURES

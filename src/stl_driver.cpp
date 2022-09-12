@@ -9,7 +9,7 @@
 #include "transducer.h"
 #include "stl_scanner.h"
 
-namespace RobonTL
+namespace STLRom
 {
 
 	map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
@@ -489,4 +489,4 @@ namespace RobonTL
 		}
 	}
 
-} // namespace RobonTL
+} // namespace STLRom
