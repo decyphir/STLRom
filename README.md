@@ -16,15 +16,13 @@ make
 
 ## Testing the C++ Library
 
-TODO
 It reads a formula specification file `spec.stl` in the same folder and reads signal samples input on stdin, computing interval robustness at each sample. 
 
 ## Testing the python bindings
 
 In the build folder, execute
-```
-python3
 
-import STLrom
-STLrom.read_point()
+```python3
+import STLRom
+STLRom.read_point()
 ```
