@@ -7,8 +7,6 @@ STLRom is a C++ library with python bindings for Robust online monitoring of Sig
 STLRom is written in C++ with no special dependencies. It can be built with Cmake:
 
 ```
-make all
-mkdir build
 cd build
 cmake ..
 make
