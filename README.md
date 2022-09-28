@@ -14,15 +14,11 @@ cmake ..
 make
 ```
 
-## Testing the C++ Library
-
-It reads a formula specification file `spec.stl` in the same folder and reads signal samples input on stdin, computing interval robustness at each sample. 
-
-## Testing the python bindings
-
-In the build folder, execute
-
-```python3
-import STLRom
-STLRom.read_point()
+## Testing 
+In the test folder, `test_driver.cpp` is an example of using the C++ library, while `test_prog*.py` are small test programs demonstrating the library usage.
+``` 
+make test
 ```
+in the build folder will compile and run these programs.
+
+More documentation coming soon. 
