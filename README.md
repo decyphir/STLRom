@@ -4,11 +4,8 @@ STLRom is a C++ library with python bindings for Robust online monitoring of Sig
 
 ## Compilation
 
-STLRom is written in C++ with no special dependencies. It can be built with Cmake:
-
+STLRom is written in C++ with Python bindings using pybind11. Python 3.10 or higher is recommended. To compile, run  
 ```
-make all
-mkdir build
 cd build
 cmake ..
 make
@@ -16,7 +13,7 @@ make
 
 ## Testing the C++ Library
 
-Go into build/test and run 
+In the test folder, `test_driver.cpp` is an example of using the C++ library. Go into build/test and run it with 
 ```
 ./test_driver
 ```
@@ -28,4 +25,3 @@ In the build folder, execute
 make test
 ```
 It will run the unit tests  python programs from the `test` folder.
-
