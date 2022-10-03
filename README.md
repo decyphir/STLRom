@@ -16,15 +16,16 @@ make
 
 ## Testing the C++ Library
 
-TODO
-It reads a formula specification file `spec.stl` in the same folder and reads signal samples input on stdin, computing interval robustness at each sample. 
+Go into build/test and run 
+```
+./test_driver
+```
 
 ## Testing the python bindings
 
 In the build folder, execute
 ```
-python3
-
-import STLrom
-STLrom.read_point()
+make test
 ```
+It will run the unit tests  python programs from the `test` folder.
+
