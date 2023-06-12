@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@ezaquarii.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,7 +31,7 @@
 #include "parser.hpp"
 #include "interpreter.h"
 
-using namespace EzAquarii;
+using namespace STLROM;
 using namespace std;
 
 int main(int argc, char **argv) {

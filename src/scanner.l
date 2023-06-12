@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@ezaquarii.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,7 @@
 
 	// Original yyterminate() macro returns int. Since we're using Bison 3 variants
 	// as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
-	#define yyterminate() EzAquarii::Parser::make_END(EzAquarii::location());
+	#define yyterminate() STLROM::Parser::make_END(STLROM::location());
 
 	// This will track current scanner location.
 	// Action is called when length of the token is known.
@@ -59,34 +59,34 @@
 %option noyywrap
 %option c++
 %option yyclass="Scanner"
-%option prefix="EzAquarii_"
+%option prefix="STLROM_"
 
 %%
 
 
 [a-z]+      { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_STRING(yytext, EzAquarii::location( /* put location data here if you want */ )); 
+                return STLROM::Parser::make_STRING(yytext, STLROM::location( /* put location data here if you want */ )); 
             }
             
 \(          {
                 cout << "Scanner: '('" << endl;
-                return EzAquarii::Parser::make_LEFTPAR(EzAquarii::location());
+                return STLROM::Parser::make_LEFTPAR(STLROM::location());
             }
             
 \)          { 
                 cout << "Scanner: ')'" << endl;
-                return EzAquarii::Parser::make_RIGHTPAR(EzAquarii::location());
+                return STLROM::Parser::make_RIGHTPAR(STLROM::location());
             }
             
 ;           {
                 cout << "Scanner: ';'" << endl;
-                return EzAquarii::Parser::make_SEMICOLON(EzAquarii::location());
+                return STLROM::Parser::make_SEMICOLON(STLROM::location());
             }
             
 ,           {
                 cout << "Scanner: ','" << endl;
-                return EzAquarii::Parser::make_COMMA(EzAquarii::location());
+                return STLROM::Parser::make_COMMA(STLROM::location());
             }
             
 [\n\t ]     {
@@ -96,7 +96,7 @@
 [1-9][0-9]* {
                 cout << "Scanner: decimal number: " << yytext << endl;
                 uint64_t number = strtoull(yytext, 0, 10);
-                return EzAquarii::Parser::make_NUMBER(number, EzAquarii::location());
+                return STLROM::Parser::make_NUMBER(number, STLROM::location());
             }
 
 .           { 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@ezaquarii.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -34,7 +34,7 @@
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
-%define api.namespace { EzAquarii }
+%define api.namespace { STLROM }
 %code requires
 {
     #include <iostream>
@@ -45,7 +45,7 @@
 
     using namespace std;
 
-    namespace EzAquarii {
+    namespace STLROM {
         class Scanner;
         class Interpreter;
     }
@@ -65,7 +65,7 @@
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y
-    static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
+    static STLROM::Parser::symbol_type yylex(STLROM::Scanner &scanner, STLROM::Interpreter &driver) {
         return scanner.get_next_token();
     }
     
@@ -73,13 +73,13 @@
     // x and y are same as in above static function
     // #define yylex(x, y) scanner.get_next_token()
     
-    using namespace EzAquarii;
+    using namespace STLROM;
 }
 
-%lex-param { EzAquarii::Scanner &scanner }
-%lex-param { EzAquarii::Interpreter &driver }
-%parse-param { EzAquarii::Scanner &scanner }
-%parse-param { EzAquarii::Interpreter &driver }
+%lex-param { STLROM::Scanner &scanner }
+%lex-param { STLROM::Interpreter &driver }
+%parse-param { STLROM::Scanner &scanner }
+%parse-param { STLROM::Interpreter &driver }
 %locations
 %define parse.trace
 %define parse.error verbose
@@ -94,7 +94,7 @@
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 
-%type< EzAquarii::Command > command;
+%type< STLROM::Command > command;
 %type< std::vector<uint64_t> > arguments;
 
 %start program
@@ -164,7 +164,7 @@ arguments : NUMBER
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
-void EzAquarii::Parser::error(const location &loc , const std::string &message) {
+void STLROM::Parser::error(const location &loc , const std::string &message) {
         
         // Location should be initialized inside scanner action, but is not in this example.
         // Let's grab location directly from driver class.

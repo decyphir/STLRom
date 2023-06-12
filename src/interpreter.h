@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@ezaquarii.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -37,7 +37,7 @@
 // if your IDE can't resolve it - call make first
 #include "parser.hpp"
 
-namespace EzAquarii {
+namespace STLROM {
 
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header
