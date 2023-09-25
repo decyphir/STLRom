@@ -399,7 +399,7 @@ namespace STLRom
 		}
 	}
 
-	vector<double> &STLDriver::get_online_rob(const string &phi_in)
+	vector<double> &STLDriver::get_online_rob(const string &phi_in, double t0=0.)
 	{
 		// transducer->param_map = param_map;
 		static vector<double> out_rob;
@@ -416,6 +416,8 @@ namespace STLRom
 			formula_map.erase(funky_name);
 			phi->set_trace_data_ptr(data);			
 			phi->set_param_map_ptr(param_map);
+			phi->start_time=t0;
+			phi->end_time=t0;			
 			phi->init_horizon();
 			double rob = phi->compute_robustness();
 			double lower_rob = phi->compute_lower_rob();
@@ -430,6 +432,12 @@ namespace STLRom
 			return out_rob;
 		}
 	}
+
+	vector<double> &STLDriver::get_online_rob(const string &phi_in)
+	{
+		return get_online_rob(phi_in, 0.);
+	}
+
 
 	void STLDriver::print_trace(ostream &os)
 	{

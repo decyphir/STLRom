@@ -69,8 +69,14 @@ PYBIND11_MODULE(STLRom, m) {
 		.def("disp",&STLRom::STLDriver::disp)		
 		.def("add_sample",&STLRom::STLDriver::add_sample)
 		.def("get_monitor",&STLRom::STLDriver::get_monitor)
-		.def("get_signals_names",&STLRom::STLDriver::get_signals_names)
-		.def("get_online_rob",&STLRom::STLDriver::get_online_rob)
+		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
+		//.def("get_online_rob",&STLRom::STLDriver::get_online_rob)
+		.def("get_online_rob",
+		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
+             return self.get_online_rob(phi_in, t0); 
+         },
+	     py::arg("phi_in") = "phi",
+         py::arg("t0") = 0.)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data);

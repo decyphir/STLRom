@@ -10,6 +10,9 @@ add_test(NAME test_driver
           COMMAND test_driver
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
 )
+add_test(NAME test_t0
+          COMMAND python test_online_rob_t0.py
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
 
 add_test(NAME test_>
           COMMAND python test_prog1.py
@@ -35,3 +38,4 @@ add_test(NAME test_until
 add_test(NAME test_SetBigM
           COMMAND python test_prog8.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
+

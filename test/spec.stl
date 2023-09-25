@@ -1,4 +1,6 @@
 # Simple formula
 
 signal x, y
-phi := alw_[0, 5] x[t]>0 or ev_[3, 4] y[t]<5
+mu :=  x[t]>0
+
+phi := alw_[0, 5] mu or ev_[3, 4] y[t]<5
