@@ -45,13 +45,14 @@ namespace STLRom {
     }
     
     void Signal::appendSample(double t, double v) {
-
+        
         if ((t<=endTime)&&size()>0)
             return;
 
         if (size()==0) {
             push_back(Sample(t,v,0.));
             beginTime=t;
+            endTime = t;
         }
         else {
             back().derivative = (v-back().value) / (t - back().time);
@@ -71,6 +72,7 @@ namespace STLRom {
         if (size()==0) {
             push_back(Sample(t,v,d));
             beginTime=t;
+            endTime = t;
         }
         else {
             back().derivative = (v-back().value) / (t - back().time);

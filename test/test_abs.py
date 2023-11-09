@@ -13,12 +13,9 @@ def test_rob_from(formula, t0):
 
 driver=STLRom.STLDriver()
 s="""signal x,y
-param p1=3,p2=-2
-mu1 := x[t]>p1
-mu2 := abs(y[t])>p2
-mmu_or := mu1 or mu2 
-mmu_and := mu1 and mu2 
-phi:= alw_[0,3] mmu_or"""
+mu1 := x[t]>0
+mu2 := abs(y[t])>0
+mmu_and := mu1 and mu2"""
 
 driver.parse_string(s)
 
@@ -26,13 +23,4 @@ driver.add_sample([0, 0, 0])
 driver.add_sample([1.5, -1.25, -2 ])
 driver.add_sample([2., -2., 2. ])
 
-# request user a value for t_in and loop until t_in is -1
-t_in = 0
-while t_in != -1:
-    t_in = float(input("Enter a value for t_in (or -1 to exit): "))
-    if t_in != -1:
-        test_rob_from("phi", t_in)
-        test_rob_from("mu1", t_in)
-        test_rob_from("mu2", t_in)
-        test_rob_from("mmu_or", t_in)
-        test_rob_from("mmu_and", t_in)
+test_rob_from("mmu_and", 2.)

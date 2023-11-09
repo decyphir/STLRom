@@ -2,6 +2,7 @@
 #include <transducer.h>
 #include <algorithm>
 #include <math.h>
+//#define DEBUG__
 
 namespace STLRom {
 
@@ -15,6 +16,7 @@ namespace STLRom {
 #endif
         compute_robustness();
         if (z.endTime < start_time) {
+            
             z_low.appendSample(start_time, BOTTOM); 
         }
         else
