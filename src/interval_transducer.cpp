@@ -292,18 +292,19 @@ namespace STLRom {
     // TODO the following is a super conservative implementation - (how) can we do better ?
     double until_transducer::compute_lower_rob() {
 
-        //	cout << "Getting into until_transducer::compute_lower_rob" << endl;
+        cout << "GETTING INTO until_transducer::compute_lower_rob" << endl;
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
-
+        
         if (childL->compute_lower_rob()==BOTTOM) return BOTTOM;
         if (childR->compute_lower_rob()==BOTTOM) return BOTTOM;
 
         z_low.compute_timed_until(childL->z_low,childR->z_low, a, b);
-        double et =min(z_up.endTime,end_time);
+        double et =min(z_low.endTime,end_time);
         z_low.resize(start_time,max(start_time,et),0.);
-
+        
+        
         if (z_low.empty())
             return BOTTOM;
         else

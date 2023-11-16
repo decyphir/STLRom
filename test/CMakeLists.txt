@@ -6,10 +6,22 @@ add_executable(test_driver
 	${HEADER_FILES}
 )
 
-add_test(NAME test_driver
+add_test(NAME test_cpp_driver
           COMMAND test_driver
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
 )
+
+add_executable(test_until
+  "${CMAKE_SOURCE_DIR}/test/test_until.cpp"
+  ${SOURCE_FILES}
+	${HEADER_FILES}
+)
+
+add_test(NAME test_cpp_until
+          COMMAND test_until
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
+)
+
 add_test(NAME test_t0
           COMMAND python test_online_rob_t0.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
