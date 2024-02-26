@@ -292,7 +292,7 @@ namespace STLRom {
     // TODO the following is a super conservative implementation - (how) can we do better ?
     double until_transducer::compute_lower_rob() {
 
-        cout << "GETTING INTO until_transducer::compute_lower_rob" << endl;
+        //cout << "GETTING INTO until_transducer::compute_lower_rob" << endl;
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
