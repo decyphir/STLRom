@@ -1,9 +1,9 @@
 import sys
 sys.path.append('../build')
-import STLRom
+import stlrom
 
 
-stl_monitor =STLRom.STLDriver()
+stl_monitor =stlrom.STLDriver()
 s="""
 signal x, y    # signal names
 mux := x[t]>0  # simple predicate 

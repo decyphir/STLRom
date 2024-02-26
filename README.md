@@ -29,9 +29,9 @@ It will run the unit tests  python programs from the `test` folder.
 ## Example
 
 ```python
-import STLRom
+import stlrom
 
-stl_monitor =STLRom.STLDriver()
+stl_monitor =stlrom.STLDriver()
 s="""
 signal x, y    # signal names
 mux := x[t]>0  # simple predicate 

@@ -23,7 +23,7 @@ file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/i
 add_subdirectory(${CMAKE_SOURCE_DIR}/pybind11)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
-pybind11_add_module(STLRom 
+pybind11_add_module(stlrom 
   "${CMAKE_SOURCE_DIR}/src/pybind11/main.cpp"
   ${SOURCE_FILES}
 	${HEADER_FILES}

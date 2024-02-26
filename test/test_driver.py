@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../build')
-import STLRom
-driver=STLRom.STLDriver()
+import stlrom
+driver=stlrom.STLDriver()
 s="signal x\nphi:= alw_[0., 3.] (x[t]<5)"
 driver.parse_string(s)
 

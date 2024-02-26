@@ -1,11 +1,11 @@
 import sys
 sys.path.append('../build')
-import STLRom
+import stlrom
 
 nb_sample=15
 nb_signal=1
 
-driver=STLRom.STLDriver()
+driver=stlrom.STLDriver()
 s="signal x\nphi:=x[t]<2"
 driver.parse_string(s)
 sig_names= driver.get_signals_names()

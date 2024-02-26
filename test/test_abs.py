@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../build')
-import STLRom
+import stlrom
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -11,7 +11,7 @@ def test_rob_from(formula, t0):
     print("Robustness of formula ", formula, " at time ", t0, " is ", rob1)
     return rob1
 
-driver=STLRom.STLDriver()
+driver=stlrom.STLDriver()
 s="""signal x,y
 mu1 := x[t]>0
 mu2 := abs(y[t])>0

@@ -1,15 +1,15 @@
 import sys
 sys.path.append('../build')
-import STLRom
+import stlrom
 
 nb_sample=15
 nb_signal=1
 
-driver=STLRom.STLDriver()
+driver=stlrom.STLDriver()
 s="signal x\nphi:=x[t]>2"
 driver.parse_string(s)
 sig_names= driver.get_signals_names()
-signal=STLRom.rand_trace_data(nb_sample+2,nb_signal+1)
+signal=stlrom.rand_trace_data(nb_sample+2,nb_signal+1)
 
 for i in range (nb_sample) :
 	driver.add_sample(signal[i]);

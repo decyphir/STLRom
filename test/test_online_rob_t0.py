@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../build')
-import STLRom
+import stlrom
 
 def test_rob_from(formula, t0):
     rob1 = driver.get_online_rob(formula, t0)
@@ -8,7 +8,7 @@ def test_rob_from(formula, t0):
     print("Robustness of formula ", formula, " at time ", t0, " is ", rob1)
     return rob1
 
-driver=STLRom.STLDriver()
+driver=stlrom.STLDriver()
 s="""signal x,y
 param p1=3,p2=-2
 mu1 := x[t]>p1
