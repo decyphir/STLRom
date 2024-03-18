@@ -115,6 +115,7 @@ class CMakeBuild(build_ext):
         if not build_temp.exists():
             build_temp.mkdir(parents=True)
 
+        print(build_temp)
         subprocess.run(
             ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
         )
@@ -142,6 +143,6 @@ setup(
         'Development Status :: 3 - Alpha'
     ],
     ext_modules=[CMakeExtension('stlrom')],
-    cmdclass=dict(build_ext=CMakeBuild),
+    cmdclass={"build_ext": CMakeBuild},
     python_requires=">=3.10",
 )

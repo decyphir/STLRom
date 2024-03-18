@@ -7,7 +7,11 @@ endif()
 set(CMAKE_CXX_FLAGS "-O3")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-project(STLRom)
+# Specify the C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+project(stlrom)
 
 enable_testing()
 
@@ -23,9 +27,5 @@ file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/i
 add_subdirectory(${CMAKE_SOURCE_DIR}/pybind11)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
-pybind11_add_module(stlrom 
-  "${CMAKE_SOURCE_DIR}/src/pybind11/main.cpp"
-  ${SOURCE_FILES}
-	${HEADER_FILES}
-)
+pybind11_add_module(stlrom src/pybind11/main.cpp ${SOURCE_FILES} ${HEADER_FILES})
 

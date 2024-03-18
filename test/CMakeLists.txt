@@ -50,4 +50,3 @@ add_test(NAME test_until
 add_test(NAME test_SetBigM
           COMMAND python test_prog8.py
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-

@@ -15,3 +15,6 @@ build/
 /test/test_driver
 /test/test_prog
 /test/test_prog.pyc
+CMakeFiles/
+stlrom.egg-info/
+dist/
