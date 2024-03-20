@@ -2,31 +2,20 @@
 
 STLRom is a C++ library with python bindings for Robust online monitoring of Signal Temporal Logic. It computes interval robustness as defined in 'Robust online monitoring of signal temporal logic' by Deshmuk et al, although the algorithm is not exactly the one described in this paper. 
 
-## Compilation
+## Install
 
-STLRom is written in C++ with Python bindings using pybind11. Python 3.10 or higher is recommended. To compile, run  
+The simplest way to install and use STLRom is to use pip:
 ```
-cd build
-cmake ..
-make
-```
+$ pip install stlrom
+``` 
 
-## Testing the C++ Library
+## Usage
 
-In the test folder, `test_driver.cpp` is an example of using the C++ library. Go into build/test and run it with 
-```
-./test_driver
-```
+### Tutorial Notebook
 
-## Testing the python bindings
+The following [notebook](test/notebook_test.ipynb) is formated as a tutorial for stlrom. It can also be accessed on [colab](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing).
 
-In the build folder, execute
-```
-make test
-```
-It will run the unit tests  python programs from the `test` folder.
-
-## Example
+###  A complete Example
 
 ```python
 import stlrom
@@ -61,3 +50,31 @@ test_rob("phi1",0)
 test_rob("phi2",1)
 test_rob("phi_until",1.1)
 ```
+
+
+
+## Compiling from source
+
+STLRom is written in C++ with Python bindings using pybind11. Python 3.10 or higher is recommended. To compile, run  
+```
+cd build
+cmake ..
+make
+```
+
+### Testing the C++ Library
+
+In the test folder, `test_driver.cpp` is an example of using the C++ library. Go into build/test and run it with 
+```
+./test_driver
+```
+
+### Testing the python bindings
+
+In the build folder, execute
+```
+make test
+```
+It will run the unit tests  python programs from the `test` folder.
+
+
