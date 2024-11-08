@@ -76,16 +76,20 @@ PYBIND11_MODULE(stlrom, m) {
 	py::class_<STLRom::Signal>(m, "Signal")
 		.def(py::init<>())
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
-        .def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
+		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
 		.def("compute_not",&STLRom::Signal::compute_not)	
+		.def("compute_and", &STLRom::Signal::compute_and)
+		.def("compute_or", &STLRom::Signal::compute_or)
 		.def("compute_boolean",&STLRom::Signal::compute_boolean)	
 		.def("compute_left_time_rob",&STLRom::Signal::compute_left_time_rob)	
 		.def("compute_right_time_rob",&STLRom::Signal::compute_right_time_rob)	
 		.def("get_samples_list",&STLRom::Signal::getSamplesDeque)
 		.def_readwrite("begin_time",&STLRom::Signal::beginTime)
 		.def_readwrite("end_time",&STLRom::Signal::endTime)
-		.def("set_BigM",&STLRom::Signal::set_BigM)
-		.def("get_BigM",&STLRom::Signal::get_BigM);
+		.def_static("set_semantics",  &STLRom::Signal::set_semantics)
+		.def_static("get_semantics",  &STLRom::Signal::get_semantics)
+		.def_static("set_BigM",&STLRom::Signal::set_BigM)
+		.def_static("get_BigM",&STLRom::Signal::get_BigM);
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");

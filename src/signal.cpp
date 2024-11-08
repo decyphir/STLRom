@@ -4,6 +4,9 @@
 
 namespace STLRom {
 
+    Semantics Signal::semantics = Semantics::SPACE;
+    double Signal::BigM = 10000.;
+
     /* 
      * class Signal member functions
      */

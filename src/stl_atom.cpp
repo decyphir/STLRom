@@ -47,12 +47,26 @@ namespace STLRom {
         }
         z.endTime = childL->z.endTime;
 
+        Signal z_space;
+        switch (Signal::semantics) {
+			case Semantics::SPACE:
+	        	return z.front().value;    
+			case Semantics::LEFT_TIME:
+                z_space = z;
+                z.compute_left_time_rob(z_space);
+                return z.front().value;
+            case Semantics::RIGHT_TIME:
+                z_space = z;
+                z.compute_right_time_rob(z_space);
+                return z.front().value;
+			default:
+				throw std::invalid_argument("Invalid semantics value");
+		}    
+        
 #ifdef DEBUG__
         cout << "OUT z:" << z << endl;
         printf("<< stl_atom::compute_robustness:              OUT.\n");
 #endif
-
-        return z.front().value;
     }
     
     double signal_transducer::compute_robustness() {

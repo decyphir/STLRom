@@ -14,8 +14,6 @@ namespace STLRom
 
 	map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
 
-	double Signal::BigM = 10000.;
-
 	STLDriver::STLDriver()
 		: trace_scanning(false),
 		  trace_parsing(false),

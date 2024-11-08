@@ -72,11 +72,55 @@ public:
 	friend std::ostream & operator<<(std::ostream &, const Sequence &);
 };
 
+enum class Semantics {
+		SPACE,
+		LEFT_TIME,
+		RIGHT_TIME
+	};
+
 //piecewise-linear, right-continuous signals
 class Signal : public std::deque<Sample> {
 public:
 
 	static double BigM;
+	
+	// Guess that should be else where... 
+	
+	static Semantics semantics;
+
+	inline static void set_semantics(const std::string& sem) {
+		if (sem == "SPACE") {
+			semantics = Semantics::SPACE;
+		} else if (sem == "LEFT_TIME") {
+			semantics = Semantics::LEFT_TIME;
+		} else if (sem == "RIGHT_TIME") {
+			semantics = Semantics::RIGHT_TIME;
+		} else {
+			throw std::invalid_argument("Invalid semantics string");
+		}
+	}
+
+	inline static std::string get_semantics() {
+		switch (semantics) {
+			case Semantics::SPACE:
+				return "SPACE";
+			case Semantics::LEFT_TIME:
+				return "LEFT_TIME";
+			case Semantics::RIGHT_TIME:
+				return "RIGHT_TIME";
+			default:
+				throw std::invalid_argument("Invalid semantics value");
+		}
+	}
+
+	inline static void set_BigM(double val){
+		BigM=val;
+	}
+
+	inline static int get_BigM(){
+		return BigM;
+	}
+
 
 	double beginTime;
 	double endTime;
@@ -95,15 +139,6 @@ public:
 	inline const std::deque<Sample>& getSamplesDeque() const {
     	return *this;
     }
-
-	inline void set_BigM(double val){
-		BigM=val;
-	}
-
-	inline int get_BigM(){
-		cout<<BigM<<endl;
-		return BigM;
-	}
 
 	// write signal to file
 	void dumpFile(const string filename) const {
