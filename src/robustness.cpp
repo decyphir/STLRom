@@ -14,6 +14,97 @@
 using namespace std;
 
 namespace STLRom { 
+
+void Signal::compute_boolean(const Signal &y) {
+	clear();
+	beginTime = y.beginTime;
+	endTime = y.endTime;
+	for (auto i = y.begin(); i != y.end(); i++) {
+		double v = i->value;
+		double d = i->derivative;
+		double next_time;
+		
+		auto next_i = std::next(i);
+		if (next_i == y.end())
+			next_time = endTime;
+		else 
+			next_time = next_i->time;
+		
+		if (v>0.) {
+			push_back(Sample(i->time, 1. , 0.));
+			if (d<0.) {
+				double t_zero_cross = i->time-v/d;
+				if (t_zero_cross < next_time) 
+					push_back(Sample(t_zero_cross, 0. , 0.));
+			}		
+		}
+		else {
+			push_back(Sample(i->time, 0. , 0.));
+			if ((v<0.)&&(d>0.)) {
+				double t_zero_cross = i->time-v/d;
+				if (t_zero_cross < next_time) 
+					push_back(Sample(t_zero_cross, 1. , 0));
+			}
+		}
+	}
+	simplify();
+	if (!empty() && back().time == endTime) {
+		pop_back();
+	}
+}
+
+// TODO be better that
+#define ZERO_POS 1e-14
+#define ZERO_NEG -1e-14
+
+void Signal::compute_left_time_rob(const Signal &y) {
+	clear();
+	beginTime = y.beginTime;
+	endTime = y.endTime;
+
+	Signal y_bool; 
+	y_bool.compute_boolean(y);
+	
+	for (auto i = y_bool.begin(); i != y_bool.end(); i++) {
+		double v = i->value;
+		if (v>0.) {
+			push_back(Sample(i->time, ZERO_POS , 1.));			
+		}
+		else {
+			push_back(Sample(i->time, ZERO_NEG , -1.));
+		}		
+	}
+}
+
+void Signal::compute_right_time_rob(const Signal &y) {
+	clear();
+	beginTime = y.beginTime;
+	endTime = y.endTime;
+	
+	Signal y_bool; 
+	y_bool.compute_boolean(y);
+	
+	for (auto i = y_bool.begin(); i != y_bool.end(); i++) {
+	//for (auto i = y_bool.begin(); i != y_bool.end(); i++) {
+		double v = i->value;
+		double next_time;
+		auto next_i = std::next(i);
+		
+		if (next_i == y.end())
+			next_time = endTime;
+		else 
+			next_time = next_i->time;
+
+		if (v>0.) {
+			push_back(Sample(i->time, next_time - i->time, -1.));			
+		}
+		else {
+			push_back(Sample(i->time, i->time-next_time , 1.));
+		}		
+	}
+	// TODO check whether we need do something for the last element...
+}
+
 void Signal::compute_not(const Signal &y) {
 	clear();
 	beginTime = y.beginTime;

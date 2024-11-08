@@ -21,7 +21,6 @@ namespace STLRom {
 
     }
        
-
     double stl_atom::compute_robustness() {
 #ifdef DEBUG__
         printf(">> stl_atom::compute_robustness:              IN.\n");

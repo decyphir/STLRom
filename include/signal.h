@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <iomanip>
 //#include <math.h>
 //#include <algorithm>
 // TODO maybe make TOP and BOTTOM static signal attribute ...
@@ -33,7 +34,7 @@ public:
 
 	Point(): time(0.), value(0.) { }
 	Point(double t, double v) : time(t), value(v) { }
-	void print_point(){cout<<"Time "<<time<<" Value "<<value<<endl;}
+	void print_point(){cout << std::fixed << std::setprecision(5) <<"Time "<<time<<" Value "<<value<<endl;}
 	
 	friend std::ostream & operator<<(std::ostream &, const Point &);
 };
@@ -48,6 +49,8 @@ public:
 	double valueAt(const double &) const;
 	double timeIntersect(const Sample &) const;
 
+	void print_sample(){cout << std::fixed << std::setprecision(5) <<"Time "<<time<<" Value "<<value<< " Derivative "<< derivative << endl;}
+	
 	friend std::ostream & operator<<(std::ostream &, const Sample &);
 };
 
@@ -89,6 +92,10 @@ public:
     void addLastSample(); // add a sample at endTime. 
 	void removeInf();
 
+	inline const std::deque<Sample>& getSamplesDeque() const {
+    	return *this;
+    }
+
 	inline void set_BigM(double val){
 		BigM=val;
 	}
@@ -115,7 +122,15 @@ public:
 
     /** Robustness computation functions - all these methods first clear content */
 
-    /// Signal becomes neg of signal argument
+    /// Signal becomes boolean version of signal argument (0 if <=0, 1 if > 0)
+    void compute_boolean(const Signal&); 
+
+	// Time robustness
+    void compute_left_time_rob(const Signal&); 	
+	void compute_right_time_rob(const Signal&); 
+	
+
+	/// Signal becomes neg of signal argument
     void compute_not(const Signal&); 
 
     /// Signal becomes conjunction (min) of the two arguments

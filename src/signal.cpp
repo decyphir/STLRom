@@ -56,7 +56,6 @@ namespace STLRom {
         }
         else {
             back().derivative = (v-back().value) / (t - back().time);
-            //back().derivative = 0.;
             push_back(Sample(t,v,0));
             endTime= t;
         }
@@ -82,7 +81,6 @@ namespace STLRom {
         }
     }
 
-    
     void Signal::appendSignal(Signal s) {
 
         Signal::const_iterator iter_s;

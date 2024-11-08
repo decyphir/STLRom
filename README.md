@@ -13,7 +13,7 @@ $ pip install stlrom
 
 ### Tutorial Notebook
 
-The following [notebook](test/notebook_test.ipynb) is formated as a tutorial for stlrom. It can also be accessed on [colab](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing).
+The following [notebook](test/tutorial.ipynb) is formated as a tutorial for stlrom. It can also be accessed on [colab](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing).
 
 ###  A complete Example
 

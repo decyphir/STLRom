@@ -53,6 +53,7 @@ void print_monitor(STLDriver& d) {
 	py::print(os.str());
 }
 
+
 PYBIND11_MODULE(stlrom, m) {
 	//Class Point
 	py::class_<STLRom::Point>(m, "Point")
@@ -61,26 +62,35 @@ PYBIND11_MODULE(stlrom, m) {
 		.def_readwrite("time",&STLRom::Point::time)
 		.def_readwrite("value",&STLRom::Point::value);
 
-	//Class STLDriver
-	py::class_<STLRom::STLDriver>(m, "STLDriver")
+	//Class Sample	
+	py::class_<STLRom::Sample>(m, "Sample")
+		.def(py::init<double,double,double>())
+		.def("value_at", &STLRom::Sample::valueAt)
+		.def("time_intersect", &STLRom::Sample::timeIntersect)
+		.def("print_sample",&STLRom::Sample::print_sample)
+		.def_readwrite("time",&STLRom::Sample::time)
+		.def_readwrite("value",&STLRom::Sample::value)
+		.def_readwrite("derivative",&STLRom::Sample::derivative);
+		
+	//Class Signal
+	py::class_<STLRom::Signal>(m, "Signal")
 		.def(py::init<>())
-		.def("parse_file",&STLRom::STLDriver::parse_file)
-		.def("parse_string",&STLRom::STLDriver::parse_string)
-		.def("disp",&STLRom::STLDriver::disp)		
-		.def("add_sample",&STLRom::STLDriver::add_sample)
-		.def("get_monitor",&STLRom::STLDriver::get_monitor)
-		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
-		//.def("get_online_rob",&STLRom::STLDriver::get_online_rob)
-		.def("get_online_rob",
-		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
-             return self.get_online_rob(phi_in, t0); 
-         },
-	     py::arg("phi_in") = "phi",
-         py::arg("t0") = 0.)
-		.def("get_param",&STLRom::STLDriver::get_param)
-		.def("set_param",&STLRom::STLDriver::set_param)
-		.def_readwrite("data",&STLRom::STLDriver::data);
-	
+		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
+        .def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
+		.def("compute_not",&STLRom::Signal::compute_not)	
+		.def("compute_boolean",&STLRom::Signal::compute_boolean)	
+		.def("compute_left_time_rob",&STLRom::Signal::compute_left_time_rob)	
+		.def("compute_right_time_rob",&STLRom::Signal::compute_right_time_rob)	
+		.def("get_samples_list",&STLRom::Signal::getSamplesDeque)
+		.def_readwrite("begin_time",&STLRom::Signal::beginTime)
+		.def_readwrite("end_time",&STLRom::Signal::endTime)
+		.def("set_BigM",&STLRom::Signal::set_BigM)
+		.def("get_BigM",&STLRom::Signal::get_BigM);
+
+	m.def("read_point",&read_point,"A function that reads and print a point");
+	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
+	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
+
 	//Class STLMonitor
 	py::class_<STLRom::STLMonitor>(m, "STLMonitor")
 		.def(py::init<>())
@@ -94,13 +104,25 @@ PYBIND11_MODULE(stlrom, m) {
 		.def_readwrite("formula",&STLRom::STLMonitor::formula)
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("current_time",&STLRom::STLMonitor::current_time);
-	//Class Signal
-	py::class_<STLRom::Signal>(m, "Signal")
-		.def(py::init<>())
-		.def("set_BigM",&STLRom::Signal::set_BigM)
-		.def("get_BigM",&STLRom::Signal::get_BigM);
 
-	m.def("read_point",&read_point,"A function that reads and print a point");
-	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
-	m.def("rand_trace_data",&rand_trace_data,"fuction generating random traces");
+	//Class STLDriver
+	py::class_<STLRom::STLDriver>(m, "STLDriver")
+		.def(py::init<>())
+		.def("parse_file",&STLRom::STLDriver::parse_file)
+		.def("parse_string",&STLRom::STLDriver::parse_string)
+		.def("disp",&STLRom::STLDriver::disp)		
+		.def("add_sample",&STLRom::STLDriver::add_sample)
+		.def("get_monitor",&STLRom::STLDriver::get_monitor)
+		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
+		.def("get_online_rob",
+		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
+             return self.get_online_rob(phi_in, t0); 
+         },
+	     py::arg("phi_in") = "phi",
+         py::arg("t0") = 0.)
+		.def("get_param",&STLRom::STLDriver::get_param)
+		.def("set_param",&STLRom::STLDriver::set_param)
+		.def_readwrite("data",&STLRom::STLDriver::data);
+	
+	
 }
