@@ -17,46 +17,217 @@ typedef STLRom::Parser::token token;
 typedef STLRom::Parser::token_type token_type;
 
 namespace STLRom {
-
+    string signal_map_to_string(map<string, int>); // TODO move in tools ?
+	
     /** A class for standalone STL monitor */
     class STLMonitor {
     public:
         trace_data data; 
+        map<string, double> param_map;
+        map<string, int> signal_map;
+
         double rob; 
         double lower_rob;
         double upper_rob;
         double current_time;
-        transducer * formula; 
-        STLMonitor(){}; // will be created by STLDriver class
+        transducer * formula;
+        Semantics semantics; 
 
-        inline void reset_signal_data() {
-            data.clear();            
+        STLMonitor() : semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), current_time(0.0) {}
+ 
+        // Copy constructor
+        STLMonitor(const STLMonitor& other) 
+            : semantics(other.semantics), 
+              data(other.data), 
+              param_map(other.param_map),
+              signal_map(other.signal_map),
+              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), current_time(other.current_time) {
+            if (other.formula) {
+                formula = other.formula->clone();
+            } else {
+                formula = nullptr;
+            }
+        }
+
+        // Copy assignment operator
+        STLMonitor& operator=(const STLMonitor& other) {
+            if (this != &other) {
+                semantics = other.semantics;
+                data = other.data;
+                param_map = other.param_map;
+                signal_map = other.signal_map;
+                rob = other.rob;
+                lower_rob = other.lower_rob;
+                upper_rob = other.upper_rob;
+                current_time = other.current_time;
+                if (formula) {
+                    delete formula;
+                }
+                if (other.formula) {
+                    formula = other.formula->clone();
+                } else {
+                    formula = nullptr;
+                }
+            }
+            return *this;
+        
+        }
+
+        // Move constructor
+        STLMonitor(STLMonitor &&other) noexcept
+            : semantics(other.semantics),
+              data(std::move(other.data)),
+              param_map(std::move(other.param_map)),
+              signal_map(std::move(other.signal_map)),   
+              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), current_time(other.current_time), formula(other.formula)
+        {
+            other.formula = nullptr;
+        }
+
+        // Move assignment operator
+        STLMonitor &operator=(STLMonitor &&other) noexcept
+        {
+            if (this != &other)
+            {
+                data = std::move(other.data);
+                param_map = std::move(other.param_map);
+                signal_map= std::move(other.signal_map);   
+                semantics=other.semantics;
+                rob = other.rob;
+                lower_rob = other.lower_rob;
+                upper_rob = other.upper_rob;
+                current_time = other.current_time;
+                if (formula)
+                {
+                    delete formula;
+                }
+                formula = other.formula;
+                other.formula = nullptr;
+            }
+            return *this;
+        }
+
+        ~STLMonitor()
+        {
+            if (formula)
+            {
+                delete formula;
+            }
+        }
+        
+        inline void set_semantics(const std::string& sem) {
+		if (sem == "SPACE") {
+			semantics = Semantics::SPACE;
+		} else if (sem == "LEFT_TIME") {
+			semantics = Semantics::LEFT_TIME;
+		} else if (sem == "RIGHT_TIME") {
+			semantics = Semantics::RIGHT_TIME;
+		} else {
+			throw std::invalid_argument("Invalid semantics string");
+		};
         };
-        inline double get_lower_rob(){return lower_rob;};            
-        inline double get_upper_rob(){return upper_rob;};
-        inline double get_rob(){return rob;};
+        // Change parameter value and update robustness
+        // Maybe add an option to reset rather than update ?
+        inline void set_param(const std::string &param, double value)
+        {
+            auto it = param_map.find(param);
+            if (it != param_map.end())
+            {
+                double prev_value = it->second;
+                if (value != prev_value)
+                {
+                    it->second = value;
+                    update_rob();
+                }
+            }
+            else
+            {
+                throw std::invalid_argument("Parameter does not exist in param_map");
+            }
+        };
 
-        // append new sample to data and update robustness
-        void add_sample(vector<double> s) { // doesn't check time and size consistency (TODO)
-
-            if (s[0]> current_time || s[0]==0.) {
-                current_time = s[0];
-                data.push_back(s);
-                rob       = formula->compute_robustness();
-                lower_rob = formula->compute_lower_rob();
-                upper_rob = formula->compute_upper_rob();
+        inline double get_param(const std::string &param) const
+        {
+            auto it = param_map.find(param);
+            if (it != param_map.end())
+            {
+                return it->second;
+            }
+            else
+            {
+                throw std::invalid_argument("Parameter does not exist in param_map");
             }
         };
         
-        inline void display_formula() {            
-            cout << *formula << endl;
+        inline void reset_signal_data()
+        {
+            data.clear();
         };
 
-        ~STLMonitor() {                        
-            delete formula;
-        };
+        inline double get_lower_rob() { return lower_rob; };
+        inline double get_upper_rob() { return upper_rob; };
+        inline double get_rob() { return rob; };
+
+        // append new sample to data 
+        void add_sample(vector<double> s);
+        inline void set_eval_time(double t_start, double t_end) {
+            formula->set_horizon(t_start, t_end);
+        }
+        
+
+
+        double update_rob();
+        
+        string get_signal_names() const;
+
+        inline Signal get_signal() const {
+            return formula->get_signal();    
+        }
+
+       // display stuff
+        inline void display_signal_names() const {
+            for (const auto& signal : signal_map) {
+            cout << signal.first << ": " << signal.second << endl;
+            }
+        }
+
+        inline void display_formula() const {
+            if (formula) {
+            cout << *formula << endl;
+            } else {
+            cout << "No formula set." << endl;
+            }
+        }
     
-    };
+    friend ostream& operator<<(ostream& os, const STLMonitor& monitor) {
+        os << "Signal Names: ";
+        bool first = true;
+        for (const auto& signal : monitor.signal_map) {
+            os << signal.first;
+            if (&signal != &(*std::prev(monitor.signal_map.end()))) {
+                os << ", ";
+            }
+        }
+        os << endl;
+        os << "Parameters: ";
+        for (const auto& param : monitor.param_map) {
+            os << param.first << ": " << param.second;
+            if (&param != &(*std::prev(monitor.param_map.end()))) {
+                os << ", ";
+            }
+        }
+        os << endl;
+        os << "Formula: ";
+        if (monitor.formula) {
+            os << *monitor.formula;
+        } else {
+            os << "No formula set.";
+        }
+        os << endl;
+        
+        return os;
+    }
+};
     
 /** A class encapsulating an STL formula plus feedback messages to be written in
  * the report based on its satisfaction or violation status.  */
@@ -131,10 +302,10 @@ namespace STLRom {
         /** formulas defined by the driver */
         map<string, transducer*> formula_map;
     
-
         /** data array - time is first column */
         trace_data data;
-        // append new sample to data and update robustness
+    
+        // append new sample to data 
         inline void add_sample(vector<double> s) { // doesn't check time and size consistency (TODO)
                 data.push_back(s);    
         };
@@ -151,7 +322,6 @@ namespace STLRom {
 
         string get_signals_names() const;
 
-
         /// CONSTRUCTORS
 
         /** construct a new parser driver context */
@@ -160,7 +330,19 @@ namespace STLRom {
         /** construct a parser driver with data */
         STLDriver(trace_data _trace);
 
-        ~STLDriver() {};
+        ~STLDriver();
+
+        /** Copy constructor */
+        STLDriver(const STLDriver &other);
+
+        /** Copy assignment operator */
+        STLDriver &operator=(const STLDriver &other);
+
+        /** Move constructor */
+        STLDriver(STLDriver &&other) noexcept;
+
+        /** Move assignment operator */
+        STLDriver &operator=(STLDriver &&other) noexcept;
 
         /** Create a new trace_tests structure and add it to the queue */
         void add_trace_test(const string &test_id, const string &trace_cfg, double sim_time, bool visu);
@@ -276,26 +458,7 @@ namespace STLRom {
         }
 
         // Creates an independant monitor with its own data
-        inline STLMonitor get_monitor(string id) const {
-            STLMonitor phi;
-            map<string,transducer*>::const_iterator it;
-            it = formula_map.find(id);
-            if (it != formula_map.end()) {
-                phi.formula = (it->second)->clone();
-                cout << "Formula " << id << " found." << endl;
-            }
-            else {
-                cout << "Formula " << id << " undefined." << endl;
-            }
-            phi.formula->set_horizon(0.,0.);
-            phi.formula->set_trace_data_ptr(phi.data);                                   
-            phi.current_time =0.;
-            phi.rob=0.;
-            phi.lower_rob = -Signal::BigM; 
-            phi.upper_rob = Signal::BigM; 
-
-            return phi;                   
-        }
+        STLMonitor get_monitor(const string& id) const;
                                         
     
         /// UTILITY FUNCTIONS
@@ -325,6 +488,6 @@ namespace STLRom {
     }
         ;
 
-} // namespace STLRom
-
+ // namespace STLRom
+}
 #endif // STL_DRIVER_H

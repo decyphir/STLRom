@@ -98,16 +98,26 @@ PYBIND11_MODULE(stlrom, m) {
 	//Class STLMonitor
 	py::class_<STLRom::STLMonitor>(m, "STLMonitor")
 		.def(py::init<>())
+		.def("__repr__", [](const STLMonitor &monitor) {
+            std::ostringstream oss;
+            oss << monitor;
+            return oss.str();
+        })
 		.def("add_sample",&STLRom::STLMonitor::add_sample)
 		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
 		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
+		.def("eval_robustness",&STLRom::STLMonitor::update_rob)
+ 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
+ 		.def("get_signal",&STLRom::STLMonitor::get_signal)
  		.def("display_formula",&STLRom::STLMonitor::display_formula) 		
+		
 		.def_readwrite("rob",&STLRom::STLMonitor::rob)
 		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
 		.def_readwrite("formula",&STLRom::STLMonitor::formula)
 		.def_readwrite("data",&STLRom::STLMonitor::data)
-		.def_readwrite("current_time",&STLRom::STLMonitor::current_time);
+		.def_readwrite("current_time",&STLRom::STLMonitor::current_time)
+		;
 
 	//Class STLDriver
 	py::class_<STLRom::STLDriver>(m, "STLDriver")

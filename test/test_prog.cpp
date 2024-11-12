@@ -78,7 +78,6 @@ int main(int argc, char** argv) {
         double rob_low= phi.get_lower_rob();
         cout << "time: " << phi.current_time << " Interval robustness: [" << rob_low << ", " << rob_up << "]" << endl;        
     }
-   
 
     return 0;
 

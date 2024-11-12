@@ -11,6 +11,64 @@
 
 namespace STLRom
 {
+	string signal_map_to_string(map<string, int> signal_map)
+	{
+	// get number of signals
+		int n_signals = signal_map.size();
+		// cout << "n_signals:" << n_signals << endl;
+		string signames[n_signals];
+
+		//     for (auto ii = signal_map->begin(); ii != signal_map->end(); ii++){
+		for (const auto &ii : signal_map)
+		{
+			string sig = ii.first;
+			int idx = ii.second - 1;
+			signames[idx] = sig;
+		}
+
+		string str_out = signames[0];
+		for (int idx = 1; idx < n_signals; idx++)
+		{
+			str_out += " " + signames[idx];
+		}
+
+		return str_out;
+	} 
+
+	string STLMonitor::get_signal_names() const
+	{
+		return signal_map_to_string(signal_map);
+	}
+
+	void STLMonitor::add_sample(vector<double> s)
+	{
+		if (s.size() != signal_map.size() + 1)
+		{
+			throw std::invalid_argument("Sample size does not match the number of signals.");
+		}
+		if (!data.empty() && s[0] <= data.back()[0])
+		{
+			throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
+		}
+		data.push_back(s);
+	}
+
+	double STLMonitor::update_rob()
+        {
+            if (formula)
+            {
+				// Ensure formula reads the right data
+				formula->set_trace_data_ptr(data);
+				formula->set_param_map_ptr(param_map);
+				Signal::semantics=semantics;
+				rob = formula->compute_robustness();
+                lower_rob = formula->compute_lower_rob();
+                upper_rob = formula->compute_upper_rob();
+                current_time = data.back()[0];             
+            }
+            return rob;
+        };
+
 
 	map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
 
@@ -26,7 +84,8 @@ namespace STLRom
 	}
 
 	STLDriver::STLDriver(trace_data _trace)
-		: trace_scanning(false),
+		: data(std::move(_trace)),
+		  trace_scanning(false),
 		  trace_parsing(false),
 		  report(""),
 		  lexer(nullptr),
@@ -34,8 +93,106 @@ namespace STLRom
 		  nb_test_pos(0),
 		  error_flag(false)
 	{
-		data = _trace;
-	};
+	}
+
+	STLDriver::~STLDriver()
+	{
+		for (auto &pair : formula_map)
+		{
+			delete pair.second;
+		}
+	}
+
+	STLDriver::STLDriver(const STLDriver &other)
+		: trace_scanning(other.trace_scanning),
+		  trace_parsing(other.trace_parsing),
+		  streamname(other.streamname),
+		  param_map(other.param_map),
+		  signal_map(other.signal_map),
+		  data(other.data),
+		  stl_test_map(other.stl_test_map),
+		  trace_test_queue(other.trace_test_queue),
+		  report(other.report),
+		  test_log(other.test_log),
+		  nb_test_pos(other.nb_test_pos),
+		  nb_test_total(other.nb_test_total),
+		  error_flag(other.error_flag)
+	{
+
+		for (const auto &pair : other.formula_map)
+		{
+			formula_map[pair.first] = pair.second->clone();
+		}
+	}
+
+	STLDriver &STLDriver::operator=(const STLDriver &other)
+	{
+		if (this != &other)
+		{
+			trace_scanning = other.trace_scanning;
+			trace_parsing = other.trace_parsing;
+			streamname = other.streamname;
+			param_map = other.param_map;
+			signal_map = other.signal_map;
+			data = other.data;
+			stl_test_map = other.stl_test_map;
+			trace_test_queue = other.trace_test_queue;
+			report = other.report;
+			test_log = other.test_log;
+			nb_test_pos = other.nb_test_pos;
+			nb_test_total = other.nb_test_total;
+			error_flag = other.error_flag;
+
+			for (auto &pair : formula_map)
+			{
+				delete pair.second;
+			}
+			formula_map.clear();
+
+			for (const auto &pair : other.formula_map)
+			{
+				formula_map[pair.first] = pair.second->clone();
+			}
+		}
+		return *this;
+	}
+
+	STLDriver::STLDriver(STLDriver &&other) noexcept
+		: trace_scanning(other.trace_scanning), trace_parsing(other.trace_parsing), streamname(std::move(other.streamname)), param_map(std::move(other.param_map)),
+		  signal_map(std::move(other.signal_map)), formula_map(std::move(other.formula_map)), data(std::move(other.data)), stl_test_map(std::move(other.stl_test_map)),
+		  trace_test_queue(std::move(other.trace_test_queue)), report(std::move(other.report)), test_log(std::move(other.test_log)), nb_test_pos(other.nb_test_pos),
+		  nb_test_total(other.nb_test_total), error_flag(other.error_flag)
+	{
+		other.formula_map.clear();
+	}
+
+	STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
+	{
+		if (this != &other)
+		{
+			trace_scanning = other.trace_scanning;
+			trace_parsing = other.trace_parsing;
+			streamname = std::move(other.streamname);
+			param_map = std::move(other.param_map);
+			signal_map = std::move(other.signal_map);
+			data = std::move(other.data);
+			stl_test_map = std::move(other.stl_test_map);
+			trace_test_queue = std::move(other.trace_test_queue);
+			report = std::move(other.report);
+			test_log = std::move(other.test_log);
+			nb_test_pos = other.nb_test_pos;
+			nb_test_total = other.nb_test_total;
+			error_flag = other.error_flag;
+
+			for (auto &pair : formula_map)
+			{
+				delete pair.second;
+			}
+			formula_map = std::move(other.formula_map);
+			other.formula_map.clear();
+		}
+		return *this;
+	}
 
 	bool STLDriver::parse_stream(std::istream &in)
 	{
@@ -80,28 +237,7 @@ namespace STLRom
 
 	string STLDriver::get_signals_names() const
 	{
-
-		// get number of signals
-
-		int n_signals = signal_map.size();
-		// cout << "n_signals:" << n_signals << endl;
-		string signames[n_signals];
-
-		//     for (auto ii = signal_map->begin(); ii != signal_map->end(); ii++){
-		for (const auto &ii : signal_map)
-		{
-			string sig = ii.first;
-			int idx = ii.second - 1;
-			signames[idx] = sig;
-		}
-
-		string str_out = signames[0];
-		for (int idx = 1; idx < n_signals; idx++)
-		{
-			str_out += " " + signames[idx];
-		}
-
-		return str_out;
+		return signal_map_to_string(signal_map);
 	}
 
 	/** clear assigned formulas and trace_test_queue */
@@ -170,29 +306,29 @@ namespace STLRom
 			out << param->second << endl;
 		}
 
-		out << "\nTrace tests:" << endl;
-		out << "---------------" << endl;
+		// Not using tests at the moments, will see if we keep/update them...
+		// out << "\nTrace tests:" << endl;
+		// out << "---------------" << endl;
 
-		string indent = "    ";
-		for (auto it = trace_test_queue.begin(); it != trace_test_queue.end(); it++)
-		{
+		// string indent = "    ";
+		// for (auto it = trace_test_queue.begin(); it != trace_test_queue.end(); it++)
+		// {
 
-			out << (*it).id << ": ";
-			out << (*it).env << ", ";
-			out << "SimTime: " << (*it).sim_time << " Visu:" << (*it).visu << endl;
-			for (auto its = (*it).tests.begin(); its != (*it).tests.end(); its++)
-			{
-				// transducer->param_map =  param_map; FIXME probably needs a set_param for transducers
-				out << indent << its->test_id << endl;
-				for (auto elem = its->param_map.begin(); elem != its->param_map.end(); elem++)
-					out << indent << indent << elem->first << "=" << elem->second << endl;
+		// 	out << (*it).id << ": ";
+		// 	out << (*it).env << ", ";
+		// 	out << "SimTime: " << (*it).sim_time << " Visu:" << (*it).visu << endl;
+		// 	for (auto its = (*it).tests.begin(); its != (*it).tests.end(); its++)
+		// 	{
+		// 		// transducer->param_map =  param_map; FIXME probably needs a set_param for transducers
+		// 		out << indent << its->test_id << endl;
+		// 		for (auto elem = its->param_map.begin(); elem != its->param_map.end(); elem++)
+		// 			out << indent << indent << elem->first << "=" << elem->second << endl;
 
-				out << indent << indent << *(*its).formula << endl;
-			}
-			out << endl;
-		}
-		out << endl
-			<< endl;
+		// 		out << indent << indent << *(*its).formula << endl;
+		// 	}
+		// 	out << endl;
+		// }
+		out << endl;
 	}
 
 	/** compute robustness for all formulas defined in the driver and write results in files */
@@ -371,7 +507,6 @@ namespace STLRom
 
 	double STLDriver::test_formula(const string &phi_in)
 	{
-		// transducer->param_map = param_map;
 
 		if (data.empty())
 		{
@@ -395,6 +530,42 @@ namespace STLRom
 			cout << "Couldn't parse formula: " << phi_in << endl;
 			return 0.;
 		}
+	}
+
+	STLMonitor STLDriver::get_monitor(const string& id) const {
+		STLMonitor phi;
+		auto it = formula_map.find(id); // FYI was map<string,transducer*>::const_iterator it;
+
+		if (it != formula_map.end() && it->second != nullptr)
+		{	
+			if (it->second != nullptr)
+			{
+				try
+				{
+					phi.formula = (it->second)->clone();
+					phi.signal_map = signal_map;
+					phi.param_map = param_map;
+					phi.formula->set_horizon(0., 0.);
+					//phi.formula->set_trace_data_ptr(phi.data); // Premature, pointer with change
+					phi.current_time = 0.;
+					phi.rob = 0.;
+					phi.lower_rob = -Signal::BigM;
+					phi.upper_rob = Signal::BigM;
+				}
+				catch (const std::exception &e)
+				{
+					std::cerr << "Error while cloning or setting up the formula: " << e.what() << std::endl;
+					// Handle the error appropriately, possibly by returning an empty or default-initialized STLMonitor
+					return STLMonitor();
+				}
+			}
+		}
+		else
+		{
+			cout << "WARNING: Formula " << id << " undefined." << endl;
+		}
+		
+		return phi;
 	}
 
 	vector<double> &STLDriver::get_online_rob(const string &phi_in, double t0=0.)
