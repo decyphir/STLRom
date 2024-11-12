@@ -34,45 +34,49 @@ int main(int argc, char** argv) {
     
     if (parse_success) {
         cout << "Formula parsed successfully" << endl;    
-        stl_driver.print();                    
         }
     else {
         cout << "Something went wrong." <<endl;
         return 1; 
     }  
 
+    // Testing get_monitor
+    auto monitor= stl_driver.get_monitor("phi");
+    cout << endl << "test monitor:" << endl;
+    cout << monitor << endl;
+
     // Testing one sample
     vector<double> v ;
     v = {0,-2, 4.43};
-    stl_driver.add_sample(v);    
+    monitor.add_sample(v);    
     v = {2.5, 0, 0};        
-    stl_driver.add_sample(v);
+    monitor.add_sample(v);
     v = {5, 5, -1.3};        
-    stl_driver.add_sample(v);
-    
-    vector<double> robs;
-    robs = stl_driver.get_online_rob("phi");
-    cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
-    
-    // set param 
-    cout << "Changing param p to -5" << endl;
-    stl_driver.set_param("p", -5);
-    robs = stl_driver.get_online_rob("phi");
-    cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
-    
-    cout << "Monitoring aphi" << endl;
-    robs = stl_driver.get_online_rob("aphi");
-    cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
-    cout << "Changing param t1 to 10" << endl;
-    stl_driver.set_param("t1", 10);
-    robs = stl_driver.get_online_rob("aphi");
-    cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
+    monitor.add_sample(v);
     
 
-    // Testing get_monitor
-    STLMonitor monitor= stl_driver.get_monitor("phi");
+    double rob = monitor.update_rob();
 
-    cout << "monitor:" << monitor << endl;
+
+    // vector<double> robs;
+    // robs = stl_driver.get_online_rob("phi");
+     cout << "Robustness: " << rob << endl;
+    
+    // // set param 
+    // cout << "Changing param p to -5" << endl;
+    // stl_driver.set_param("p", -5);
+    // robs = stl_driver.get_online_rob("phi");
+    // cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
+    
+    // cout << "Monitoring aphi" << endl;
+    // robs = stl_driver.get_online_rob("aphi");
+    // cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
+    // cout << "Changing param t1 to 10" << endl;
+    // stl_driver.set_param("t1", 10);
+    // robs = stl_driver.get_online_rob("aphi");
+    // cout << robs[0] << " " << robs[1] << " " << robs[2] << endl;
+    
+
 
 
     return 0;

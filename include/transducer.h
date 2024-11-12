@@ -33,7 +33,7 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
-        // z is neutral semantics, z_up upper bound, z_low lower bound
+        // z is estimated robustness signal, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
 
         transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
@@ -59,7 +59,6 @@ namespace STLRom {
         }
         virtual void set_param_map_ptr(const map<string, double> &map)
         {
-            cout << "Looking for shit transducer, wtf I am doing here ?????" << endl;
             param_map_ptr= &map;
         }
                         

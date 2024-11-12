@@ -17,6 +17,12 @@ add_executable(test_until
 	${HEADER_FILES}
 )
 
+add_executable(test_monitor
+  "${CMAKE_SOURCE_DIR}/test/test_monitor.cpp"
+  ${SOURCE_FILES}
+	${HEADER_FILES}
+)
+
 add_test(NAME test_cpp_until
           COMMAND test_until
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
