@@ -40,6 +40,30 @@ trace_data rand_trace_data( int m, int n) {
 
 }
 
+string signal_map_to_string(map<string, int> signal_map)
+	{
+	// get number of signals
+		int n_signals = signal_map.size();
+		// cout << "n_signals:" << n_signals << endl;
+		string signames[n_signals];
+
+		//     for (auto ii = signal_map->begin(); ii != signal_map->end(); ii++){
+		for (const auto &ii : signal_map)
+		{
+			string sig = ii.first;
+			int idx = ii.second - 1;
+			signames[idx] = sig;
+		}
+
+		string str_out = signames[0];
+		for (int idx = 1; idx < n_signals; idx++)
+		{
+			str_out += " " + signames[idx];
+		}
+
+		return str_out;
+	} 
+
 const std::string current_date_time() {
 	time_t     now = time(0);
 	struct tm  tstruct;

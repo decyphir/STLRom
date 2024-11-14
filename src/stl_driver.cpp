@@ -9,73 +9,16 @@
 #include "transducer.h"
 #include "stl_scanner.h"
 
+
 namespace STLRom
 {
-	string signal_map_to_string(map<string, int> signal_map)
-	{
-	// get number of signals
-		int n_signals = signal_map.size();
-		// cout << "n_signals:" << n_signals << endl;
-		string signames[n_signals];
-
-		//     for (auto ii = signal_map->begin(); ii != signal_map->end(); ii++){
-		for (const auto &ii : signal_map)
-		{
-			string sig = ii.first;
-			int idx = ii.second - 1;
-			signames[idx] = sig;
-		}
-
-		string str_out = signames[0];
-		for (int idx = 1; idx < n_signals; idx++)
-		{
-			str_out += " " + signames[idx];
-		}
-
-		return str_out;
-	} 
-
-	string STLMonitor::get_signal_names() const
-	{
-		return signal_map_to_string(signal_map);
-	}
-
-	void STLMonitor::add_sample(vector<double> s)
-	{
-		if (s.size() != signal_map.size() + 1)
-		{
-			throw std::invalid_argument("Sample size does not match the number of signals.");
-		}
-		if (!data.empty() && s[0] <= data.back()[0])
-		{
-			throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
-		}
-		data.push_back(s);
-	}
-
-	double STLMonitor::update_rob()
-        {
-            if (formula)
-            {
-				// Ensure formula reads the right data
-				formula->set_trace_data_ptr(data);
-				formula->set_param_map_ptr(param_map);
-				Signal::semantics=semantics;
-				Signal::interpol= interpol;
-				formula->reset();				
-				formula->set_horizon(start_time, end_time);
-				rob = formula->compute_robustness();
-                lower_rob = formula->compute_lower_rob();
-                upper_rob = formula->compute_upper_rob();
-            }
-            return rob;
-        };
-
-
+	
 	map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
 
 	STLDriver::STLDriver()
-		: trace_scanning(false),
+		: interpol(Interpol::LINEAR),
+		  semantics(Semantics::SPACE),
+		  trace_scanning(false),
 		  trace_parsing(false),
 		  report(""),
 		  lexer(nullptr),
@@ -86,7 +29,9 @@ namespace STLRom
 	}
 
 	STLDriver::STLDriver(trace_data _trace)
-		: data(std::move(_trace)),
+		: interpol(Interpol::LINEAR),
+		  semantics(Semantics::SPACE),
+		  data(std::move(_trace)),
 		  trace_scanning(false),
 		  trace_parsing(false),
 		  report(""),
@@ -106,7 +51,9 @@ namespace STLRom
 	}
 
 	STLDriver::STLDriver(const STLDriver &other)
-		: trace_scanning(other.trace_scanning),
+		: semantics(other.semantics),
+		interpol(other.interpol), 
+		trace_scanning(other.trace_scanning),
 		  trace_parsing(other.trace_parsing),
 		  streamname(other.streamname),
 		  param_map(other.param_map),
@@ -131,6 +78,8 @@ namespace STLRom
 	{
 		if (this != &other)
 		{
+			semantics = other.semantics;
+			interpol = other.interpol;
 			trace_scanning = other.trace_scanning;
 			trace_parsing = other.trace_parsing;
 			streamname = other.streamname;
@@ -160,7 +109,7 @@ namespace STLRom
 	}
 
 	STLDriver::STLDriver(STLDriver &&other) noexcept
-		: trace_scanning(other.trace_scanning), trace_parsing(other.trace_parsing), streamname(std::move(other.streamname)), param_map(std::move(other.param_map)),
+		: semantics(other.semantics),interpol(other.interpol),trace_scanning(other.trace_scanning), trace_parsing(other.trace_parsing), streamname(std::move(other.streamname)), param_map(std::move(other.param_map)),
 		  signal_map(std::move(other.signal_map)), formula_map(std::move(other.formula_map)), data(std::move(other.data)), stl_test_map(std::move(other.stl_test_map)),
 		  trace_test_queue(std::move(other.trace_test_queue)), report(std::move(other.report)), test_log(std::move(other.test_log)), nb_test_pos(other.nb_test_pos),
 		  nb_test_total(other.nb_test_total), error_flag(other.error_flag)
@@ -172,6 +121,8 @@ namespace STLRom
 	{
 		if (this != &other)
 		{
+			semantics = other.semantics;
+			interpol = other.interpol;
 			trace_scanning = other.trace_scanning;
 			trace_parsing = other.trace_parsing;
 			streamname = std::move(other.streamname);
@@ -507,31 +458,18 @@ namespace STLRom
 		}
 	}
 
-	double STLDriver::test_formula(const string &phi_in)
-	{
 
-		if (data.empty())
+	void STLDriver::add_sample(vector<double> s)
+	{
+		if (s.size() != signal_map.size() + 1)
 		{
-			cout << "Empty data" << endl;
-			return 0.;
+			throw std::invalid_argument("Sample size does not match the number of signals.");
 		}
-		string funky_name = "f_u_n_k_y_p_h__i_n_a_m_e"; // seriously?
-		string str_to_parse = funky_name + ":=" + phi_in;
-		if (parse_string(str_to_parse))
+		if (!data.empty() && s[0] <= data.back()[0])
 		{
-			transducer *phi = formula_map[funky_name]->clone();
-			formula_map.erase(funky_name);
-			phi->trace_data_ptr = &data;
-			phi->init_horizon();
-			double rob = phi->compute_robustness();
-			delete phi;
-			return rob;
+			throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
 		}
-		else
-		{
-			cout << "Couldn't parse formula: " << phi_in << endl;
-			return 0.;
-		}
+		data.push_back(s);
 	}
 
 	STLMonitor STLDriver::get_monitor(const string& id) const {
@@ -544,6 +482,9 @@ namespace STLRom
 			{
 				try
 				{
+					phi.interpol = interpol;
+					phi.semantics = semantics;
+					phi.data = data;
 					phi.formula = (it->second)->clone();
 					phi.signal_map = signal_map;
 					phi.param_map = param_map;
@@ -582,6 +523,9 @@ namespace STLRom
 		string str_to_parse = funky_name + ":=" + phi_in;
 		if (parse_string(str_to_parse))
 		{
+			Signal::semantics=semantics;
+			Signal::interpol= interpol;
+				
 			transducer *phi = formula_map[funky_name]->clone();
 			formula_map.erase(funky_name);
 			phi->set_trace_data_ptr(data);			

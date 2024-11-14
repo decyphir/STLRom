@@ -14,17 +14,6 @@
 
 using namespace std;
 
-/*
-double fmin(double a,double b)
-{
-  return (a<b)?a:b;
-}
-
-double fmax(double a,double b)
-{
-  return (b<a)?a:b;
-}
-*/
 namespace STLRom {
 
 class Point {
@@ -75,7 +64,8 @@ public:
 enum class Semantics {
 		SPACE,
 		LEFT_TIME,
-		RIGHT_TIME
+		RIGHT_TIME,
+		BOOLEAN
 	};
 
 enum class Interpol {

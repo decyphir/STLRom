@@ -111,9 +111,11 @@ PYBIND11_MODULE(stlrom, m) {
 		.def("set_semantics",&STLRom::STLMonitor::set_semantics)
 		.def("get_semantics",&STLRom::STLMonitor::get_semantics)
 		.def("set_interpol",&STLRom::STLMonitor::set_interpol)
-		.def("get_interpol",&STLRom::STLMonitor::get_interpol)
-		.def("eval_robustness",&STLRom::STLMonitor::update_rob)
- 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
+		.def("get_interpol",&STLRom::STLMonitor::get_interpol)	
+		.def("eval_rob",(double (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_rob)		
+		.def("eval_rob",(double (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_rob)		
+		.def("eval_rob",(double (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
+		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
 		.def("get_param",&STLRom::STLMonitor::get_param)
 		.def("get_signal",&STLRom::STLMonitor::get_signal)
@@ -123,7 +125,8 @@ PYBIND11_MODULE(stlrom, m) {
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
 		.def_readwrite("formula",&STLRom::STLMonitor::formula)
 		.def_readwrite("data",&STLRom::STLMonitor::data)
-		.def_readwrite("current_time",&STLRom::STLMonitor::current_time)
+		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
+		.def_readwrite("end_time",&STLRom::STLMonitor::end_time)
 		;
 
 	//Class STLDriver
@@ -135,6 +138,11 @@ PYBIND11_MODULE(stlrom, m) {
 		.def("add_sample",&STLRom::STLDriver::add_sample)
 		.def("get_monitor",&STLRom::STLDriver::get_monitor)
 		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
+		.def("set_semantics",&STLRom::STLDriver::set_semantics)
+		.def("get_semantics",&STLRom::STLDriver::get_semantics)
+		.def("set_interpol",&STLRom::STLDriver::set_interpol)
+		.def("get_interpol",&STLRom::STLDriver::get_interpol)
+		
 		.def("get_online_rob",
 		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
              return self.get_online_rob(phi_in, t0); 

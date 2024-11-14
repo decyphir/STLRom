@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <map>
 
 using namespace std;
 typedef vector<vector<double> > trace_data;
@@ -27,7 +28,8 @@ inline bool s_to_d(std::string const& s,
   else
 	return true;
 }
-
+string signal_map_to_string(map<string, int>); // TODO move in tools ?
+	
 /** double to string conversion */
 inline string d_to_s(
 	double const &x)
