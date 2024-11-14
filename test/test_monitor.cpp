@@ -24,11 +24,9 @@ int main(int argc, char** argv) {
     STLDriver stl_driver = STLDriver();	  
     string s ="signal x,y\n";
     s+="param p=3\n";
-    s+="phi:=";
-    s+="x[t]>p\n";
+    s+="mu := x[t]>p\n";
     s+="param t1=3\n";
-    s+="aphi:=";
-    s+="alw_[0, t1] (y[t]>0)\n";
+    s+="phi:= alw_[0, t1] (y[t]>0)";
  
     bool parse_success = stl_driver.parse_string(s);
     
@@ -41,26 +39,41 @@ int main(int argc, char** argv) {
     }  
 
     // Testing get_monitor
-    auto monitor= stl_driver.get_monitor("phi");
-    cout << endl << "test monitor:" << endl;
-    cout << monitor << endl;
+    auto mu= stl_driver.get_monitor("mu");
+    cout << mu << endl;
 
-    // Testing one sample
-    vector<double> v ;
+    auto phi = stl_driver.get_monitor("phi");
+    cout << endl << "phi:" << endl;
+    cout << phi << endl;
+
+    phi.set_eval_time(0., 0.);
+    unary_transducer* ut = dynamic_cast<unary_transducer*>(phi.formula);
+
+    cout << endl << "phi:" << endl;
+    cout << phi << endl;
+
+    // Testing a few samples
+    vector<double> v;
     v = {0,-2, 4.43};
-    monitor.add_sample(v);    
+    mu.add_sample(v);    
+    phi.add_sample(v);
     v = {2.5, 0, 0};        
-    monitor.add_sample(v);
+    mu.add_sample(v);
+    phi.add_sample(v);
     v = {5, 5, -1.3};        
-    monitor.add_sample(v);
+    mu.add_sample(v);
+    phi.add_sample(v);
     
 
-    double rob = monitor.update_rob();
-
+ //   double rho_mu = mu.update_rob();
+ //   cout << "rho(mu): " << rho_mu << endl;
+    
+    double rho_phi = phi.update_rob();
+    cout << "rho(phi): " << rho_phi << endl;
+    
 
     // vector<double> robs;
     // robs = stl_driver.get_online_rob("phi");
-     cout << "Robustness: " << rob << endl;
     
     // // set param 
     // cout << "Changing param p to -5" << endl;

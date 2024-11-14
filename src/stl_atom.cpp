@@ -75,7 +75,6 @@ namespace STLRom {
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
         short i = signal_map[variable];
-        //double t0;  // now, we assume t0 = 0.; WARNING: THIS WILL BREAK CPSGRADER... 
         double t=0., v=0.;  
         double res= 0.;
             

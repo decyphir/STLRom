@@ -62,11 +62,11 @@ namespace STLRom
 				formula->set_param_map_ptr(param_map);
 				Signal::semantics=semantics;
 				Signal::interpol= interpol;
-				//formula->reset();				
+				formula->reset();				
+				formula->set_horizon(start_time, end_time);
 				rob = formula->compute_robustness();
                 lower_rob = formula->compute_lower_rob();
                 upper_rob = formula->compute_upper_rob();
-                current_time = data.back()[0];             
             }
             return rob;
         };
@@ -547,10 +547,8 @@ namespace STLRom
 					phi.formula = (it->second)->clone();
 					phi.signal_map = signal_map;
 					phi.param_map = param_map;
-					phi.formula->set_horizon(0., 0.);
-
-					//phi.formula->set_trace_data_ptr(phi.data); // Premature, pointer with change
-					phi.current_time = 0.;
+					phi.start_time = 0.;
+					phi.end_time = 0.;
 					phi.rob = 0.;
 					phi.lower_rob = -Signal::BigM;
 					phi.upper_rob = Signal::BigM;

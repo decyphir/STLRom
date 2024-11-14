@@ -29,12 +29,13 @@ namespace STLRom {
         double rob; 
         double lower_rob;
         double upper_rob;
-        double current_time;
+
+        double start_time, end_time;
         transducer * formula;
         Semantics semantics; 
         Interpol interpol;
 
-        STLMonitor() : interpol(Interpol::LINEAR), semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), current_time(0.0) {}
+        STLMonitor() : interpol(Interpol::LINEAR), semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0),start_time(0.0), end_time(0.0) {}
  
         // Copy constructor
         STLMonitor(const STLMonitor& other) 
@@ -43,7 +44,7 @@ namespace STLRom {
               data(other.data), 
               param_map(other.param_map),
               signal_map(other.signal_map),
-              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), current_time(other.current_time) {
+              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), start_time(other.start_time), end_time(other.end_time) {
             if (other.formula) {
                 formula = other.formula->clone();
             } else {
@@ -62,7 +63,8 @@ namespace STLRom {
                 rob = other.rob;
                 lower_rob = other.lower_rob;
                 upper_rob = other.upper_rob;
-                current_time = other.current_time;
+                start_time = other.start_time;
+                end_time = other.end_time;
                 if (formula) {
                     delete formula;
                 }
@@ -83,7 +85,7 @@ namespace STLRom {
               data(std::move(other.data)),
               param_map(std::move(other.param_map)),
               signal_map(std::move(other.signal_map)),   
-              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), current_time(other.current_time), formula(other.formula)
+              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), start_time(other.start_time), end_time(other.end_time), formula(other.formula)
         {
             other.formula = nullptr;
         }
@@ -101,7 +103,8 @@ namespace STLRom {
                 rob = other.rob;
                 lower_rob = other.lower_rob;
                 upper_rob = other.upper_rob;
-                current_time = other.current_time;
+                start_time = other.start_time;
+                end_time = other.end_time;
                 if (formula)
                 {
                     delete formula;
@@ -221,7 +224,8 @@ namespace STLRom {
         // append new sample to data 
         void add_sample(vector<double> s);
         inline void set_eval_time(double t_start, double t_end) {
-            formula->set_horizon(t_start, t_end);
+            start_time = t_start;
+            end_time = t_end;
         }
         
         double update_rob();

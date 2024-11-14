@@ -22,7 +22,6 @@ namespace STLRom {
 
     void timed_unary_transducer::init_horizon() {
 
-        //	cout << "timed_unary_transducer::init_horizon - start_time:" << start_time <<  endl;
         // checks whether a and b are given by parameters, and assign corresponding values
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
