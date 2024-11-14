@@ -32,12 +32,14 @@ namespace STLRom {
         double current_time;
         transducer * formula;
         Semantics semantics; 
+        Interpol interpol;
 
-        STLMonitor() : semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), current_time(0.0) {}
+        STLMonitor() : interpol(Interpol::LINEAR), semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), current_time(0.0) {}
  
         // Copy constructor
         STLMonitor(const STLMonitor& other) 
-            : semantics(other.semantics), 
+            : interpol(other.interpol), 
+             semantics(other.semantics), 
               data(other.data), 
               param_map(other.param_map),
               signal_map(other.signal_map),
@@ -52,6 +54,7 @@ namespace STLRom {
         // Copy assignment operator
         STLMonitor& operator=(const STLMonitor& other) {
             if (this != &other) {
+                interpol = other.interpol;
                 semantics = other.semantics;
                 data = other.data;
                 param_map = other.param_map;
@@ -75,7 +78,8 @@ namespace STLRom {
 
         // Move constructor
         STLMonitor(STLMonitor &&other) noexcept
-            : semantics(other.semantics),
+            : interpol(other.interpol),
+              semantics(other.semantics),
               data(std::move(other.data)),
               param_map(std::move(other.param_map)),
               signal_map(std::move(other.signal_map)),   
@@ -92,6 +96,7 @@ namespace STLRom {
                 data = std::move(other.data);
                 param_map = std::move(other.param_map);
                 signal_map= std::move(other.signal_map);   
+                interpol = other.interpol;
                 semantics=other.semantics;
                 rob = other.rob;
                 lower_rob = other.lower_rob;
@@ -126,6 +131,52 @@ namespace STLRom {
 			throw std::invalid_argument("Invalid semantics string");
 		};
         };
+        
+        inline std::string get_semantics() const {
+            switch (semantics) {
+                case Semantics::SPACE:
+                    return "SPACE";
+                case Semantics::LEFT_TIME:
+                    return "LEFT_TIME";
+                case Semantics::RIGHT_TIME:
+                    return "RIGHT_TIME";
+                default:
+                    throw std::invalid_argument("Invalid semantics value");
+            }
+        }
+
+        inline void set_interpol(const std::string &interp)
+        {
+            cout << "interpol:" << interp << endl;
+            if (interp == "PREVIOUS")
+            {
+                cout << "prev" << endl;
+                interpol = Interpol::PREVIOUS;
+            }
+            else if (interp == "LINEAR")
+            {
+                cout << "lin" << endl;
+                interpol = Interpol::LINEAR;
+            }
+            else
+            {
+                throw std::invalid_argument("Invalid interpol string");
+            }
+        }
+
+        inline std::string get_interpol()
+        {
+            switch (interpol)
+            {
+            case Interpol::PREVIOUS:
+                return "PREVIOUS";
+            case Interpol::LINEAR:
+                return "LINEAR";
+            default:
+                throw std::invalid_argument("Invalid interpol value");
+            }
+        }
+
         // Change parameter value and update robustness
         // Maybe add an option to reset rather than update ?
         inline void set_param(const std::string &param, double value)
@@ -137,7 +188,6 @@ namespace STLRom {
                 if (value != prev_value)
                 {
                     it->second = value;
-                    update_rob();
                 }
             }
             else
@@ -174,8 +224,6 @@ namespace STLRom {
             formula->set_horizon(t_start, t_end);
         }
         
-
-
         double update_rob();
         
         string get_signal_names() const;
@@ -460,7 +508,6 @@ namespace STLRom {
         // Creates an independant monitor with its own data
         STLMonitor get_monitor(const string& id) const;
                                         
-    
         /// UTILITY FUNCTIONS
 
         /** clear assigned formulas and trace_test_queue */

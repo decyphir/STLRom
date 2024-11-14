@@ -28,5 +28,12 @@ stl_parser.parse_string("mu := mu_x and mu_y") # a compound proposition
 stl_parser.parse_string("phi := ev_[0, tau] mu") # a temporal proposition
 stl_parser.disp()
 
-monitor1 = stl_parser.get_monitor("mu_déaeefx")
+phi = stl_parser.get_monitor("phi")
+phi.add_sample([0., 0., 0.])  # time, x, y
+phi.add_sample([0.5, 1.1, 2.2])
+#phi.set_interpol('PREVIOUS')
 
+#phi.set_eval_time(0.,.001)
+phi.eval_robustness() # should be -2.
+
+print(phi.rob)

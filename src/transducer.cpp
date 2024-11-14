@@ -70,6 +70,32 @@ namespace STLRom {
         childR->set_param(param, val);
     }
 
+    /* reset */
+    void transducer::reset() {        
+        z.clear();z.beginTime=0.; z.endTime=0.;
+        z_low.clear();z_low.beginTime=0.; z_low.endTime=0.;
+        z_up.clear();z_up.beginTime=0.; z_up.endTime=0.;
+        
+    }
+
+    void unary_transducer::reset() {        
+        z.clear();z.beginTime=0.; z.endTime=0.;
+        z_low.clear();z_low.beginTime=0.; z_low.endTime=0.;
+        z_up.clear();z_up.beginTime=0.; z_up.endTime=0.;
+        
+        child->reset();
+    }
+
+    void binary_transducer::reset() {        
+        z.clear();z.beginTime=0.; z.endTime=0.;
+        z_low.clear();z_low.beginTime=0.; z_low.endTime=0.;
+        z_up.clear();z_up.beginTime=0.; z_up.endTime=0.;
+        
+        childL->reset();
+        childR->reset();
+    }
+
+
     void timed_unary_transducer::set_param(const string &param, double val) {
     	if (param_map.find(param)!=param_map.end()){
 		param_map[param]=val;

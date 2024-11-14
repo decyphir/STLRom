@@ -4,7 +4,10 @@
 
 namespace STLRom {
 
+    // Default semantics and interpolation
     Semantics Signal::semantics = Semantics::SPACE;
+    Interpol Signal::interpol = Interpol::LINEAR; 
+
     double Signal::BigM = 10000.;
 
     /* 
@@ -25,16 +28,30 @@ namespace STLRom {
 #endif
 
         beginTime=T[0];
-        endTime=T[n-1];
+        endTime = T[n - 1];
 
-        if (n==1)
+        if (n == 1)
             push_back(Sample(T[0], V[0], 0.));
-        else {
-            for(int i=0; i < n-1; i++) {
-                push_back(Sample(T[i], V[i], (V[i+1]-V[i]) / (T[i+1] - T[i])));
-                //push_back(Sample(T[i], V[i], 0.));
+        else
+        {
+            switch (Signal::interpol)
+            {
+            case Interpol::PREVIOUS:
+                for (int i = 0; i < n - 1; i++)
+                {
+                    push_back(Sample(T[i], V[i], 0.));
+                }
+                break;
+            case Interpol::LINEAR:
+                for (int i = 0; i < n - 1; i++)
+                {
+                    push_back(Sample(T[i], V[i], (V[i + 1] - V[i]) / (T[i + 1] - T[i])));
+                }
+                break;
+            default:
+                throw invalid_argument("Invalid interpolation value");
             }
-            push_back(Sample(T[n-1], V[n-1], 0.));
+            push_back(Sample(T[n - 1], V[n - 1], 0.));
         }
 
 #ifdef DEBUG__
@@ -48,39 +65,45 @@ namespace STLRom {
     }
     
     void Signal::appendSample(double t, double v) {
-        
-        if ((t<=endTime)&&size()>0)
-            return;
-
-        if (size()==0) {
-            push_back(Sample(t,v,0.));
-            beginTime=t;
-            endTime = t;
-        }
-        else {
-            back().derivative = (v-back().value) / (t - back().time);
-            push_back(Sample(t,v,0));
-            endTime= t;
-        }
+        appendSample(t,v,0.);
     }
 
-    void Signal::appendSample(double t, double v, double d) {
-
-        //cout << "Appending t=" << t << " v=" << v << endl;
-
-        if ((t<=endTime)&&size()>0)
+    void Signal::appendSample(double t, double v, double d)
+    {
+        if ((t <= endTime) && size() > 0)
             return;
 
-        if (size()==0) {
-            push_back(Sample(t,v,d));
-            beginTime=t;
-            endTime = t;
-        }
-        else {
-            back().derivative = (v-back().value) / (t - back().time);
-            //back().derivative = 0.;
-            push_back(Sample(t,v,d));
-            endTime= t;
+        switch (Signal::interpol)
+        {
+        case Interpol::PREVIOUS:
+            if (size() == 0)
+            {
+                push_back(Sample(t, v, 0.));
+                beginTime = t;
+                endTime = t;
+            }
+            else
+            {
+                push_back(Sample(t, v, 0.));
+                endTime = t;
+            }
+            break;
+        case Interpol::LINEAR:
+            if (size() == 0)
+            {
+                push_back(Sample(t, v, d));
+                beginTime = t;
+                endTime = t;
+            }
+            else
+            {
+                back().derivative = (v - back().value) / (t - back().time);
+                push_back(Sample(t, v, d));
+                endTime = t;
+            }
+            break;
+        default:
+            throw invalid_argument("Invalid interpolation value");
         }
     }
 

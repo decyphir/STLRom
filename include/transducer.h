@@ -42,6 +42,9 @@ namespace STLRom {
 
         virtual ~transducer() {};
 
+        // Reset z, z_low, z_up
+        virtual void reset();
+
         // Initializes horizons
         virtual void init_horizon();
 
@@ -105,7 +108,8 @@ namespace STLRom {
 
         void init_horizon();
         void set_param(const string&, double); 
-        
+        void reset();
+
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;
             child->set_trace_data_ptr(trace);
@@ -146,6 +150,7 @@ namespace STLRom {
 
         void init_horizon();
         void set_param(const string&, double); 
+        void reset();
         
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;            

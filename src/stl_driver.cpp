@@ -61,6 +61,8 @@ namespace STLRom
 				formula->set_trace_data_ptr(data);
 				formula->set_param_map_ptr(param_map);
 				Signal::semantics=semantics;
+				Signal::interpol= interpol;
+				//formula->reset();				
 				rob = formula->compute_robustness();
                 lower_rob = formula->compute_lower_rob();
                 upper_rob = formula->compute_upper_rob();
@@ -546,6 +548,7 @@ namespace STLRom
 					phi.signal_map = signal_map;
 					phi.param_map = param_map;
 					phi.formula->set_horizon(0., 0.);
+
 					//phi.formula->set_trace_data_ptr(phi.data); // Premature, pointer with change
 					phi.current_time = 0.;
 					phi.rob = 0.;

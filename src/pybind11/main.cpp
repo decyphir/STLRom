@@ -88,6 +88,8 @@ PYBIND11_MODULE(stlrom, m) {
 		.def_readwrite("end_time",&STLRom::Signal::endTime)
 		.def_static("set_semantics",  &STLRom::Signal::set_semantics)
 		.def_static("get_semantics",  &STLRom::Signal::get_semantics)
+		.def_static("set_interpol",  &STLRom::Signal::set_interpol)
+		.def_static("get_interpol",  &STLRom::Signal::get_interpol)
 		.def_static("set_BigM",&STLRom::Signal::set_BigM)
 		.def_static("get_BigM",&STLRom::Signal::get_BigM);
 
@@ -106,11 +108,16 @@ PYBIND11_MODULE(stlrom, m) {
 		.def("add_sample",&STLRom::STLMonitor::add_sample)
 		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
 		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
+		.def("set_semantics",&STLRom::STLMonitor::set_semantics)
+		.def("get_semantics",&STLRom::STLMonitor::get_semantics)
+		.def("set_interpol",&STLRom::STLMonitor::set_interpol)
+		.def("get_interpol",&STLRom::STLMonitor::get_interpol)
 		.def("eval_robustness",&STLRom::STLMonitor::update_rob)
  		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
- 		.def("get_signal",&STLRom::STLMonitor::get_signal)
+		.def("set_param",&STLRom::STLMonitor::set_param)
+		.def("get_param",&STLRom::STLMonitor::get_param)
+		.def("get_signal",&STLRom::STLMonitor::get_signal)
  		.def("display_formula",&STLRom::STLMonitor::display_formula) 		
-		
 		.def_readwrite("rob",&STLRom::STLMonitor::rob)
 		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
