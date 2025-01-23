@@ -60,7 +60,12 @@ PYBIND11_MODULE(stlrom, m) {
 		.def(py::init<double,double>())
 		.def("print_point",&STLRom::Point::print_point)
 		.def_readwrite("time",&STLRom::Point::time)
-		.def_readwrite("value",&STLRom::Point::value);
+		.def_readwrite("value",&STLRom::Point::value)
+		.def(py::init<const STLRom::Point&>()) // Copy constructor
+		.def("copy", [](const STLRom::Point &self) { return STLRom::Point(self); })
+		.def("__copy__", [](const STLRom::Point &self) { return STLRom::Point(self); })
+		.def("__deepcopy__", [](const STLRom::Point &self, py::dict) { return STLRom::Point(self); })
+		.def("__del__", [](STLRom::Point &self) {});
 
 	//Class Sample	
 	py::class_<STLRom::Sample>(m, "Sample")
@@ -70,7 +75,11 @@ PYBIND11_MODULE(stlrom, m) {
 		.def("print_sample",&STLRom::Sample::print_sample)
 		.def_readwrite("time",&STLRom::Sample::time)
 		.def_readwrite("value",&STLRom::Sample::value)
-		.def_readwrite("derivative",&STLRom::Sample::derivative);
+		.def_readwrite("derivative",&STLRom::Sample::derivative)
+		.def("copy", [](const STLRom::Sample &self) { return STLRom::Sample(self); })
+		.def("__copy__", [](const STLRom::Sample &self) { return STLRom::Sample(self); })
+		.def("__deepcopy__", [](const STLRom::Sample &self, py::dict) { return STLRom::Sample(self); })
+		.def("__del__", [](STLRom::Sample &self) {});
 		
 	//Class Signal
 	py::class_<STLRom::Signal>(m, "Signal")
@@ -91,7 +100,12 @@ PYBIND11_MODULE(stlrom, m) {
 		.def_static("set_interpol",  &STLRom::Signal::set_interpol)
 		.def_static("get_interpol",  &STLRom::Signal::get_interpol)
 		.def_static("set_BigM",&STLRom::Signal::set_BigM)
-		.def_static("get_BigM",&STLRom::Signal::get_BigM);
+		.def_static("get_BigM",&STLRom::Signal::get_BigM)
+		.def("copy", [](const STLRom::Signal &self) { return STLRom::Signal(self); })
+		.def("__copy__", [](const STLRom::Signal &self) { return STLRom::Signal(self); })
+		.def("__deepcopy__", [](const STLRom::Signal &self, py::dict) { return STLRom::Signal(self); })
+		.def("__del__", [](STLRom::Signal &self) {});
+		
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
@@ -120,6 +134,11 @@ PYBIND11_MODULE(stlrom, m) {
 		.def("get_param",&STLRom::STLMonitor::get_param)
 		.def("get_signal",&STLRom::STLMonitor::get_signal)
  		.def("display_formula",&STLRom::STLMonitor::display_formula) 		
+		.def("copy", [](const STLRom::STLMonitor &self) { return STLRom::STLMonitor(self); })
+		.def("__copy__", [](const STLRom::STLMonitor &self) { return STLRom::STLMonitor(self); })
+		.def("__deepcopy__", [](const STLRom::STLMonitor &self, py::dict) { return STLRom::STLMonitor(self); })
+		.def("__del__", [](STLRom::STLMonitor *instance) { delete instance; }) // Bind the destructor
+
 		.def_readwrite("rob",&STLRom::STLMonitor::rob)
 		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
@@ -151,7 +170,9 @@ PYBIND11_MODULE(stlrom, m) {
          py::arg("t0") = 0.)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
-		.def_readwrite("data",&STLRom::STLDriver::data);
-	
-	
+		.def_readwrite("data",&STLRom::STLDriver::data)
+		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
+		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
+		.def("__deepcopy__", [](const STLRom::STLDriver &self, py::dict) { return STLRom::STLDriver(self); })
+		.def("__del__", [](STLRom::STLDriver *instance) {delete instance; }); // Bind the destructor
 }

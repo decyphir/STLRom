@@ -42,7 +42,7 @@ phi.add_sample([0.5, 1.1, 2.2])
 #phi.set_interpol('PREVIOUS')
 
 #phi.set_eval_time(0.,1.)
-phi.eval_robustness() # should be -2.
+phi.eval_rob() # should be -2.
 
 print_signal(phi.get_signal())
 print(phi.rob)
