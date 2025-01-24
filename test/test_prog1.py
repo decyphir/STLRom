@@ -9,7 +9,8 @@ driver=stlrom.STLDriver()
 s="signal x\nphi:=x[t]>2"
 driver.parse_string(s)
 sig_names= driver.get_signals_names()
-signal=stlrom.rand_trace_data(nb_sample+2,nb_signal+1)
+signal=stlrom.rand_trace_data(nb_sample+2,nb_signal)
+print(signal)
 
 for i in range (nb_sample) :
 	driver.add_sample(signal[i]);

@@ -19,8 +19,20 @@ int main(int argc, char** argv) {
 
     */
 
+    int num_samples = 100; // default value
+    int num_traces = 100;
+    for (int i = 1; i < argc; ++i) {
+        if (string(argv[i]) == "-n" && i + 1 < argc) {
+            num_samples = stoi(argv[++i]);
+        }
+        if (string(argv[i]) == "-N" && i+1<argc) {
+            num_traces  = stoi(argv[++i]);
+        }
+    }
+    cout << "Number of samples: " << num_samples << endl;
+
     // STLDriver is the class implementing the parser.            
-    
+
     STLDriver stl_driver = STLDriver();	  
     string s ="signal x,y\n";
     s+="param p=3\n";

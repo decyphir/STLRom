@@ -1,0 +1,6 @@
+ signal x,y
+ param p=3
+ mu:= x[t]>p
+ param t1=3
+ phi := alw_[0, t1] (y[t]>0) 
+ phi2 := ev_[0, 100] (phi and mu)

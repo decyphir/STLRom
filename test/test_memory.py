@@ -4,6 +4,7 @@ import stlrom
 import numpy as np
 import time
 import gc
+import argparse
 
 def rand_sample(t, dim):
     val = np.random.rand(dim)
@@ -14,7 +15,8 @@ def test_timing(driver,formula, num_sample):
     start_time =time.time()
     for i in range(0,num_sample):
         driver.add_sample(rand_sample(i,2))
-        rob1 = driver.get_online_rob(formula)
+        driver.get_online_rob(formula)
+    
     # display both formula and robustness in one formated line
     end_time = time.time()
     execution_time = end_time - start_time
@@ -22,22 +24,23 @@ def test_timing(driver,formula, num_sample):
     
     return execution_time
 
-s="""signal x,y
-param p1=3,p2=-2
-mu1 := x[t]>p1
-mu2 := abs(y[t])>p2
-mmu_or := mu1 or mu2 
-mmu_and := mu1 and mu2 
-phi:= alw_[0,3] mmu_or"""
+num_trace = 1
+num_samples = 10000
+s= "stress.stl"
 
-s2="""signal x,y
-mu1 := x[t]>0
-phi:= alw_[0,3] mu1
-"""
 
-for n in range(0,50):
-    driver=stlrom.STLDriver()
-    driver.parse_string(s)
-    test_timing(driver, "phi",10000)
-    del driver
-    gc.collect()
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--num_trace', type=int, default=1, help='Number of traces')
+    parser.add_argument('--num_samples', type=int, default=10000, help='Number of samples')
+
+    args = parser.parse_args()
+
+    num_trace = args.num_trace
+    num_samples = args.num_samples
+
+    for n in range(0, num_trace):
+        driver = stlrom.STLDriver()
+        driver.parse_file(s)
+        test_timing(driver, "phi", num_samples)

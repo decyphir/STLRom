@@ -8,11 +8,11 @@
 #include "stl_driver.h"
 #include "transducer.h"
 #include "stl_scanner.h"
-
+#include <memory>
 
 namespace STLRom
 {
-	
+
 	map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
 
 	STLDriver::STLDriver()
@@ -52,8 +52,8 @@ namespace STLRom
 
 	STLDriver::STLDriver(const STLDriver &other)
 		: semantics(other.semantics),
-		interpol(other.interpol), 
-		trace_scanning(other.trace_scanning),
+		  interpol(other.interpol),
+		  trace_scanning(other.trace_scanning),
 		  trace_parsing(other.trace_parsing),
 		  streamname(other.streamname),
 		  param_map(other.param_map),
@@ -109,7 +109,7 @@ namespace STLRom
 	}
 
 	STLDriver::STLDriver(STLDriver &&other) noexcept
-		: semantics(other.semantics),interpol(other.interpol),trace_scanning(other.trace_scanning), trace_parsing(other.trace_parsing), streamname(std::move(other.streamname)), param_map(std::move(other.param_map)),
+		: semantics(other.semantics), interpol(other.interpol), trace_scanning(other.trace_scanning), trace_parsing(other.trace_parsing), streamname(std::move(other.streamname)), param_map(std::move(other.param_map)),
 		  signal_map(std::move(other.signal_map)), formula_map(std::move(other.formula_map)), data(std::move(other.data)), stl_test_map(std::move(other.stl_test_map)),
 		  trace_test_queue(std::move(other.trace_test_queue)), report(std::move(other.report)), test_log(std::move(other.test_log)), nb_test_pos(other.nb_test_pos),
 		  nb_test_total(other.nb_test_total), error_flag(other.error_flag)
@@ -387,7 +387,7 @@ namespace STLRom
 		// Update param map for all formulas
 		for (auto it = formula_map.begin(); it != formula_map.end(); it++)
 		{
-		((*it).second)->set_param(param, n);
+			((*it).second)->set_param(param, n);
 		}
 	}
 
@@ -458,7 +458,6 @@ namespace STLRom
 		}
 	}
 
-
 	void STLDriver::add_sample(vector<double> s)
 	{
 		if (s.size() != signal_map.size() + 1)
@@ -472,12 +471,13 @@ namespace STLRom
 		data.push_back(s);
 	}
 
-	STLMonitor STLDriver::get_monitor(const string& id) const {
+	STLMonitor STLDriver::get_monitor(const string &id) const
+	{
 		STLMonitor phi;
 		auto it = formula_map.find(id); // FYI was map<string,transducer*>::const_iterator it;
 
 		if (it != formula_map.end() && it->second != nullptr)
-		{	
+		{
 			if (it->second != nullptr)
 			{
 				try
@@ -506,52 +506,44 @@ namespace STLRom
 		{
 			cout << "WARNING: Formula " << id << " undefined." << endl;
 		}
-		
+
 		return phi;
 	}
 
-	vector<double> &STLDriver::get_online_rob(const string &phi_in, double t0=0.)
+	vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
 	{
-		// transducer->param_map = param_map;
-		static vector<double> out_rob;
+		// static vector<double> out_rob;
+		vector<double> out_rob;
 		if (data.empty())
 		{
 			cout << "Empty data" << endl;
 			return out_rob;
 		}
-		string funky_name = "f_u_n_k_y_p_h__i_n_a_m_e"; // seriously?
-		string str_to_parse = funky_name + ":=" + phi_in;
-		if (parse_string(str_to_parse))
+
+		if (formula_map.find(phi_in) == formula_map.end())
 		{
-			Signal::semantics=semantics;
-			Signal::interpol= interpol;
-				
-			transducer *phi = formula_map[funky_name]->clone();
-			formula_map.erase(funky_name);
-			phi->set_trace_data_ptr(data);			
-			phi->set_param_map_ptr(param_map);
-			phi->start_time=t0;
-			phi->end_time=t0;			
-			phi->init_horizon();
-			double rob = phi->compute_robustness();
-			double lower_rob = phi->compute_lower_rob();
-			double upper_rob = phi->compute_upper_rob();
-			out_rob = {rob, lower_rob, upper_rob};
-			delete phi;
+			cout << "Formula " << phi_in << " not found in formula_map." << endl;
 			return out_rob;
 		}
-		else
-		{
-			cout << "Couldn't parse formula: " << phi_in << endl;
-			return out_rob;
-		}
+		transducer *phi = formula_map[phi_in];
+		phi->set_trace_data_ptr(data);
+		phi->set_param_map_ptr(param_map);
+		Signal::semantics = semantics;
+		Signal::interpol = interpol;
+		phi->reset();
+		phi->set_horizon(t0, t0);
+		double rob = phi->compute_robustness();
+		double lower_rob = phi->compute_lower_rob();
+		double upper_rob = phi->compute_upper_rob();
+		out_rob = {rob, lower_rob, upper_rob};
+
+		return out_rob;
 	}
 
-	vector<double> &STLDriver::get_online_rob(const string &phi_in)
+	vector<double> STLDriver::get_online_rob(const string &phi_in)
 	{
 		return get_online_rob(phi_in, 0.);
 	}
-
 
 	void STLDriver::print_trace(ostream &os)
 	{
