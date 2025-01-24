@@ -23,6 +23,12 @@ add_executable(test_monitor
 	${HEADER_FILES}
 )
 
+add_executable(test_stress
+  "${CMAKE_SOURCE_DIR}/test/test_stress.cpp"
+  ${SOURCE_FILES}
+	${HEADER_FILES}
+)
+
 add_test(NAME test_cpp_until
           COMMAND test_until
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"

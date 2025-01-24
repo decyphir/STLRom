@@ -45,6 +45,7 @@ trace_data rand_trace_data( int m, int n);
 const std::string current_date_time();
 
 void print(const trace_data&);
+void print(const trace_data&, int max_iter);
 bool read_trace(const string &trace_file_name, trace_data &data);
 
 #endif /* TOOLS_H_ */
