@@ -9,7 +9,6 @@
 #include "tools.h"
 #include "signal.h"
 
-
 namespace STLRom
 {
     /** A class for standalone STL monitor */
@@ -166,12 +165,10 @@ namespace STLRom
             cout << "interpol:" << interp << endl;
             if (interp == "PREVIOUS")
             {
-                cout << "prev" << endl;
                 interpol = Interpol::PREVIOUS;
             }
             else if (interp == "LINEAR")
             {
-                cout << "lin" << endl;
                 interpol = Interpol::LINEAR;
             }
             else
@@ -244,7 +241,7 @@ namespace STLRom
 
         double eval_rob();
         double eval_rob(double);
-        double eval_rob(double,double);
+        double eval_rob(double, double);
 
         string get_signal_names() const;
 

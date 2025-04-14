@@ -31,7 +31,7 @@ trace_data rand_trace_data( int m, int n) {
 	for(int i=0; i<m; i++) {
 		vector<double> v;
 		v.push_back(i*dt);
-		for(int j=1; j<n; j++) {
+		for(int j=0; j<n; j++) {
 			v.push_back(random_double());
 		}
 		rand_trace.push_back(v);
@@ -78,12 +78,27 @@ void print(const trace_data & data) {
 
 	vector<double>::const_iterator iter_value;
 	vector<vector<double>>::const_iterator iter_sample;
-
+	
 	for(iter_sample=data.begin();iter_sample != data.end(); iter_sample++) {
 		for(iter_value = iter_sample->begin(); iter_value != iter_sample->end(); iter_value++ ) {
 			cout << *iter_value << " ";
 		}
 		cout << endl;
+	}
+}
+
+void print(const trace_data & data, const int max_iter) {
+
+	vector<double>::const_iterator iter_value;
+	vector<vector<double>>::const_iterator iter_sample;
+	int counter = 0;
+	for(iter_sample=data.begin();iter_sample != data.end(); iter_sample++) {		
+		for(iter_value = iter_sample->begin(); iter_value != iter_sample->end(); iter_value++ ) {
+			cout << *iter_value << " ";
+		}
+		cout << endl;
+		counter++;
+		if (counter>=max_iter)  break;
 	}
 }
 
