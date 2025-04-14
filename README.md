@@ -4,7 +4,11 @@ STLRom is a C++ library with python bindings for Robust online monitoring of Sig
 
 ## Install
 
-The simplest way to install and use STLRom is to use pip:
+
+The simplest way to install and use STLRom is to use pip. This works (has been tested) only on linux systems though, and requires a few packages for building, for instance:
+ - `cmake`, with a reasonnably recent version
+ - `python3.x-dev` where 3.x is the appropriate python version (e.g., 3.10)
+Then the following should fetch, build and install stlrom: 
 ```
 $ pip install stlrom
 ``` 
