@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -13,10 +13,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(stlrom)
 
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+find_package(pybind11 CONFIG REQUIRED)
+
 enable_testing()
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
-include_directories("${CMAKE_SOURCE_DIR}/pybind11")
+#include_directories("${CMAKE_SOURCE_DIR}/pybind11")
 
 file (GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/include/*.hh")
@@ -24,8 +27,15 @@ file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/i
 # Set up such that XCode organizes the files
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES} ${HEADER_FILES} )
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/pybind11)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/pybind11)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
-pybind11_add_module(stlrom src/pybind11/main.cpp ${SOURCE_FILES} ${HEADER_FILES})
+pybind11_add_module(stlrom
+  src/pybind11/main.cpp 
+  ${SOURCE_FILES} 
+  ${HEADER_FILES})
 
+install (
+  TARGETS stlrom
+  DESTINATION .
+)
