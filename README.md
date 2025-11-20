@@ -4,22 +4,60 @@ STLRom is a C++ library with python bindings for Robust online monitoring of Sig
 
 ## Install
 
+stlrom is only available on Linux based systems.
 
-The simplest way to install and use STLRom is to use pip. This works (has been tested) only on linux systems though, and requires a few packages for building, for instance:
- - `cmake`, with a reasonnably recent version
- - `python3.x-dev` where 3.x is the appropriate python version (e.g., 3.10)
-Then the following should fetch, build and install stlrom: 
+### Building the C++ library 
+
+STLRom is primarily a C++ library. It comes with a standard cmake configuration file. Assuming cmake and a C++ development environment are installed, a library called stlromlib can be built with
+
 ```
-$ pip install stlrom
-``` 
+mkdir build; cd build
+cmake ..
+make
+```
+
+### Python bindings
+
+A python interface for stlrom is implemented with pybind11. To build and install it in a local virtual environment we recommend using [uv](https://docs.astral.sh/uv/getting-started/installation/).
+To create a virtual environment, build and install stlrom, run:
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e .
+```
+Note this requires compiling the C++ library, so cmake and a C++ compiler must be available.
+
+### Installing from PyPI
+
+stlrom is available on Pypi, so it can be installed in any Python environment with pip:
+
+```bash
+pip install stlrom
+```
+
+### Testing the C++ Library
+
+In the test folder, `test_driver.cpp` is an example of using the C++ library. Go into build/test and run it with 
+```
+./test_driver
+```
+
+### Testing the python bindings
+
+In the build folder, execute
+```
+make test
+```
+It will run the unit tests python programs from the `test` folder.
 
 ## Usage
 
 ### Tutorial Notebook
 
-The following [notebook](test/tutorial.ipynb) is formated as a tutorial for stlrom. It can also be accessed on [colab](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing).
+The following [notebook](test/notebook_test.ipynb) is formated as a tutorial for stlrom. It can also be accessed on [colab](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing).
 
-###  A complete Example
+###  A Complete Example
 
 ```python
 import stlrom
@@ -55,31 +93,5 @@ phi1 = stl_driver.get_monitor("phi1")
 print('Robustness of phi1 at time 0.: ', phi1.eval_rob())
 print('Robustness of phi1 from time 1.: ', phi1.eval_rob(1.))
 ```
-
-
-
-## Compiling from source
-
-STLRom is written in C++ with Python bindings using pybind11. Python 3.10 or higher is recommended. To compile, run  
-```
-cd build
-cmake ..
-make
-```
-
-### Testing the C++ Library
-
-In the test folder, `test_driver.cpp` is an example of using the C++ library. Go into build/test and run it with 
-```
-./test_driver
-```
-
-### Testing the python bindings
-
-In the build folder, execute
-```
-make test
-```
-It will run the unit tests  python programs from the `test` folder.
 
 

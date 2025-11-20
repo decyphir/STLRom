@@ -1,36 +1,32 @@
 project(STLRomtest)
 
 add_executable(test_driver
-  "${CMAKE_SOURCE_DIR}/test/test_driver.cpp"
-  ${SOURCE_FILES}
-	${HEADER_FILES}
+  "${CMAKE_SOURCE_DIR}/test/test_driver.cpp"  
+)
+target_link_libraries(test_driver PRIVATE stlromlib)
+
+add_executable(test_until
+  "${CMAKE_SOURCE_DIR}/test/test_until.cpp"
+)
+target_link_libraries(test_until PRIVATE stlromlib)
+
+add_executable(test_monitor
+"${CMAKE_SOURCE_DIR}/test/test_monitor.cpp"
+)
+target_link_libraries(test_monitor PRIVATE stlromlib)
+
+add_executable(test_stress
+"${CMAKE_SOURCE_DIR}/test/test_stress.cpp"
+)
+target_link_libraries(test_stress PRIVATE stlromlib)
+
+add_test(NAME test_cpp_until
+COMMAND test_until
+WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
 )
 
 add_test(NAME test_cpp_driver
           COMMAND test_driver
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-)
-
-add_executable(test_until
-  "${CMAKE_SOURCE_DIR}/test/test_until.cpp"
-  ${SOURCE_FILES}
-	${HEADER_FILES}
-)
-
-add_executable(test_monitor
-  "${CMAKE_SOURCE_DIR}/test/test_monitor.cpp"
-  ${SOURCE_FILES}
-	${HEADER_FILES}
-)
-
-add_executable(test_stress
-  "${CMAKE_SOURCE_DIR}/test/test_stress.cpp"
-  ${SOURCE_FILES}
-	${HEADER_FILES}
-)
-
-add_test(NAME test_cpp_until
-          COMMAND test_until
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
 )
 
