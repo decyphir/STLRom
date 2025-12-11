@@ -89,8 +89,6 @@
 %token END 0 "end of file"
 %token <std::string> STRING  "string";
 %token <uint64_t> NUMBER "number";
-%token LEFTPAR "leftpar";
-%token RIGHTPAR "rightpar";
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 
@@ -147,13 +145,13 @@ program :   {
         ;
 
 
-command : STRING LEFTPAR RIGHTPAR
+command : STRING LPAREN RPAREN
         {
             string &id = $1;
             cout << "ID: " << id << endl;
             $$ = Command(id);
         }
-    | STRING LEFTPAR arguments RIGHTPAR
+    | STRING LPAREN arguments RPAREN
         {
             string &id = $1;
             const std::vector<uint64_t> &args = $3;

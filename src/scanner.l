@@ -91,27 +91,12 @@
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
                 return STLRom::Parser::make_STRING(yytext, STLRom::location( /* put location data here if you want */ )); 
             }
-            
-\(          {
-                cout << "Scanner: '('" << endl;
-                return STLRom::Parser::make_LEFTPAR(STLRom::location());
-            }
-            
-\)          { 
-                cout << "Scanner: ')'" << endl;
-                return STLRom::Parser::make_RIGHTPAR(STLRom::location());
-            }
-            
+                        
 ;           {
                 cout << "Scanner: ';'" << endl;
                 return STLRom::Parser::make_SEMICOLON(STLRom::location());
             }
-            
-,           {
-                cout << "Scanner: ','" << endl;
-                return STLRom::Parser::make_COMMA(STLRom::location());
-            }
-            
+
 [\n\t ]     {
                 //cout << "Scanner: whitechar (ignored)" << endl;
             }
