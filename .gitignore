@@ -37,3 +37,4 @@ src/parser.cpp
 src/location.hh
 src/scanner.cpp
 build/*
+*.out*
