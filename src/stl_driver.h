@@ -37,6 +37,9 @@
 // if your IDE can't resolve it - call make first
 #include "parser.hpp"
 
+typedef STLRom::Parser::token token;
+typedef STLRom::Parser::token_type token_type;
+
 namespace STLROM {
 
 // forward declare our simplistic AST node class so we
@@ -57,6 +60,9 @@ class STLDriver
 {
 public:
     STLDriver();
+
+    /** Reserved words for STL parser */
+    static map<string, token_type> reserved;
     
     /**
      * Run parser. Results are stored inside.
