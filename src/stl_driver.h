@@ -30,6 +30,8 @@
 #define STLDRIVER_H
 
 #include <vector>
+#include <map>
+
 
 #include "scanner.h"
 
@@ -37,8 +39,8 @@
 // if your IDE can't resolve it - call make first
 #include "parser.hpp"
 
-typedef STLRom::Parser::token token;
-typedef STLRom::Parser::token_type token_type;
+typedef STLROM::Parser::token token;
+typedef STLROM::Parser::token_type token_type;
 
 namespace STLROM {
 

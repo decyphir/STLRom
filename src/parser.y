@@ -94,6 +94,24 @@
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 
+%token DIAMOND     "diamond"
+%token BOX         "box"
+%token LINT        "lbracket"
+%token RINT        "rbracket"
+%token LPAREN      "lparen"
+%token RPAREN      "rparen"
+%token IMPLIES     "implies"
+%token LT          "lt"
+%token GT          "gt"
+%token NOT         "not"
+%token AND         "and"
+%token OR          "or"
+%token ASSIGN      "assign"
+%token PLUS        "plus"
+%token MINUS       "minus"
+%token MULT        "mult"
+
+
 %type< STLROM::Command > command;
 %type< std::vector<uint64_t> > arguments;
 
