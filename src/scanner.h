@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLRom.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,7 +39,7 @@
  */
 #if ! defined(yyFlexLexerOnce)
 #undef yyFlexLexer
-#define yyFlexLexer STLROM_FlexLexer // the trick with prefix; no namespace here :(
+#define yyFlexLexer STLRom_FlexLexer // the trick with prefix; no namespace here :(
 #include <FlexLexer.h>
 #endif
 
@@ -47,11 +47,11 @@
 // Sinice Bison 3 uses symbol_type, we must change returned type. We also rename it
 // to something sane, since you cannot overload return type.
 #undef YY_DECL
-#define YY_DECL STLROM::Parser::symbol_type STLROM::Scanner::get_next_token()
+#define YY_DECL STLRom::Parser::symbol_type STLRom::Scanner::get_next_token()
 
 #include "parser.hpp" // this is needed for symbol_type
 
-namespace STLROM {
+namespace STLRom {
 
 // Forward declare driver to avoid include. Header is added inimplementation file.
 class STLDriver; 
@@ -60,7 +60,7 @@ class Scanner : public yyFlexLexer {
 public:
         Scanner(STLDriver &driver) : m_driver(driver) {}
 	virtual ~Scanner() {}
-	virtual STLROM::Parser::symbol_type get_next_token();
+	virtual STLRom::Parser::symbol_type get_next_token();
         
 private:
     STLDriver &m_driver;

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLRom.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,7 +38,7 @@
 
 	// Original yyterminate() macro returns int. Since we're using Bison 3 variants
 	// as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
-	#define yyterminate() STLROM::Parser::make_END(STLROM::location());
+	#define yyterminate() STLRom::Parser::make_END(STLRom::location());
 
 	// This will track current scanner location.
 	// Action is called when length of the token is known.
@@ -59,57 +59,57 @@
 %option noyywrap
 %option c++
 %option yyclass="Scanner"
-%option prefix="STLROM_"
+%option prefix="STLRom_"
 
 %%
 
-"<>"      { return STLROM::Parser::make_DIAMOND(STLROM::location()); }
-"<>_"     { return STLROM::Parser::make_DIAMOND(STLROM::location()); }
-"[]"      { return STLROM::Parser::make_BOX(STLROM::location()); }
-"[]_"     { return STLROM::Parser::make_BOX(STLROM::location()); }
-"["       { return STLROM::Parser::make_LINT(STLROM::location()); }
-"]"       { return STLROM::Parser::make_RINT(STLROM::location()); }
-"("       { return STLROM::Parser::make_LPAREN(STLROM::location()); }
-")"       { return STLROM::Parser::make_RPAREN(STLROM::location()); }
-"=>"      { return STLROM::Parser::make_IMPLIES(STLROM::location()); }
-"->"      { return STLROM::Parser::make_IMPLIES(STLROM::location()); }
-"<"       { return STLROM::Parser::make_LT(STLROM::location()); }
-">"       { return STLROM::Parser::make_GT(STLROM::location()); }
-"<="      { return STLROM::Parser::make_LT(STLROM::location()); }
-">="      { return STLROM::Parser::make_GT(STLROM::location()); }
-"!"       { return STLROM::Parser::make_NOT(STLROM::location()); }
-","       { return STLROM::Parser::make_COMMA(STLROM::location()); }
-"&"       { return STLROM::Parser::make_AND(STLROM::location()); }
-"|"       { return STLROM::Parser::make_OR(STLROM::location()); }
-":="      { return STLROM::Parser::make_ASSIGN(STLROM::location()); }
-"+"       { return STLROM::Parser::make_PLUS(STLROM::location()); }
-"-"       { return STLROM::Parser::make_MINUS(STLROM::location()); }
-"*"       { return STLROM::Parser::make_MULT(STLROM::location()); }
+"<>"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+"<>_"     { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+"[]"      { return STLRom::Parser::make_BOX(STLRom::location()); }
+"[]_"     { return STLRom::Parser::make_BOX(STLRom::location()); }
+"["       { return STLRom::Parser::make_LINT(STLRom::location()); }
+"]"       { return STLRom::Parser::make_RINT(STLRom::location()); }
+"("       { return STLRom::Parser::make_LPAREN(STLRom::location()); }
+")"       { return STLRom::Parser::make_RPAREN(STLRom::location()); }
+"=>"      { return STLRom::Parser::make_IMPLIES(STLRom::location()); }
+"->"      { return STLRom::Parser::make_IMPLIES(STLRom::location()); }
+"<"       { return STLRom::Parser::make_LT(STLRom::location()); }
+">"       { return STLRom::Parser::make_GT(STLRom::location()); }
+"<="      { return STLRom::Parser::make_LT(STLRom::location()); }
+">="      { return STLRom::Parser::make_GT(STLRom::location()); }
+"!"       { return STLRom::Parser::make_NOT(STLRom::location()); }
+","       { return STLRom::Parser::make_COMMA(STLRom::location()); }
+"&"       { return STLRom::Parser::make_AND(STLRom::location()); }
+"|"       { return STLRom::Parser::make_OR(STLRom::location()); }
+":="      { return STLRom::Parser::make_ASSIGN(STLRom::location()); }
+"+"       { return STLRom::Parser::make_PLUS(STLRom::location()); }
+"-"       { return STLRom::Parser::make_MINUS(STLRom::location()); }
+"*"       { return STLRom::Parser::make_MULT(STLRom::location()); }
 
 
 [a-z]+      { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return STLROM::Parser::make_STRING(yytext, STLROM::location( /* put location data here if you want */ )); 
+                return STLRom::Parser::make_STRING(yytext, STLRom::location( /* put location data here if you want */ )); 
             }
             
 \(          {
                 cout << "Scanner: '('" << endl;
-                return STLROM::Parser::make_LEFTPAR(STLROM::location());
+                return STLRom::Parser::make_LEFTPAR(STLRom::location());
             }
             
 \)          { 
                 cout << "Scanner: ')'" << endl;
-                return STLROM::Parser::make_RIGHTPAR(STLROM::location());
+                return STLRom::Parser::make_RIGHTPAR(STLRom::location());
             }
             
 ;           {
                 cout << "Scanner: ';'" << endl;
-                return STLROM::Parser::make_SEMICOLON(STLROM::location());
+                return STLRom::Parser::make_SEMICOLON(STLRom::location());
             }
             
 ,           {
                 cout << "Scanner: ','" << endl;
-                return STLROM::Parser::make_COMMA(STLROM::location());
+                return STLRom::Parser::make_COMMA(STLRom::location());
             }
             
 [\n\t ]     {
@@ -119,7 +119,7 @@
 [1-9][0-9]* {
                 cout << "Scanner: decimal number: " << yytext << endl;
                 uint64_t number = strtoull(yytext, 0, 10);
-                return STLROM::Parser::make_NUMBER(number, STLROM::location());
+                return STLRom::Parser::make_NUMBER(number, STLRom::location());
             }
 
 .           { 

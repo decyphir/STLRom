@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLRom.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,10 +39,10 @@
 // if your IDE can't resolve it - call make first
 #include "parser.hpp"
 
-typedef STLROM::Parser::token token;
-typedef STLROM::Parser::token_type token_type;
+typedef STLRom::Parser::token token;
+typedef STLRom::Parser::token_type token_type;
 
-namespace STLROM {
+namespace STLRom {
 
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header
