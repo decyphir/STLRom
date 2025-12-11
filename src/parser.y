@@ -47,7 +47,7 @@
 
     namespace STLROM {
         class Scanner;
-        class Interpreter;
+        class STLDriver;
     }
 }
 
@@ -61,11 +61,11 @@
     #include <iostream>
     #include "scanner.h"
     #include "parser.hpp"
-    #include "interpreter.h"
+    #include "stl_driver.h"
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y
-    static STLROM::Parser::symbol_type yylex(STLROM::Scanner &scanner, STLROM::Interpreter &driver) {
+    static STLROM::Parser::symbol_type yylex(STLROM::Scanner &scanner, STLROM::STLDriver &driver) {
         return scanner.get_next_token();
     }
     
@@ -77,9 +77,9 @@
 }
 
 %lex-param { STLROM::Scanner &scanner }
-%lex-param { STLROM::Interpreter &driver }
+%lex-param { STLROM::STLDriver &driver }
 %parse-param { STLROM::Scanner &scanner }
-%parse-param { STLROM::Interpreter &driver }
+%parse-param { STLROM::STLDriver &driver }
 %locations
 %define parse.trace
 %define parse.error verbose

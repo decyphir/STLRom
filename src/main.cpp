@@ -29,13 +29,13 @@
 #include <iostream>
 #include "scanner.h"
 #include "parser.hpp"
-#include "interpreter.h"
+#include "stl_driver.h"
 
 using namespace STLROM;
 using namespace std;
 
 int main(int argc, char **argv) {
-    Interpreter i;
+    STLDriver i;
     int res = i.parse();
     cout << "Parse complete. Result = " << res << endl;
     return res;

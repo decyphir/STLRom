@@ -30,7 +30,7 @@
 	#include <iostream>
 	#include <cstdlib>
 	#include "scanner.h"
-	#include "interpreter.h"
+	#include "stl_driver.h"
 	#include "parser.hpp"
 	#include "location.hh"
 
@@ -62,6 +62,29 @@
 %option prefix="STLROM_"
 
 %%
+
+"<>"      { return STLROM::Parser::make_DIAMOND(STLROM::location()); }
+"<>_"     { return STLROM::Parser::make_DIAMOND(STLROM::location()); }
+"[]"      { return STLROM::Parser::make_BOX(STLROM::location()); }
+"[]_"     { return STLROM::Parser::make_BOX(STLROM::location()); }
+"["       { return STLROM::Parser::make_LINT(STLROM::location()); }
+"]"       { return STLROM::Parser::make_RINT(STLROM::location()); }
+"("       { return STLROM::Parser::make_LPAREN(STLROM::location()); }
+")"       { return STLROM::Parser::make_RPAREN(STLROM::location()); }
+"=>"      { return STLROM::Parser::make_IMPLIES(STLROM::location()); }
+"->"      { return STLROM::Parser::make_IMPLIES(STLROM::location()); }
+"<"       { return STLROM::Parser::make_LT(STLROM::location()); }
+">"       { return STLROM::Parser::make_GT(STLROM::location()); }
+"<="      { return STLROM::Parser::make_LT(STLROM::location()); }
+">="      { return STLROM::Parser::make_GT(STLROM::location()); }
+"!"       { return STLROM::Parser::make_NOT(STLROM::location()); }
+","       { return STLROM::Parser::make_COMMA(STLROM::location()); }
+"&"       { return STLROM::Parser::make_AND(STLROM::location()); }
+"|"       { return STLROM::Parser::make_OR(STLROM::location()); }
+":="      { return STLROM::Parser::make_ASSIGN(STLROM::location()); }
+"+"       { return STLROM::Parser::make_PLUS(STLROM::location()); }
+"-"       { return STLROM::Parser::make_MINUS(STLROM::location()); }
+"*"       { return STLROM::Parser::make_MULT(STLROM::location()); }
 
 
 [a-z]+      { 

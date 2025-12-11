@@ -10,7 +10,7 @@ Features:
 * Fully reentrant parser and lexer, C++ implementation.
 * Parser and lexer are in a customized namespace with custom class names.
 * Flex base class has a customized name; multiple different flex scanners in the binary are possible without a name conflict. Believe it or not, but even in the 21st century it is still a bit tricky with *Flex*.
-* Parser and scanner enclosed in a "driver" class (`Interpreter`)
+* Parser and scanner enclosed in a "driver" class (`STLDriver`)
 * Uses *Bison 3.0* token variant API (yay!).
 * Location tracking. Not perfect, but the core is there.
 
@@ -36,7 +36,7 @@ Official *GNU Bison* example features C++ parser connected to primitive C-style 
 
 ## Source organization ##
 
-The main function creates the `Interpreter` object and calls `parse()`. `Scanner` and `Parser` are encapsulated in the `Interpreter`. By default the `Scanner` reads the standard input, but you can switch it using the provided `Interpreter` API and feed it with an arbitrary stream, such as `std::stringstream`.
+The main function creates the `STLDriver` object and calls `parse()`. `Scanner` and `Parser` are encapsulated in the `STLDriver`. By default the `Scanner` reads the standard input, but you can switch it using the provided `STLDriver` API and feed it with an arbitrary stream, such as `std::stringstream`.
 
 ## Building ##
 

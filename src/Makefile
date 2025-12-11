@@ -1,7 +1,7 @@
 all:
 	flex -o scanner.cpp scanner.l
 	bison -o parser.cpp parser.y
-	g++ -g main.cpp scanner.cpp parser.cpp interpreter.cpp command.cpp -o a.out
+	g++ -g main.cpp scanner.cpp parser.cpp stl_driver.cpp command.cpp -o a.out
 
 clean:
 	rm -rf scanner.cpp

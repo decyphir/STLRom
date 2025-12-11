@@ -53,17 +53,17 @@
 
 namespace STLROM {
 
-// Forward declare interpreter to avoid include. Header is added inimplementation file.
-class Interpreter; 
+// Forward declare driver to avoid include. Header is added inimplementation file.
+class STLDriver; 
     
 class Scanner : public yyFlexLexer {
 public:
-        Scanner(Interpreter &driver) : m_driver(driver) {}
+        Scanner(STLDriver &driver) : m_driver(driver) {}
 	virtual ~Scanner() {}
 	virtual STLROM::Parser::symbol_type get_next_token();
         
 private:
-    Interpreter &m_driver;
+    STLDriver &m_driver;
 };
 
 }
