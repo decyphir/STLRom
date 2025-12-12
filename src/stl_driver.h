@@ -106,6 +106,9 @@ private:
     
     // Used to get last Scanner location. Used in error messages.
     unsigned int location() const;
+
+    // Initializes the reserved words map
+    void initReserved();
     
 private:
     Scanner m_scanner;

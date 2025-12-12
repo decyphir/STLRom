@@ -43,36 +43,7 @@ STLDriver::STLDriver() :
     m_location(0)
 
 {
-    reserved["F"]      = token::TOKEN_DIAMOND;
-    reserved["F_"]     = token::TOKEN_DIAMOND;
-    reserved["ev"]     = token::TOKEN_DIAMOND;
-    reserved["ev_"]    = token::TOKEN_DIAMOND;
-
-    reserved["G"]      = token::TOKEN_BOX;
-    reserved["G_"]     = token::TOKEN_BOX;
-    reserved["alw"]    = token::TOKEN_BOX;
-    reserved["alw_"]   = token::TOKEN_BOX;
-
-    reserved["U"]      = token::TOKEN_UNTIL;
-    reserved["U_"]     = token::TOKEN_UNTIL;
-    reserved["until"]  = token::TOKEN_UNTIL;
-    reserved["until_"] = token::TOKEN_UNTIL;
-
-    reserved["and"]    = token::TOKEN_AND;
-    reserved["or"]     = token::TOKEN_OR;
-    reserved["not"]    = token::TOKEN_NOT;
-
-    reserved["true"]   = token::TOKEN_BOOL_TRUE;
-    reserved["false"]  = token::TOKEN_BOOL_FALSE;
-
-    reserved["t"]      = token::TOKEN_TIME;
-    reserved["abs"]    = token::TOKEN_ABS;
-    reserved["param"]  = token::TOKEN_PARAM_DECL;
-    reserved["test"]   = token::TOKEN_TEST;
-    reserved["signal"] = token::TOKEN_SIGNAL_DECL;
-
-    reserved["IDENTIFIER"] = token::TOKEN_CONSTANT_IDENTIFIER; // default for unknown identifiers
-
+    initReserved();
 }
 
 int STLDriver::parse() {
@@ -111,6 +82,38 @@ void STLDriver::increaseLocation(unsigned int loc) {
 
 unsigned int STLDriver::location() const {
     return m_location;
+}
+
+void initReserved() {
+    STLDriver::reserved["F"]      = token::TOKEN_DIAMOND;
+    STLDriver::reserved["F_"]     = token::TOKEN_DIAMOND;
+    STLDriver::reserved["ev"]     = token::TOKEN_DIAMOND;
+    STLDriver::reserved["ev_"]    = token::TOKEN_DIAMOND;
+
+    STLDriver::reserved["G"]      = token::TOKEN_BOX;
+    STLDriver::reserved["G_"]     = token::TOKEN_BOX;
+    STLDriver::reserved["alw"]    = token::TOKEN_BOX;
+    STLDriver::reserved["alw_"]   = token::TOKEN_BOX;
+
+    STLDriver::reserved["U"]      = token::TOKEN_UNTIL;
+    STLDriver::reserved["U_"]     = token::TOKEN_UNTIL;
+    STLDriver::reserved["until"]  = token::TOKEN_UNTIL;
+    STLDriver::reserved["until_"] = token::TOKEN_UNTIL;
+
+    STLDriver::reserved["and"]    = token::TOKEN_AND;
+    STLDriver::reserved["or"]     = token::TOKEN_OR;
+    STLDriver::reserved["not"]    = token::TOKEN_NOT;
+
+    STLDriver::reserved["true"]   = token::TOKEN_BOOL_TRUE;
+    STLDriver::reserved["false"]  = token::TOKEN_BOOL_FALSE;
+
+    STLDriver::reserved["t"]      = token::TOKEN_TIME;
+    STLDriver::reserved["abs"]    = token::TOKEN_ABS;
+    STLDriver::reserved["param"]  = token::TOKEN_PARAM_DECL;
+    STLDriver::reserved["test"]   = token::TOKEN_TEST;
+    STLDriver::reserved["signal"] = token::TOKEN_SIGNAL_DECL;
+
+    STLDriver::reserved["IDENTIFIER"] = token::TOKEN_CONSTANT_IDENTIFIER; // default for unknown identifiers
 }
 
 Parser::symbol_type make_keyword(const std::string &kw, const location_type &loc) {
