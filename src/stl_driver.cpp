@@ -84,7 +84,7 @@ unsigned int STLDriver::location() const {
     return m_location;
 }
 
-void initReserved() {
+void STLDriver::initReserved() {
     STLDriver::reserved["F"]      = token::TOKEN_DIAMOND;
     STLDriver::reserved["F_"]     = token::TOKEN_DIAMOND;
     STLDriver::reserved["ev"]     = token::TOKEN_DIAMOND;
