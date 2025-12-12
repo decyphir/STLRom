@@ -28,17 +28,50 @@
 
 #include "stl_driver.h"
 #include "command.h"
+#include "parser.hpp" // this is needed for symbol_type
 
 #include <sstream>
 
 using namespace STLRom;
+
+map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
 
 STLDriver::STLDriver() :
     m_commands(),
     m_scanner(*this),
     m_parser(m_scanner, *this),
     m_location(0)
+
 {
+    reserved["F"]      = token::TOKEN_DIAMOND;
+    reserved["F_"]     = token::TOKEN_DIAMOND;
+    reserved["ev"]     = token::TOKEN_DIAMOND;
+    reserved["ev_"]    = token::TOKEN_DIAMOND;
+
+    reserved["G"]      = token::TOKEN_BOX;
+    reserved["G_"]     = token::TOKEN_BOX;
+    reserved["alw"]    = token::TOKEN_BOX;
+    reserved["alw_"]   = token::TOKEN_BOX;
+
+    reserved["U"]      = token::TOKEN_UNTIL;
+    reserved["U_"]     = token::TOKEN_UNTIL;
+    reserved["until"]  = token::TOKEN_UNTIL;
+    reserved["until_"] = token::TOKEN_UNTIL;
+
+    reserved["and"]    = token::TOKEN_AND;
+    reserved["or"]     = token::TOKEN_OR;
+    reserved["not"]    = token::TOKEN_NOT;
+
+    reserved["true"]   = token::TOKEN_BOOL_TRUE;
+    reserved["false"]  = token::TOKEN_BOOL_FALSE;
+
+    reserved["t"]      = token::TOKEN_TIME;
+    reserved["abs"]    = token::TOKEN_ABS;
+    reserved["param"]  = token::TOKEN_PARAM_DECL;
+    reserved["test"]   = token::TOKEN_TEST;
+    reserved["signal"] = token::TOKEN_SIGNAL_DECL;
+
+    reserved["IDENTIFIER"] = token::TOKEN_CONSTANT_IDENTIFIER; // default for unknown identifiers
 
 }
 
@@ -78,4 +111,13 @@ void STLDriver::increaseLocation(unsigned int loc) {
 
 unsigned int STLDriver::location() const {
     return m_location;
+}
+
+Parser::symbol_type make_keyword(const std::string &kw, const location_type &loc) {
+    auto it = STLDriver::reserved.find(kw);
+    if(it != STLDriver::reserved.end()) {
+        return Parser::symbol_type(it->second, std::move(loc));
+    } else {
+        return Parser::symbol_type(STLDriver::reserved["IDENTIFIER"], std::move(loc));
+    }
 }

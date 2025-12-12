@@ -86,28 +86,60 @@
 
 %define api.token.prefix {TOKEN_}
 
-%token END 0 "end of file"
-%token <std::string> STRING  "string";
+//%token END 0 "end of file"
+//%token <std::string> STRING  "string";
 %token <uint64_t> NUMBER "number";
 %token SEMICOLON "semicolon";
-%token COMMA "comma";
+//%token COMMA "comma";
 
-%token DIAMOND     "diamond"
-%token BOX         "box"
-%token LINT        "lbracket"
-%token RINT        "rbracket"
-%token LPAREN      "lparen"
-%token RPAREN      "rparen"
-%token IMPLIES     "implies"
-%token LT          "lt"
-%token GT          "gt"
-%token NOT         "not"
-%token AND         "and"
-%token OR          "or"
-%token ASSIGN      "assign"
-%token PLUS        "plus"
-%token MINUS       "minus"
-%token MULT        "mult"
+%token                 LINT            "["
+%token                 RINT            "]"
+%token                 LPAREN          "("
+%token                 RPAREN          ")"
+%token                 LT              "<"
+%token                 NOT             "not"
+%token                 GT              ">"
+%token                 AND             "and"
+%token                 OR              "or"
+%token                 IMPLIES         "=>"
+%token                 BOX             "alw"
+%token                 DIAMOND         "ev"
+%token                 UNTIL           "until"
+%token                 TIME            "time"
+%token                 COMMA           ","
+%token                 END	       0   "end of file"
+%token                 EOL             "end of line"
+%token                 ASSIGN          ":="
+%token                 PLUS            "+"
+%token                 MINUS           "-"
+%token                 MULT            "*"
+%token                 ABS             "abs"
+%token                 PARAM_DECL      "param_decl"
+%token                 SIGNAL_DECL     "signal_decl"
+%token                 TEST            "test"
+
+%token                 CONSTANT_IDENTIFIER "constant_identifier"
+
+
+%token <bool>       BOOL_TRUE       "true"
+%token <bool>       BOOL_FALSE      "false"
+%token <double>     DOUBLE		   "double"
+%token <std::string>     CONSTANT        "constant"
+%token <std::string>     PARAM_ID        "param_id"
+%token <std::string>     PHI_ID          "phi_id"
+%token <std::string>     NEW_ID          "new_id"
+%token <std::string>     SIGNAL_ID       "signal_id"
+%token <std::string>     STL_TEST_ID     "stl_test_id"
+%token <std::string> 	   STRING		   "string"
+
+%left AND
+%left OR
+%left NOT
+%left IMPLIES
+%left LT GT
+%left BOX DIAMOND UNTIL ASSIGN
+%nonassoc LPAREN RPAREN
+
 
 
 %type< STLRom::Command > command;

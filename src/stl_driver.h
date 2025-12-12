@@ -41,6 +41,8 @@
 
 typedef STLRom::Parser::token token;
 typedef STLRom::Parser::token_type token_type;
+typedef STLRom::Parser::location_type location_type;
+
 
 namespace STLRom {
 
