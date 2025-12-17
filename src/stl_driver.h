@@ -65,8 +65,6 @@ class STLDriver
 public:
     STLDriver();
 
-    /** Reserved words for STL parser */
-    static map<string, token_type> reserved;
 
     /** parameters in formulas */
     map<string, double> param_map;
