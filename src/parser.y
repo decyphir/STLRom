@@ -121,16 +121,16 @@
 %token                 CONSTANT_IDENTIFIER "constant_identifier"
 
 
-%token <bool>       BOOL_TRUE       "true"
-%token <bool>       BOOL_FALSE      "false"
-%token <double>     DOUBLE		   "double"
-%token <std::string>     CONSTANT        "constant"
-%token <std::string>     PARAM_ID        "param_id"
-%token <std::string>     PHI_ID          "phi_id"
-%token <std::string>     NEW_ID          "new_id"
-%token <std::string>     SIGNAL_ID       "signal_id"
-%token <std::string>     STL_TEST_ID     "stl_test_id"
-%token <std::string> 	   STRING		   "string"
+%token <bool>          BOOL_TRUE       "true"
+%token <bool>          BOOL_FALSE      "false"
+%token <double>        DOUBLE		   "double"
+%token <std::string>   CONSTANT        "constant"
+%token <std::string>   PARAM_ID        "param_id"
+%token <std::string>   PHI_ID          "phi_id"
+%token <std::string>   NEW_ID          "new_id"
+%token <std::string>   SIGNAL_ID       "signal_id"
+%token <std::string>   STL_TEST_ID     "stl_test_id"
+%token <std::string>   STRING		   "string"
 
 %left AND
 %left OR
