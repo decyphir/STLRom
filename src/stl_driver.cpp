@@ -34,8 +34,6 @@
 
 using namespace STLRom;
 
-map<string, token_type> STLDriver::reserved = map<string, token_type>(); // filled in stl_scanner.lpp
-
 STLDriver::STLDriver() :
     m_commands(),
     m_scanner(*this),
@@ -43,7 +41,7 @@ STLDriver::STLDriver() :
     m_location(0)
 
 {
-    initReserved();
+
 }
 
 int STLDriver::parse() {
@@ -84,43 +82,3 @@ unsigned int STLDriver::location() const {
     return m_location;
 }
 
-void STLDriver::initReserved() {
-    STLDriver::reserved["F"]      = token::TOKEN_DIAMOND;
-    STLDriver::reserved["F_"]     = token::TOKEN_DIAMOND;
-    STLDriver::reserved["ev"]     = token::TOKEN_DIAMOND;
-    STLDriver::reserved["ev_"]    = token::TOKEN_DIAMOND;
-
-    STLDriver::reserved["G"]      = token::TOKEN_BOX;
-    STLDriver::reserved["G_"]     = token::TOKEN_BOX;
-    STLDriver::reserved["alw"]    = token::TOKEN_BOX;
-    STLDriver::reserved["alw_"]   = token::TOKEN_BOX;
-
-    STLDriver::reserved["U"]      = token::TOKEN_UNTIL;
-    STLDriver::reserved["U_"]     = token::TOKEN_UNTIL;
-    STLDriver::reserved["until"]  = token::TOKEN_UNTIL;
-    STLDriver::reserved["until_"] = token::TOKEN_UNTIL;
-
-    STLDriver::reserved["and"]    = token::TOKEN_AND;
-    STLDriver::reserved["or"]     = token::TOKEN_OR;
-    STLDriver::reserved["not"]    = token::TOKEN_NOT;
-
-    STLDriver::reserved["true"]   = token::TOKEN_BOOL_TRUE;
-    STLDriver::reserved["false"]  = token::TOKEN_BOOL_FALSE;
-
-    STLDriver::reserved["t"]      = token::TOKEN_TIME;
-    STLDriver::reserved["abs"]    = token::TOKEN_ABS;
-    STLDriver::reserved["param"]  = token::TOKEN_PARAM_DECL;
-    STLDriver::reserved["test"]   = token::TOKEN_TEST;
-    STLDriver::reserved["signal"] = token::TOKEN_SIGNAL_DECL;
-
-    STLDriver::reserved["IDENTIFIER"] = token::TOKEN_CONSTANT_IDENTIFIER; // default for unknown identifiers
-}
-
-Parser::symbol_type make_keyword(const std::string &kw, const location_type &loc) {
-    auto it = STLDriver::reserved.find(kw);
-    if(it != STLDriver::reserved.end()) {
-        return Parser::symbol_type(it->second, std::move(loc));
-    } else {
-        return Parser::symbol_type(STLDriver::reserved["IDENTIFIER"], std::move(loc));
-    }
-}

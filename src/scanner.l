@@ -86,6 +86,34 @@
 "-"       { return STLRom::Parser::make_MINUS(STLRom::location()); }
 "*"       { return STLRom::Parser::make_MULT(STLRom::location()); }
 
+"F"       { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+"F_"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+"ev"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+"ev_"     { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+
+"G"       { return STLRom::Parser::make_BOX(STLRom::location()); }
+"G_"      { return STLRom::Parser::make_BOX(STLRom::location()); }
+"alw"     { return STLRom::Parser::make_BOX(STLRom::location()); }
+"alw_"    { return STLRom::Parser::make_BOX(STLRom::location()); }
+
+"U"       { return STLRom::Parser::make_UNTIL(STLRom::location()); }
+"U_"      { return STLRom::Parser::make_UNTIL(STLRom::location()); }
+"until"   { return STLRom::Parser::make_UNTIL(STLRom::location()); }
+"until_"  { return STLRom::Parser::make_UNTIL(STLRom::location()); }
+
+"and"     { return STLRom::Parser::make_AND(STLRom::location()); }
+"or"      { return STLRom::Parser::make_OR(STLRom::location()); }
+"not"     { return STLRom::Parser::make_NOT(STLRom::location()); }
+
+"true"    { return STLRom::Parser::make_BOOL_TRUE(true, STLRom::location()); }
+"false"   { return STLRom::Parser::make_BOOL_FALSE(false, STLRom::location()); }
+
+"t"       { return STLRom::Parser::make_TIME(STLRom::location()); }
+"abs"     { return STLRom::Parser::make_ABS(STLRom::location()); }
+"param"   { return STLRom::Parser::make_PARAM_DECL(STLRom::location()); }
+"test"    { return STLRom::Parser::make_TEST(STLRom::location()); }
+"signal"  { return STLRom::Parser::make_SIGNAL_DECL(STLRom::location()); }
+
 
 [a-z]+      { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
