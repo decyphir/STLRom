@@ -67,6 +67,16 @@ public:
 
     /** Reserved words for STL parser */
     static map<string, token_type> reserved;
+
+    /** parameters in formulas */
+    map<string, double> param_map;
+
+    /** signals in formulas */
+    map<string, int> signal_map;
+
+    /** formulas defined by the driver */
+    //INT TO BE REPLACED BY transducer* 
+    map<string, int> formula_map;
     
     /**
      * Run parser. Results are stored inside.
@@ -109,7 +119,7 @@ private:
 
     // Initializes the reserved words map
     void initReserved();
-    
+
 private:
     Scanner m_scanner;
     Parser m_parser;

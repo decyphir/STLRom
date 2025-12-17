@@ -114,26 +114,49 @@
 "test"    { return STLRom::Parser::make_TEST(STLRom::location()); }
 "signal"  { return STLRom::Parser::make_SIGNAL_DECL(STLRom::location()); }
 
+[a-zA-Z][A-Za-z0-9_]*     { 
 
-[a-z]+      { 
-                cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return STLRom::Parser::make_STRING(yytext, STLRom::location( /* put location data here if you want */ )); 
-            }
-                        
-;           {
-                cout << "Scanner: ';'" << endl;
-                return STLRom::Parser::make_SEMICOLON(STLRom::location());
-            }
+    if (m_driver.formula_map.find(yytext) != m_driver.formula_map.end()) {
+        return STLRom::Parser::make_PHI_ID(yytext, STLRom::location());
+    }
+    else        
+    if (m_driver.param_map.find(yytext) != m_driver.param_map.end()) {
+        return STLRom::Parser::make_PARAM_ID(yytext, STLRom::location());
+    }
+    else 
+    if (m_driver.signal_map.find(yytext) != m_driver.signal_map.end()) {
+        return STLRom::Parser::make_SIGNAL_ID(yytext, STLRom::location());
+    }
+    else 
+        return STLRom::Parser::make_NEW_ID(yytext, STLRom::location());;
+       
+}
 
-[\n\t ]     {
-                //cout << "Scanner: whitechar (ignored)" << endl;
-            }
+[-+]?[0-9]*\.[0-9]+     { 
+    //yylval->stringVal = new std::string(yytext, yyleng);
+    //cout <<  *yylval->stringVal  << " is a CONSTANT "<< endl; 
+ 
+  //return token::CONSTANT;
+  return STLRom::Parser::make_CONSTANT(yytext, STLRom::location());
 
-[1-9][0-9]* {
-                cout << "Scanner: decimal number: " << yytext << endl;
-                uint64_t number = strtoull(yytext, 0, 10);
-                return STLRom::Parser::make_NUMBER(number, STLRom::location());
-            }
+}
+
+[-+]?[0-9]*\. {
+    return STLRom::Parser::make_CONSTANT(yytext, STLRom::location());
+}
+
+[-+]?[0-9]+             { 
+    return STLRom::Parser::make_CONSTANT(yytext, STLRom::location());
+}
+
+\"(\\.|[^\\"])*\" { // "
+    // TODO: check if stringVal can be constructed differently
+    std::string stringVal(yytext+1, yyleng-2);
+    return STLRom::Parser::make_STRING(stringVal, STLRom::location());
+}
+
+
+
 
 .           { 
                 cout << "Scanner: unknown character [" << yytext << "]" << endl; 
