@@ -75,7 +75,7 @@ void STLDriver::addCommand(const Command &cmd)
 
 void STLDriver::increaseLocation(unsigned int loc) {
     m_location += loc;
-    cout << "increaseLocation(): " << loc << ", total = " << m_location << endl;
+    //cout << "increaseLocation(): " << loc << ", total = " << m_location << endl;
 }
 
 unsigned int STLDriver::location() const {
