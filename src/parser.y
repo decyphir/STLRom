@@ -42,6 +42,8 @@
     #include <vector>
     #include <stdint.h>
     #include "command.h"
+    #include "transducer.h"
+    #include "tools.h"
 
     using namespace std;
 
@@ -142,14 +144,304 @@
 
 
 
-%type< STLRom::Command > command;
-%type< std::vector<uint64_t> > arguments;
+%type <STLRom::Transducer*> signal stl_atom
+%type <STLRom::Transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryexpr
+%type <STLRom::Transducer*> constant_signal
+%type <STLRom::Transducer*> stl_formula
+%type <STLRom::Transducer*>   interval
+%type <std::string>            op
+%type <std::string>            constant
+%type <bool>           boolean
+%type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement
 
-%start program
+%start start_semicolon
 
 %%
 
-program :   {
+constant : CONSTANT
+        {
+            $$ = $1;
+        }
+        ;
+        | PARAM_ID
+        {
+           $$ = $1;
+        };
+
+
+constant_signal : CONSTANT
+        {
+            $$ = new Transducer($1);
+        }
+        ;
+        | PARAM_ID
+        {
+           $$ = new Transducer($1);
+        };
+
+signal: SIGNAL_ID LINT TIME RINT
+        {
+            $$ = new Transducer($1);
+        }
+        ;
+
+signal_atom : signal
+        {
+            $$ = $1;
+        }
+        ;
+        | constant_signal
+        {
+            $$ = $1;
+        }
+        ;
+        | LPAREN signal_expr RPAREN
+        {
+	       $$ = $2;
+	    }
+
+signal_unaryexpr : signal_atom
+        {
+	      $$ = $1;
+	    }
+        | ABS LPAREN signal_expr RPAREN
+        {
+            $$ = new Transducer("abs", $3);
+        }
+
+signal_multexpr : signal_unaryexpr
+        {
+	      $$ = $1;
+	    }
+        | signal_addexpr MULT signal_atom
+          {
+	      $$ = new Transducer("mult", $1, $3);
+          }
+
+signal_addexpr : signal_multexpr
+        {
+	      $$ = $1;
+	    }
+        | signal_addexpr PLUS signal_atom
+          {
+	      $$ = new Transducer("+", $1, $3);
+
+          }
+        | signal_addexpr MINUS signal_atom
+          {
+	      $$ = new Transducer("-", $1, $3);
+          }
+
+signal_expr : signal_addexpr
+        {
+            $$ = $1;
+        }
+
+
+stl_atom : signal_expr op signal_expr
+          {
+              $$ = new Transducer($2, $1, $3);
+          }
+          ;
+
+op        : LT { $$ = "<"; }
+          | GT { $$ = ">"; }
+          ;
+
+interval : LINT constant COMMA constant RINT
+         {
+             $$ = new Transducer("interval", new Transducer($2), new Transducer($4));
+         }
+         ;
+         | LINT constant constant RINT
+         {
+             $$ = new Transducer("interval", new Transducer($2), new Transducer($3));
+         }
+
+stl_formula :
+             stl_atom
+             {
+                 $$ = $1;
+             }
+             | NOT stl_formula %prec NOT
+             {
+                 $$ = new Transducer("not", $2);
+             }
+             | stl_formula AND stl_formula %prec AND
+             {
+                 $$ = new Transducer("and", $1, $3);
+             }
+             | stl_formula OR stl_formula %prec AND
+             {
+                 $$ = new Transducer("or", $1, $3);
+
+             }
+             | stl_formula IMPLIES stl_formula %prec AND
+             {
+                 $$ = new Transducer("implies", $1, $3);
+
+             }
+             | DIAMOND interval stl_formula %prec DIAMOND
+             {
+                $$ = new Transducer("ev", $2, $3);
+
+             }
+             | BOX interval stl_formula %prec BOX
+             {
+                 $$ = new Transducer("alw", $2, $3);
+
+             }
+             | stl_formula UNTIL interval stl_formula %prec UNTIL
+             {
+                 $$ = new Transducer("until", $1, $4);
+
+             }
+             | LPAREN stl_formula RPAREN
+             {
+                 $$ = $2;
+             }
+             | PHI_ID
+             {
+
+                 Transducer * ref = driver.formula_map[$1];
+
+                 if (ref==nullptr) {
+                     cout << "Parsing error: unknown identifier " << $1 << endl;
+                     $$ = nullptr;
+                     YYERROR;
+                 }
+                 else {
+                     $$ = ref->clone();
+                 }
+             }
+;
+
+
+assignement : NEW_ID ASSIGN stl_formula
+            {
+                driver.formula_map[$1] = $3;
+            }
+
+/* trace_env: TEST NEW_ID ':' STRING
+         {
+             double x;
+             driver.add_trace_test(*$2, *$4, 0., false);
+             delete $2;
+         }
+         | TEST NEW_ID ':' STRING COMMA CONSTANT COMMA boolean  //test id: environment, simulation time, visualization 
+         {
+             double x;
+             s_to_d(*$6, x);
+             driver.add_trace_test(*$2, *$4, x, $8);
+             delete $2;
+             delete $4;
+             delete $6;
+         } */
+
+boolean: BOOL_TRUE
+       {
+           $$ = true;
+       }
+       | BOOL_FALSE
+       {
+           $$ = false;
+       }
+
+// Parameters
+
+param_assignement: PARAM_ID '=' CONSTANT
+                 {
+                    double val;
+                    s_to_d( $3, val );
+                    driver.param_map[$1] = val;
+                 }
+                 | NEW_ID '=' CONSTANT
+                 {
+                    double val;
+                    s_to_d( $3, val );
+                    driver.param_map[$1] = val;
+                 }
+
+param_assignement_list: param_assignement
+                      | param_assignement_list COMMA param_assignement
+
+param_assignements: PARAM_DECL param_assignement_list
+
+
+
+local_param_assignement: PARAM_ID '=' CONSTANT
+                 {
+
+                    double val;
+                    s_to_d( $3, val );
+
+                    $$ = new map<string,double>();
+                    (*$$)[*$1] = val;
+                 }
+                 | NEW_ID '=' CONSTANT
+                 {
+                    double val;
+                    s_to_d( $3, val );
+                    $$ = new map<string,double>();
+                    (*$$)[$1] = val;
+                 }
+
+
+local_param_assignement_list: local_param_assignement
+                            | local_param_assignement_list COMMA local_param_assignement
+{
+    $$ = new map<string,double>(*$1);
+    auto elem = $3->begin();
+    (*$$)[elem->first] = elem->second;
+}
+
+local_param_assignements: /* empty */
+                       {
+                           $$ = new map<string,double>();
+                       }
+                       | LPAREN local_param_assignement_list RPAREN
+                       {
+                           $$ = $2;
+                       }
+
+// Signals
+
+signal_new: NEW_ID
+          {
+             short idx =  driver.signal_map.size()+1;
+             driver.signal_map[$1] = idx;
+          }
+          | SIGNAL_ID
+          {
+          }
+
+signal_new_list: signal_new
+                      | signal_new_list COMMA signal_new
+
+signal_decl: SIGNAL_DECL signal_new_list
+
+
+
+start : assignement
+      | param_assignements
+      | signal_decl
+      | start assignement
+      | start param_assignements
+
+start_semicolon : start SEMICOLON
+                {
+                    cout << "Parsing completed successfully." << endl;
+                    for (const auto& [k, v] : driver.param_map)
+                        std::cout << k << " = " << v << '\n';
+                    for (const auto& [k, v] : driver.signal_map)
+                        std::cout << k << " = " << v << '\n';
+                    for (const auto& [k, v] : driver.formula_map)
+                        std::cout << k << " = " << (v ? v->toString() : "<null>") << '\n';
+                }
+                ;
+
+
+/* program :   {
                 cout << "*** RUN ***" << endl;
                 cout << "Type function with list of parmeters. Parameter list can be empty" << endl
                      << "or contain positive integers only. Examples: " << endl
@@ -208,7 +500,7 @@ arguments : NUMBER
             cout << "next argument: " << number << ", arg list size = " << args.size() << endl;
         }
     ;
-    
+     */
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
