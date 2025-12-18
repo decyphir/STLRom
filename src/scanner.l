@@ -160,6 +160,13 @@
 
 }
 
+;   { return STLRom::Parser::make_SEMICOLON(STLRom::location()); }
+
+[ \t\r]+    { /* skip whitespace */ }
+
+"#".*\n { 
+    /* Comments; TODO check locations */
+}
 
 .           { 
                 cout << "Scanner: unknown character [" << yytext << "]" << endl; 
