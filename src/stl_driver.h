@@ -49,6 +49,7 @@ namespace STLRom {
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header
 class Command;
+class Transducer;
 
 /**
  * This class is the interface for our scanner/lexer. The end user
@@ -73,8 +74,8 @@ public:
     map<string, int> signal_map;
 
     /** formulas defined by the driver */
-    //INT TO BE REPLACED BY transducer* 
-    map<string, int> formula_map;
+
+    map<string, Transducer*> formula_map;
     
     /**
      * Run parser. Results are stored inside.
