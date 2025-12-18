@@ -427,6 +427,7 @@ start : assignement
       | signal_decl
       | start assignement
       | start param_assignements
+      | start_semicolon
 
 start_semicolon : start SEMICOLON
                 {
