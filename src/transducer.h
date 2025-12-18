@@ -26,6 +26,9 @@ public:
     // String representation
     std::string toString() const;
 
+    // Clone function
+    Transducer* clone() const;
+
     // Getters
     std::string getType() const;
     Transducer* getChildL() const;

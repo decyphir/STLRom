@@ -53,3 +53,12 @@ Transducer *Transducer::getChildR() const {
     return childR;
 }
 
+
+// Clone function
+Transducer* Transducer::clone() const {
+        return new Transducer(
+            type,
+            childL  ? childL->clone()  : nullptr,
+            childR ? childL->clone() : nullptr
+        );
+}
