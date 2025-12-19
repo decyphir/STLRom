@@ -59,6 +59,6 @@ Transducer* Transducer::clone() const {
         return new Transducer(
             type,
             childL  ? childL->clone()  : nullptr,
-            childR ? childL->clone() : nullptr
+            childR ? childR->clone() : nullptr
         );
 }
