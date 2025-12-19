@@ -27,6 +27,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include "scanner.h"
 #include "parser.hpp"
 #include "stl_driver.h"
@@ -36,6 +37,17 @@ using namespace std;
 
 int main(int argc, char **argv) {
     STLDriver i;
+    std::ifstream inFile;
+
+    if (argc > 1) {
+        inFile.open(argv[1]);
+        if (!inFile) {
+            cerr << "Error: cannot open input file " << argv[1] << endl;
+            return 1;
+        }
+        i.switchInputStream(&inFile);
+    }
+
     int res = i.parse();
     cout << "Parse complete. Result = " << res << endl;
     return res;

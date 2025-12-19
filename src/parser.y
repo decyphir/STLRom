@@ -443,6 +443,14 @@ start_semicolon : start SEMICOLON
                         std::cout << k << " = " << v << '\n';
                     for (const auto& [k, v] : driver.formula_map)
                         std::cout << k << " = " << (v ? v->toString() : "<null>") << '\n';
+                } | start END {
+                    cout << "Parsing completed successfully." << endl;
+                    for (const auto& [k, v] : driver.param_map)
+                        std::cout << k << " = " << v << '\n';
+                    for (const auto& [k, v] : driver.signal_map)
+                        std::cout << k << " = " << v << '\n';
+                    for (const auto& [k, v] : driver.formula_map)
+                        std::cout << k << " = " << (v ? v->toString() : "<null>") << '\n';
                 }
                 ;
 
