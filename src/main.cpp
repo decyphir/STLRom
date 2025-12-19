@@ -45,6 +45,14 @@ int main(int argc, char **argv) {
             cerr << "Error: cannot open input file " << argv[1] << endl;
             return 1;
         }
+        
+        cout << "Parsing from file with content:" << endl;
+        cout << "----------------------------------------" << endl;
+        cout << inFile.rdbuf() << endl;
+        cout << "----------------------------------------" << endl;
+
+        inFile.clear(); // clear eof flag
+        inFile.seekg(0, ios::beg); // rewind to beginning
         i.switchInputStream(&inFile);
     }
 
