@@ -104,6 +104,7 @@
 %token                 AND             "and"
 %token                 OR              "or"
 %token                 IMPLIES         "=>"
+%token                 PARAM_EQ        "'='"
 %token                 BOX             "alw"
 %token                 DIAMOND         "ev"
 %token                 UNTIL           "until"
@@ -349,13 +350,13 @@ boolean: BOOL_TRUE
 
 // Parameters
 
-param_assignement: PARAM_ID '=' CONSTANT
+param_assignement: PARAM_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
                  }
-                 | NEW_ID '=' CONSTANT
+                 | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );

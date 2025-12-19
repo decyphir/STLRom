@@ -85,6 +85,7 @@
 "+"       { return STLRom::Parser::make_PLUS(STLRom::location()); }
 "-"       { return STLRom::Parser::make_MINUS(STLRom::location()); }
 "*"       { return STLRom::Parser::make_MULT(STLRom::location()); }
+"'='"     { return STLRom::Parser::make_PARAM_EQ(STLRom::location()); }
 
 "F"       { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
 "F_"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
