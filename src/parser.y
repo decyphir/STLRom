@@ -321,6 +321,7 @@ stl_formula :
 assignement : NEW_ID ASSIGN stl_formula
             {
                 driver.formula_map[$1] = $3;
+                cout << "Defined formula " << $1 << " = " << $3->toString() << endl;
             }
 
 /* trace_env: TEST NEW_ID ':' STRING
@@ -355,12 +356,14 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
+                    cout << "Parameter " << $1 << " re-assigned value " << val << endl;
                  }
                  | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
+                    cout << "New parameter " << $1 << " assigned value " << val << endl;
                  }
 
 param_assignement_list: param_assignement
@@ -370,7 +373,7 @@ param_assignements: PARAM_DECL param_assignement_list
 
 
 
-local_param_assignement: PARAM_ID '=' CONSTANT
+local_param_assignement: PARAM_ID PARAM_EQ CONSTANT
                  {
 
                     double val;
@@ -379,7 +382,7 @@ local_param_assignement: PARAM_ID '=' CONSTANT
                     $$ = new map<string,double>();
                     (*$$)[*$1] = val;
                  }
-                 | NEW_ID '=' CONSTANT
+                 | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
@@ -411,6 +414,7 @@ signal_new: NEW_ID
           {
              short idx =  driver.signal_map.size()+1;
              driver.signal_map[$1] = idx;
+             cout << "Defined signal " << $1 << " with index " << idx << endl;
           }
           | SIGNAL_ID
           {

@@ -1,4 +1,5 @@
 #include "transducer.h"
+#include <iostream>
 
 using namespace STLRom;
 
@@ -9,7 +10,7 @@ Transducer::Transducer(const std::string& type):
     childR(nullptr) 
     
 {
-
+    std::cout << "Created leaf transducer " << toString() << std::endl;
 }
 
 // Constructor with left child only
@@ -19,7 +20,7 @@ Transducer::Transducer(const std::string& type, Transducer *left):
     childR(nullptr)
     
 {
-
+    std::cout << "Created unary transducer " << toString() << std::endl;
 }
 
 // Constructor with both children
@@ -29,7 +30,7 @@ Transducer::Transducer(const std::string& type, Transducer *left, Transducer *ri
     childR(right)
     
 {
-
+    std::cout << "Created internal transducer " << toString() << std::endl;
 }
 
 // String representation: (childL, type, childR)
