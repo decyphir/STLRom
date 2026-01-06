@@ -104,7 +104,7 @@
 %token                 AND             "and"
 %token                 OR              "or"
 %token                 IMPLIES         "=>"
-%token                 PARAM_EQ        "'='"
+%token                 PARAM_EQ        "="
 %token                 BOX             "alw"
 %token                 DIAMOND         "ev"
 %token                 UNTIL           "until"
@@ -294,6 +294,7 @@ stl_formula :
              }
              | stl_formula UNTIL interval stl_formula %prec UNTIL
              {
+                // TODO interval handling
                  $$ = new Transducer("until", $1, $4);
 
              }
