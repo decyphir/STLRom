@@ -32,6 +32,9 @@
 #include "parser.hpp"
 #include "stl_driver.h"
 
+constexpr const char* CYAN  = "\033[36m";
+constexpr const char* RESET = "\033[0m";
+
 using namespace STLRom;
 using namespace std;
 
@@ -46,10 +49,10 @@ int main(int argc, char **argv) {
             return 1;
         }
         
-        cout << "Parsing from file with content:" << endl;
-        cout << "----------------------------------------" << endl;
-        cout << inFile.rdbuf() << endl;
-        cout << "----------------------------------------" << endl;
+        cout << CYAN << "Parsing from file with content:" << RESET << endl;
+        cout << CYAN << "----------------------------------------" << RESET << endl;
+        cout << CYAN << inFile.rdbuf() << RESET << endl;
+        cout << CYAN << "----------------------------------------" << RESET << endl;
 
         inFile.clear(); // clear eof flag
         inFile.seekg(0, ios::beg); // rewind to beginning
@@ -57,6 +60,6 @@ int main(int argc, char **argv) {
     }
 
     int res = i.parse();
-    cout << "Parse complete. Result = " << res << endl;
+    cout << CYAN << "Parse complete. Result = " << res << RESET << endl;
     return res;
 }

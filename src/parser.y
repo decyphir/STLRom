@@ -65,6 +65,9 @@
     #include "parser.hpp"
     #include "stl_driver.h"
     #include "location.hh"
+
+    constexpr const char* CYAN  = "\033[36m";
+    constexpr const char* RESET = "\033[0m";
     
     // yylex() arguments are defined in parser.y
     static STLRom::Parser::symbol_type yylex(STLRom::Scanner &scanner, STLRom::STLDriver &driver) {
@@ -322,7 +325,7 @@ stl_formula :
 assignement : NEW_ID ASSIGN stl_formula
             {
                 driver.formula_map[$1] = $3;
-                cout << "Defined formula " << $1 << " = " << $3->toString() << endl;
+                cout << CYAN << "Defined formula " << $1 << " = " << $3->toString() << RESET << endl;
             }
 
 /* trace_env: TEST NEW_ID ':' STRING
@@ -415,7 +418,7 @@ signal_new: NEW_ID
           {
              short idx =  driver.signal_map.size()+1;
              driver.signal_map[$1] = idx;
-             cout << "Defined signal " << $1 << " with index " << idx << endl;
+             cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }
           | SIGNAL_ID
           {
@@ -437,25 +440,25 @@ start : assignement
 
 start_semicolon : start SEMICOLON
                 {
-                    cout << "----------------------------------------" << endl;
-                    cout << "Parsing completed successfully." << endl;
-                    cout << "----------------------------------------" << endl;
+                    cout << CYAN << "----------------------------------------" << RESET << endl;
+                    cout << CYAN << "Parsing completed successfully." << RESET << endl;
+                    cout << CYAN << "----------------------------------------" << RESET << endl;
                     for (const auto& [k, v] : driver.param_map)
-                        std::cout << k << " = " << v << '\n';
+                        std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.signal_map)
-                        std::cout << k << " = " << v << '\n';
+                        std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.formula_map)
-                        std::cout << k << " = " << (v ? v->toString() : "<null>") << '\n';
+                        std::cout << CYAN << k << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 } | start END {
-                    cout << "----------------------------------------" << endl;
-                    cout << "Parsing completed successfully." << endl;
-                    cout << "----------------------------------------" << endl;
+                    cout << CYAN << "----------------------------------------" << RESET << endl;
+                    cout << CYAN << "Parsing completed successfully." << RESET << endl;
+                    cout << CYAN << "----------------------------------------" << RESET << endl;
                     for (const auto& [k, v] : driver.param_map)
-                        std::cout << k << " = " << v << '\n';
+                        std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.signal_map)
-                        std::cout << k << " = " << v << '\n';
+                        std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.formula_map)
-                        std::cout << k << " = " << (v ? v->toString() : "<null>") << '\n';
+                        std::cout << CYAN << k << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 }
                 ;
 
