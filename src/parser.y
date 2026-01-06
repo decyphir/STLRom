@@ -67,6 +67,7 @@
     #include "location.hh"
 
     constexpr const char* CYAN  = "\033[36m";
+    constexpr const char* RED  = "\033[31m";
     constexpr const char* RESET = "\033[0m";
     
     // yylex() arguments are defined in parser.y
@@ -360,14 +361,14 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
-                    cout << "Parameter " << $1 << " re-assigned value " << val << endl;
+                    cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
                  }
                  | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
-                    cout << "New parameter " << $1 << " assigned value " << val << endl;
+                    cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
                  }
 
 param_assignement_list: param_assignement
@@ -532,5 +533,5 @@ void STLRom::Parser::error(const location &loc , const std::string &message) {
         // Let's grab location directly from driver class.
 	// cout << "Error: " << message << endl << "Location: " << loc << endl;
 	
-        cout << "Error: " << message << endl << "Error location: " << driver.location() << endl;
+        cout << RED << "Error: " << message << endl << "Error location: " << driver.location() << RESET << endl;
 }
