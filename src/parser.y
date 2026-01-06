@@ -378,40 +378,40 @@ param_assignements: PARAM_DECL param_assignement_list
 
 
 
-local_param_assignement: PARAM_ID PARAM_EQ CONSTANT
-                 {
-
-                    double val;
-                    s_to_d( $3, val );
-
-                    $$ = new map<string,double>();
-                    (*$$)[*$1] = val;
-                 }
-                 | NEW_ID PARAM_EQ CONSTANT
-                 {
-                    double val;
-                    s_to_d( $3, val );
-                    $$ = new map<string,double>();
-                    (*$$)[$1] = val;
-                 }
-
-
-local_param_assignement_list: local_param_assignement
-                            | local_param_assignement_list COMMA local_param_assignement
-{
-    $$ = new map<string,double>(*$1);
-    auto elem = $3->begin();
-    (*$$)[elem->first] = elem->second;
-}
-
-local_param_assignements: /* empty */
-                       {
-                           $$ = new map<string,double>();
-                       }
-                       | LPAREN local_param_assignement_list RPAREN
-                       {
-                           $$ = $2;
-                       }
+/* local_param_assignement: PARAM_ID PARAM_EQ CONSTANT
+*                 {
+*
+*                    double val;
+*                    s_to_d( $3, val );
+*
+*                    $$ = new map<string,double>();
+*                    (*$$)[$1] = val;
+*                 }
+*                 | NEW_ID PARAM_EQ CONSTANT
+*                 {
+*                    double val;
+*                    s_to_d( $3, val );
+*                    $$ = new map<string,double>();
+*                    (*$$)[$1] = val;
+*                 }
+*
+*
+*local_param_assignement_list: local_param_assignement
+*                            | local_param_assignement_list COMMA local_param_assignement
+*{
+*    $$ = new map<string,double>(*$1);
+*    auto elem = $3->begin();
+*    (*$$)[elem->first] = elem->second;
+*}
+*
+*local_param_assignements: /* empty */
+/*                       {
+*                          $$ = new map<string,double>();
+*                       }
+*                       | LPAREN local_param_assignement_list RPAREN
+*                       {
+*                           $$ = $2;
+*                       } */
 
 // Signals
 
