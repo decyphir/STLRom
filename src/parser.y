@@ -42,7 +42,7 @@
     #include <vector>
     #include <stdint.h>
     #include "command.h"
-    #include "transducer.h"
+    #include "transducer_basic.h"
     #include "tools.h"
 
     using namespace std;
