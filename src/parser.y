@@ -345,7 +345,7 @@ stl_formula :
 assignement : NEW_ID ASSIGN stl_formula
             {
                 driver.formula_map[$1] = $3;
-                cout << CYAN << "Defined formula " << $1 << RESET << endl;
+                cout << CYAN << "Defined formula " << $1 << " = " << *$3 << RESET << endl;
                 // cout << CYAN << "Defined formula " << $1 << " = " << $3->toString() << RESET << endl;
             }
 
