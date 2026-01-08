@@ -502,22 +502,22 @@ start_semicolon : start SEMICOLON
                     cout << CYAN << "----------------------------------------" << RESET << endl;
                     cout << CYAN << "Parsing completed successfully." << RESET << endl;
                     cout << CYAN << "----------------------------------------" << RESET << endl;
-                    for (const auto& [k, v] : driver.param_map)
-                        std::cout << CYAN << k << " = " << v << RESET << endl;
-                    for (const auto& [k, v] : driver.signal_map)
-                        std::cout << CYAN << k << " = " << v << RESET << endl;
-                    for (const auto& [k, v] : driver.formula_map)
-                        std::cout << CYAN << k << " = " << *v << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
+                    for (const auto& element : driver.param_map)
+                        std::cout << CYAN << element.first << " = " << element.second << RESET << endl;
+                    for (const auto& element : driver.signal_map)
+                        std::cout << CYAN << element.first << " = " << element.second << RESET << endl;
+                    for (const auto& element : driver.formula_map)
+                        std::cout << CYAN << element.first << " = " << *element.second << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 } | start END {
                     cout << CYAN << "----------------------------------------" << RESET << endl;
                     cout << CYAN << "Parsing completed successfully." << RESET << endl;
                     cout << CYAN << "----------------------------------------" << RESET << endl;
-                    for (const auto& [k, v] : driver.param_map)
-                        std::cout << CYAN << k << " = " << v << RESET << endl;
-                    for (const auto& [k, v] : driver.signal_map)
-                        std::cout << CYAN << k << " = " << v << RESET << endl;
-                    for (const auto& [k, v] : driver.formula_map)
-                        std::cout << CYAN << k << " = " << *v << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
+                    for (const auto& element : driver.param_map)
+                        std::cout << CYAN << element.first << " = " << element.second << RESET << endl;
+                    for (const auto& element : driver.signal_map)
+                        std::cout << CYAN << element.first << " = " << element.second << RESET << endl;
+                    for (const auto& element : driver.formula_map)
+                        std::cout << CYAN << element.first << " = " << *element.second << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 }
                 ;
 
