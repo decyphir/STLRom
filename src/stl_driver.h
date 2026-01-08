@@ -76,6 +76,9 @@ public:
     /** formulas defined by the driver */
 
     map<string, transducer*> formula_map;
+
+    /** data array - time is first column */
+    trace_data data;
     
     /**
      * Run parser. Results are stored inside.
