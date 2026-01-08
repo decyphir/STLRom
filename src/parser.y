@@ -365,14 +365,14 @@ assignement : NEW_ID ASSIGN stl_formula
              delete $6;
          } */
 
-boolean: BOOL_TRUE
+/* boolean: BOOL_TRUE
        {
            $$ = true;
        }
        | BOOL_FALSE
        {
            $$ = false;
-       }
+       } */
 
 // Parameters
 
