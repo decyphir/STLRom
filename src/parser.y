@@ -42,7 +42,8 @@
     #include <vector>
     #include <stdint.h>
     #include "command.h"
-    #include "transducer_basic.h"
+    #include "transducer.h"
+    #include "interval.h"
     #include "tools.h"
 
     using namespace std;
@@ -149,15 +150,15 @@
 
 
 
-%type <STLRom::Transducer*> signal stl_atom
-%type <STLRom::Transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryexpr
-%type <STLRom::Transducer*> constant_signal
-%type <STLRom::Transducer*> stl_formula
-%type <STLRom::Transducer*>   interval
+%type <STLRom::transducer*> signal stl_atom
+%type <STLRom::transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryexpr
+%type <STLRom::transducer*> constant_signal
+%type <STLRom::transducer*> stl_formula
+%type <STLRom::interval*>   interval
 %type <std::string>            op
 %type <std::string>            constant
 %type <bool>           boolean
-%type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement
+/* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
 
 %start start_semicolon
 
