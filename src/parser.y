@@ -159,7 +159,7 @@
 %type <STLRom::interval*>   interval
 %type <std::string>            op
 %type <std::string>            constant
-%type <bool>           boolean
+/* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
 
 %start start_semicolon
