@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <interval.h>
 #include "tools.h"
 #include "transducer.h"

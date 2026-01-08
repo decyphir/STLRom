@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <transducer.h>
 #include <algorithm>
 

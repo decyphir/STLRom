@@ -5,7 +5,7 @@
 #include <vector>
 #include <iterator>
 #include <string>
-// #include "robustness.h"
+#include "robustness.h"
 #include "interval.h"
 
 using namespace std;
