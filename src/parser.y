@@ -180,20 +180,35 @@ constant : CONSTANT
 constant_signal : CONSTANT
         {
             $$ = new constant_transducer($1);
-            // TODO: copy variables
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
         }
         ;
         | PARAM_ID
         {
            $$ = new constant_transducer($1);
-           // TODO: copy variables
+           $$->trace_data_ptr = &driver.data;
+           $$->param_map = driver.param_map;
+           $$->signal_map = driver.signal_map;
         };
 
 signal: SIGNAL_ID LINT TIME RINT
         {
             $$ = new signal_transducer($1);
 
-            // TODO: copy variables and check signal map
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
+
+            int i = driver.signal_map[$1];
+
+            if (i==0) {
+                cout << "Parsing error: unknown signal " << $1 << endl;
+                delete $$;
+                $$ = nullptr;
+                YYERROR;
+            }
         }
         ;
 
@@ -219,7 +234,9 @@ signal_unaryexpr : signal_atom
         | ABS LPAREN signal_expr RPAREN
         {
             $$ = new abs_transducer($3);
-            // TODO: copy variables
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
         }
 
 signal_multexpr : signal_unaryexpr
@@ -229,7 +246,9 @@ signal_multexpr : signal_unaryexpr
         | signal_addexpr MULT signal_atom
           {
 	      $$ = new mult_transducer($1, $3);
-          // TODO: copy variables
+          $$->trace_data_ptr = &driver.data;
+          $$->param_map = driver.param_map;
+          $$->signal_map = driver.signal_map;
           }
 
 signal_addexpr : signal_multexpr
@@ -239,13 +258,16 @@ signal_addexpr : signal_multexpr
         | signal_addexpr PLUS signal_atom
           {
 	      $$ = new plus_transducer($1, $3);
-          // TODO: copy variables
-
+          $$->trace_data_ptr = &driver.data;
+          $$->param_map = driver.param_map;
+          $$->signal_map = driver.signal_map;
           }
         | signal_addexpr MINUS signal_atom
           {
-	      $$ = new minus_transducer($1, $3);
-          // TODO: copy variables
+	        $$ = new minus_transducer($1, $3);
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
           }
 
 signal_expr : signal_addexpr
@@ -257,7 +279,9 @@ signal_expr : signal_addexpr
 stl_atom : signal_expr op signal_expr
           {
               $$ = new stl_atom($1, $2, $3);
-              // TODO: copy variables
+              $$->trace_data_ptr = &driver.data;
+              $$->param_map = driver.param_map;
+              $$->signal_map = driver.signal_map;
           }
           ;
 
@@ -283,41 +307,55 @@ stl_formula :
              | NOT stl_formula %prec NOT
              {
                  $$ = new not_transducer($2);
-                 // TODO: copy variables
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
              }
              | stl_formula AND stl_formula %prec AND
              {
                  $$ = new and_transducer($1, $3);
-                 // TODO: copy variables
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
              }
              | stl_formula OR stl_formula %prec AND
              {
                  $$ = new or_transducer($1, $3);
-                 // TODO: copy variables
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
 
              }
              | stl_formula IMPLIES stl_formula %prec AND
              {
                  $$ = new implies_transducer($1, $3);
-                 // TODO: copy variables
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
 
              }
              | DIAMOND interval stl_formula %prec DIAMOND
              {
                 $$ = new ev_transducer($2, $3);
-                // TODO: copy variables
+                $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
 
              }
              | BOX interval stl_formula %prec BOX
              {
                  $$ = new alw_transducer($2, $3);
-                 // TODO: copy variables
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
 
              }
              | stl_formula UNTIL interval stl_formula %prec UNTIL
              {
                 $$ = new until_transducer($1, $3, $4);
-                // TODO: copy variables
+                $$->trace_data_ptr = &driver.data;
+                $$->param_map = driver.param_map;
+                $$->signal_map = driver.signal_map;
 
              }
              | LPAREN stl_formula RPAREN
