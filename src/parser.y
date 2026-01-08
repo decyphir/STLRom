@@ -45,6 +45,8 @@
     #include "transducer.h"
     #include "interval.h"
     #include "tools.h"
+    #include "signal_expr.h"
+    #include "robustness.h"
 
     using namespace std;
 
@@ -177,17 +179,21 @@ constant : CONSTANT
 
 constant_signal : CONSTANT
         {
-            $$ = new Transducer($1);
+            $$ = new constant_transducer($1);
+            // TODO: copy variables
         }
         ;
         | PARAM_ID
         {
-           $$ = new Transducer($1);
+           $$ = new constant_transducer($1);
+           // TODO: copy variables
         };
 
 signal: SIGNAL_ID LINT TIME RINT
         {
-            $$ = new Transducer($1);
+            $$ = new signal_transducer($1);
+
+            // TODO: copy variables and check signal map
         }
         ;
 
@@ -212,7 +218,8 @@ signal_unaryexpr : signal_atom
 	    }
         | ABS LPAREN signal_expr RPAREN
         {
-            $$ = new Transducer("abs", $3);
+            $$ = new abs_transducer($3);
+            // TODO: copy variables
         }
 
 signal_multexpr : signal_unaryexpr
@@ -221,7 +228,8 @@ signal_multexpr : signal_unaryexpr
 	    }
         | signal_addexpr MULT signal_atom
           {
-	      $$ = new Transducer("mult", $1, $3);
+	      $$ = new mult_transducer($1, $3);
+          // TODO: copy variables
           }
 
 signal_addexpr : signal_multexpr
@@ -230,12 +238,14 @@ signal_addexpr : signal_multexpr
 	    }
         | signal_addexpr PLUS signal_atom
           {
-	      $$ = new Transducer("+", $1, $3);
+	      $$ = new plus_transducer($1, $3);
+          // TODO: copy variables
 
           }
         | signal_addexpr MINUS signal_atom
           {
-	      $$ = new Transducer("-", $1, $3);
+	      $$ = new minus_transducer($1, $3);
+          // TODO: copy variables
           }
 
 signal_expr : signal_addexpr
@@ -246,7 +256,8 @@ signal_expr : signal_addexpr
 
 stl_atom : signal_expr op signal_expr
           {
-              $$ = new Transducer($2, $1, $3);
+              $$ = new stl_atom($1, $2, $3);
+              // TODO: copy variables
           }
           ;
 
@@ -256,12 +267,12 @@ op        : LT { $$ = "<"; }
 
 interval : LINT constant COMMA constant RINT
          {
-             $$ = new Transducer("interval", new Transducer($2), new Transducer($4));
+             $$ = new interval($2, $4);
          }
          ;
          | LINT constant constant RINT
          {
-             $$ = new Transducer("interval", new Transducer($2), new Transducer($3));
+             $$ = new interval($2, $3);
          }
 
 stl_formula :
@@ -271,36 +282,42 @@ stl_formula :
              }
              | NOT stl_formula %prec NOT
              {
-                 $$ = new Transducer("not", $2);
+                 $$ = new not_transducer($2);
+                 // TODO: copy variables
              }
              | stl_formula AND stl_formula %prec AND
              {
-                 $$ = new Transducer("and", $1, $3);
+                 $$ = new and_transducer($1, $3);
+                 // TODO: copy variables
              }
              | stl_formula OR stl_formula %prec AND
              {
-                 $$ = new Transducer("or", $1, $3);
+                 $$ = new or_transducer($1, $3);
+                 // TODO: copy variables
 
              }
              | stl_formula IMPLIES stl_formula %prec AND
              {
-                 $$ = new Transducer("implies", $1, $3);
+                 $$ = new implies_transducer($1, $3);
+                 // TODO: copy variables
 
              }
              | DIAMOND interval stl_formula %prec DIAMOND
              {
-                $$ = new Transducer("ev", $2, $3);
+                $$ = new ev_transducer($2, $3);
+                // TODO: copy variables
 
              }
              | BOX interval stl_formula %prec BOX
              {
-                 $$ = new Transducer("alw", $2, $3);
+                 $$ = new alw_transducer($2, $3);
+                 // TODO: copy variables
 
              }
              | stl_formula UNTIL interval stl_formula %prec UNTIL
              {
-                // TODO interval handling
-                 $$ = new Transducer("until", $1, $4);
+                $$ = new until_transducer($1, $3, $4);
+                // TODO: copy variables
 
              }
              | LPAREN stl_formula RPAREN
@@ -310,7 +327,7 @@ stl_formula :
              | PHI_ID
              {
 
-                 Transducer * ref = driver.formula_map[$1];
+                 transducer * ref = driver.formula_map[$1];
 
                  if (ref==nullptr) {
                      cout << "Parsing error: unknown identifier " << $1 << endl;
@@ -319,6 +336,7 @@ stl_formula :
                  }
                  else {
                      $$ = ref->clone();
+                     // TODO: copy variables (should be done in clone() no?)
                  }
              }
 ;
@@ -327,7 +345,8 @@ stl_formula :
 assignement : NEW_ID ASSIGN stl_formula
             {
                 driver.formula_map[$1] = $3;
-                cout << CYAN << "Defined formula " << $1 << " = " << $3->toString() << RESET << endl;
+                cout << CYAN << "Defined formula " << $1 << RESET << endl;
+                // cout << CYAN << "Defined formula " << $1 << " = " << $3->toString() << RESET << endl;
             }
 
 /* trace_env: TEST NEW_ID ':' STRING
@@ -450,7 +469,7 @@ start_semicolon : start SEMICOLON
                     for (const auto& [k, v] : driver.signal_map)
                         std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.formula_map)
-                        std::cout << CYAN << k << " = " << (v ? v->toString() : "<null>") << RESET << endl;
+                        std::cout << CYAN << k << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 } | start END {
                     cout << CYAN << "----------------------------------------" << RESET << endl;
                     cout << CYAN << "Parsing completed successfully." << RESET << endl;
@@ -460,7 +479,7 @@ start_semicolon : start SEMICOLON
                     for (const auto& [k, v] : driver.signal_map)
                         std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.formula_map)
-                        std::cout << CYAN << k << " = " << (v ? v->toString() : "<null>") << RESET << endl;
+                        std::cout << CYAN << k << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 }
                 ;
 

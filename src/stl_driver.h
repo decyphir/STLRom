@@ -75,7 +75,7 @@ public:
 
     /** formulas defined by the driver */
 
-    map<string, Transducer*> formula_map;
+    map<string, transducer*> formula_map;
     
     /**
      * Run parser. Results are stored inside.
