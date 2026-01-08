@@ -469,7 +469,7 @@ start_semicolon : start SEMICOLON
                     for (const auto& [k, v] : driver.signal_map)
                         std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.formula_map)
-                        std::cout << CYAN << k << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
+                        std::cout << CYAN << k << " = " << *v << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 } | start END {
                     cout << CYAN << "----------------------------------------" << RESET << endl;
                     cout << CYAN << "Parsing completed successfully." << RESET << endl;
@@ -479,7 +479,7 @@ start_semicolon : start SEMICOLON
                     for (const auto& [k, v] : driver.signal_map)
                         std::cout << CYAN << k << " = " << v << RESET << endl;
                     for (const auto& [k, v] : driver.formula_map)
-                        std::cout << CYAN << k << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
+                        std::cout << CYAN << k << " = " << *v << RESET << endl; // << " = " << (v ? v->toString() : "<null>") << RESET << endl;
                 }
                 ;
 
