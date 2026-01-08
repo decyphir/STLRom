@@ -201,6 +201,11 @@ signal: SIGNAL_ID LINT TIME RINT
             $$->param_map = driver.param_map;
             $$->signal_map = driver.signal_map;
 
+
+            // WARNING TODO:
+            // this will never be called because if signal is not defined,
+            // scanner will not return SIGNAL_ID token but rather a NEW_ID token
+            // need to fix this properly later
             int i = driver.signal_map[$1];
 
             if (i==0) {
