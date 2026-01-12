@@ -48,7 +48,6 @@ namespace STLRom {
 
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header
-class Command;
 class transducer;
 
 /** A class encapsulating an STL formula plus feedback messages to be written in
@@ -234,11 +233,37 @@ public:
         }
     }
     
+
+    // TODO: add get_param, set_param, get_online_rob, set_online_rob.
+
+
+    /// PARSER
     /**
      * Run parser. Results are stored inside.
      * \returns 0 on success, 1 on failure
      */
     int parse();
+
+    /** Invoke the scanner and parser for a stream.
+     * @param in	input stream
+     * @param sname	stream name for error messages
+     * @return		true if successfully parsed
+     */
+    bool parse_stream(std::istream &in);
+
+    /** Invoke the scanner and parser on an input string.
+     * @param input	input string
+     * @param sname	stream name for error messages
+     * @return		true if successfully parsed
+     */
+    bool parse_string(const std::string &input);
+
+    /** Invoke the scanner and parser on a file. Use parse_stream with a
+     * std::ifstream if detection of file reading errors is required.
+     * @param filename	input file name
+     * @return		true if successfully parsed
+     */
+    bool parse_file(const std::string &filename);
     
     /**
      * Clear AST
@@ -264,8 +289,6 @@ public:
     friend class Scanner;
     
 private:
-    // Used internally by Parser to insert AST nodes.
-    void addCommand(const Command &cmd);
     
     // Used internally by Scanner YY_USER_ACTION to update location indicator
     void increaseLocation(unsigned int loc);
@@ -273,13 +296,9 @@ private:
     // Used to get last Scanner location. Used in error messages.
     unsigned int location() const;
 
-    // Initializes the reserved words map
-    void initReserved();
-
 private:
     Scanner m_scanner;
     Parser m_parser;
-    std::vector<Command> m_commands;  // Example AST
     unsigned int m_location;          // Used by scanner
 };
 

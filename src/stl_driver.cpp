@@ -27,7 +27,6 @@
  */
 
 #include "stl_driver.h"
-#include "command.h"
 #include "transducer.h"
 #include "parser.hpp" // this is needed for symbol_type
 
@@ -206,27 +205,18 @@ int STLDriver::parse() {
 
 void STLDriver::clear() {
     m_location = 0;
-    m_commands.clear();
+    // TODO : clear AST, etc.
 }
 
 std::string STLDriver::str() const {
-    std::stringstream s;
-    s << "STLDriver: " << m_commands.size() << " commands received from command line." << endl;
-    for(int i = 0; i < m_commands.size(); i++) {
-        s << " * " << m_commands[i].str() << endl;
-    }
-    return s.str();
+    return "TODO";
 }
 
 void STLDriver::switchInputStream(std::istream *is) {
     m_scanner.switch_streams(is, NULL);
-    m_commands.clear();    
+    // TODO : clear AST, etc.
 }
 
-void STLDriver::addCommand(const Command &cmd)
-{
-    m_commands.push_back(cmd);
-}
 
 void STLDriver::increaseLocation(unsigned int loc) {
     m_location += loc;
