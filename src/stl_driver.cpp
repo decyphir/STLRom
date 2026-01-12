@@ -36,14 +36,168 @@
 using namespace STLRom;
 
 STLDriver::STLDriver() :
-    m_commands(),
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    m_location(0)
-
+    m_location(0),
+    interpol(Interpol::LINEAR),
+    semantics(Semantics::SPACE),
+    trace_scanning(false),
+    trace_parsing(false),
+    report(""),
+    nb_test_pos(0),
+    nb_test_total(0),
+    error_flag(false)
 {
 
 }
+
+STLDriver::STLDriver(trace_data _trace) :
+    m_scanner(*this),
+    m_parser(m_scanner, *this),
+    m_location(0),
+    data(std::move(_trace)),
+    interpol(Interpol::LINEAR),
+    semantics(Semantics::SPACE),
+    trace_scanning(false),
+    trace_parsing(false),
+    report(""),
+    nb_test_pos(0),
+    nb_test_total(0),
+    error_flag(false)
+{
+
+}
+
+STLDriver::~STLDriver()
+{
+    for (auto &pair : formula_map)
+    {
+        delete pair.second;
+    }
+}
+
+STLDriver::STLDriver(const STLDriver &other) :
+    m_scanner(*this),
+    m_parser(m_scanner, *this),
+    m_location(other.m_location),
+    semantics(other.semantics),
+    interpol(other.interpol),
+    trace_scanning(other.trace_scanning),
+    trace_parsing(other.trace_parsing),
+    streamname(other.streamname),
+    param_map(other.param_map),
+    signal_map(other.signal_map),
+    data(other.data),
+    stl_test_map(other.stl_test_map),
+    trace_test_queue(other.trace_test_queue),
+    report(other.report),
+    test_log(other.test_log),
+    nb_test_pos(other.nb_test_pos),
+    nb_test_total(other.nb_test_total),
+    error_flag(other.error_flag)
+{
+    // Deep copy of formula_map
+    for (const auto &pair : other.formula_map)
+    {
+        formula_map[pair.first] = pair.second->clone();
+    }
+}
+
+STLDriver &STLDriver::operator=(const STLDriver &other)
+{
+    if (this != &other)
+    {
+        // Clean up existing formula_map
+        for (auto &pair : formula_map)
+        {
+            delete pair.second;
+        }
+        formula_map.clear();
+
+        m_location = other.m_location;
+        semantics = other.semantics;
+        interpol = other.interpol;
+        trace_scanning = other.trace_scanning;
+        trace_parsing = other.trace_parsing;
+        streamname = other.streamname;
+        param_map = other.param_map;
+        signal_map = other.signal_map;
+        data = other.data;
+        stl_test_map = other.stl_test_map;
+        trace_test_queue = other.trace_test_queue;
+        report = other.report;
+        test_log = other.test_log;
+        nb_test_pos = other.nb_test_pos;
+        nb_test_total = other.nb_test_total;
+        error_flag = other.error_flag;
+
+        // Deep copy of formula_map
+        for (const auto &pair : other.formula_map)
+        {
+            formula_map[pair.first] = pair.second->clone();
+        }
+    }
+    return *this;
+}
+
+STLDriver::STLDriver(STLDriver &&other) noexcept :
+    m_scanner(*this),
+    m_parser(m_scanner, *this),
+    m_location(other.m_location),
+    semantics(other.semantics),
+    interpol(other.interpol),
+    trace_scanning(other.trace_scanning),
+    trace_parsing(other.trace_parsing),
+    streamname(std::move(other.streamname)),
+    param_map(std::move(other.param_map)),
+    signal_map(std::move(other.signal_map)),
+    data(std::move(other.data)),
+    formula_map(std::move(other.formula_map)),
+    stl_test_map(std::move(other.stl_test_map)),
+    trace_test_queue(std::move(other.trace_test_queue)),
+    report(std::move(other.report)),
+    test_log(std::move(other.test_log)),
+    nb_test_pos(other.nb_test_pos),
+    nb_test_total(other.nb_test_total),
+    error_flag(other.error_flag)
+{
+    other.formula_map.clear();
+}
+
+STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
+{
+    if (this != &other)
+    {
+        // Clean up existing formula_map
+        for (auto &pair : formula_map)
+        {
+            delete pair.second;
+        }
+
+        m_location = other.m_location;
+        semantics = other.semantics;
+        interpol = other.interpol;
+        trace_scanning = other.trace_scanning;
+        trace_parsing = other.trace_parsing;
+        streamname = std::move(other.streamname);
+        param_map = std::move(other.param_map);
+        signal_map = std::move(other.signal_map);
+        data = std::move(other.data);
+        formula_map = std::move(other.formula_map);
+        stl_test_map = std::move(other.stl_test_map);
+        trace_test_queue = std::move(other.trace_test_queue);
+        report = std::move(other.report);
+        test_log = std::move(other.test_log);
+        nb_test_pos = other.nb_test_pos;
+        nb_test_total = other.nb_test_total;
+        error_flag = other.error_flag;
+
+        other.formula_map.clear();
+    }
+    return *this;
+}
+
+
 
 int STLDriver::parse() {
     m_location = 0;

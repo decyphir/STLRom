@@ -108,7 +108,6 @@ class transducer;
 class STLDriver
 {
 public:
-    STLDriver();
 
     Semantics semantics;  /**< semantics to use */
     Interpol  interpol;   /**< interpolation method */
@@ -148,6 +147,92 @@ public:
     bool error_flag;
 
     string get_signals_names() const;
+
+    /// CONSTRUCTORS
+
+    /** construct a new parser driver context */
+    STLDriver();
+
+    /** construct a parser driver with data */
+    STLDriver(trace_data _trace);
+
+    ~STLDriver();
+
+    /** Copy constructor */
+    STLDriver(const STLDriver &other);
+
+    /** Copy assignment operator */
+    STLDriver &operator=(const STLDriver &other);
+
+    /** Move constructor */
+    STLDriver(STLDriver &&other) noexcept;
+
+    /** Move assignment operator */
+    STLDriver &operator=(STLDriver &&other) noexcept;
+
+    inline void set_semantics(const std::string &sem)
+    {
+        if (sem == "SPACE")
+        {
+            semantics = Semantics::SPACE;
+        }
+        else if (sem == "LEFT_TIME")
+        {
+            semantics = Semantics::LEFT_TIME;
+        }
+        else if (sem == "RIGHT_TIME")
+        {
+            semantics = Semantics::RIGHT_TIME;
+        }
+        else
+        {
+            throw std::invalid_argument("Invalid semantics string");
+        };
+    };
+
+    inline std::string get_semantics() const
+    {
+        switch (semantics)
+        {
+        case Semantics::SPACE:
+            return "SPACE";
+        case Semantics::LEFT_TIME:
+            return "LEFT_TIME";
+        case Semantics::RIGHT_TIME:
+            return "RIGHT_TIME";
+        default:
+            throw std::invalid_argument("Invalid semantics value");
+        }
+    }
+
+    inline void set_interpol(const std::string &interp)
+    {
+        if (interp == "PREVIOUS")
+        {
+            interpol = Interpol::PREVIOUS;
+        }
+        else if (interp == "LINEAR")
+        {
+            interpol = Interpol::LINEAR;
+        }
+        else
+        {
+            throw std::invalid_argument("Invalid interpol string");
+        }
+    }
+
+    inline std::string get_interpol()
+    {
+        switch (interpol)
+        {
+        case Interpol::PREVIOUS:
+            return "PREVIOUS";
+        case Interpol::LINEAR:
+            return "LINEAR";
+        default:
+            throw std::invalid_argument("Invalid interpol value");
+        }
+    }
     
     /**
      * Run parser. Results are stored inside.
