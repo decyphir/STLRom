@@ -197,6 +197,29 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
 }
 
 
+// TODO: debug levels in lexer and parser
+
+bool STLDriver::parse_stream(std::istream &in) {
+    m_scanner.switch_streams(&in, NULL);
+    return (m_parser.parse() == 0);
+}
+
+bool STLDriver::parse_file(const std::string &filename) {
+    std::ifstream in(filename.c_str());
+    
+    if (!in.good()) {
+        std::cerr << "STLDriver::parse_file(): Could not open file: " << filename << std::endl;
+        return false;
+    }
+
+    return parse_stream(in);
+}
+
+bool STLDriver::parse_string(const std::string &input) {
+    std::istringstream iss(input);
+    return parse_stream(iss);
+}
+
 
 int STLDriver::parse() {
     m_location = 0;
