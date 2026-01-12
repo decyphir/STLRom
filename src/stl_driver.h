@@ -51,6 +51,50 @@ namespace STLRom {
 class Command;
 class transducer;
 
+/** A class encapsulating an STL formula plus feedback messages to be written in
+     * the report based on its satisfaction or violation status.  */
+    class stl_test
+    {
+    public:
+        string test_id;
+        map<string, double> param_map;
+        transducer *formula;
+        string report_positive;
+        string report_negative;
+        bool is_error;
+
+        stl_test()
+        {
+            is_error = false;
+            formula = nullptr;
+        };
+
+        stl_test(const string &_test_id, const map<string, double> &_param_map, transducer *_formula, const string &_report_pos,
+                 const string &_report_neg, bool _is_err) : test_id(_test_id),
+                                                            param_map(_param_map),
+                                                            formula(_formula),
+                                                            report_positive(_report_pos),
+                                                            report_negative(_report_neg),
+                                                            is_error(_is_err) {
+                                                            };
+
+        ~stl_test()
+        {
+            delete formula;
+        }
+    };
+
+    struct trace_test
+    {
+        string id;
+        string env;
+        double sim_time;
+        bool visu;
+        deque<stl_test> tests;
+    };
+
+
+
 /**
  * This class is the interface for our scanner/lexer. The end user
  * is expected to use this. It drives scanner/lexer, keeps
@@ -66,6 +110,17 @@ class STLDriver
 public:
     STLDriver();
 
+    Semantics semantics;  /**< semantics to use */
+    Interpol  interpol;   /**< interpolation method */
+
+    /** enable debug output in the flex scanner */
+    bool trace_scanning;
+
+    /** enable debug output in the bison parser */
+    bool trace_parsing;
+
+    /** stream name (file or input stream) used for error messages */
+    std::string streamname;
 
     /** parameters in formulas */
     map<string, double> param_map;
@@ -74,11 +129,25 @@ public:
     map<string, int> signal_map;
 
     /** formulas defined by the driver */
-
     map<string, transducer*> formula_map;
 
     /** data array - time is first column */
     trace_data data;
+
+    /** append new sample to data */
+    void add_sample(vector <double> sample);
+
+    /** tests (sets of formulas) */
+    map<string, stl_test> stl_test_map;
+    deque<trace_test> trace_test_queue;
+
+    string report;
+    string test_log;
+    int nb_test_pos;
+    int nb_test_total;
+    bool error_flag;
+
+    string get_signals_names() const;
     
     /**
      * Run parser. Results are stored inside.

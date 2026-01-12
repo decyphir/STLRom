@@ -28,6 +28,7 @@
 
 #include "stl_driver.h"
 #include "command.h"
+#include "transducer.h"
 #include "parser.hpp" // this is needed for symbol_type
 
 #include <sstream>
@@ -80,5 +81,23 @@ void STLDriver::increaseLocation(unsigned int loc) {
 
 unsigned int STLDriver::location() const {
     return m_location;
+}
+
+void STLDriver::add_sample(vector<double> s)
+{
+    if (s.size() != signal_map.size() + 1)
+    {
+        throw std::invalid_argument("Sample size does not match the number of signals.");
+    }
+    if (!data.empty() && s[0] <= data.back()[0])
+    {
+        throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
+    }
+    data.push_back(s);
+}
+
+string STLDriver::get_signals_names() const
+{
+    return signal_map_to_string(signal_map);
 }
 
