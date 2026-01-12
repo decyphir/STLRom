@@ -49,7 +49,7 @@ namespace STLRom {
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header
 class Command;
-class Transducer;
+class transducer;
 
 /**
  * This class is the interface for our scanner/lexer. The end user
