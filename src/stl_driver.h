@@ -135,14 +135,14 @@ public:
     /** append new sample to data */
     void add_sample(vector <double> sample);
 
-    /** tests (sets of formulas) */
-    map<string, stl_test> stl_test_map;
-    deque<trace_test> trace_test_queue;
+    // /** tests (sets of formulas) */
+    // map<string, stl_test> stl_test_map;
+    // deque<trace_test> trace_test_queue;
 
-    string report;
-    string test_log;
-    int nb_test_pos;
-    int nb_test_total;
+    // string report;
+    // string test_log;
+    // int nb_test_pos;
+    // int nb_test_total;
     bool error_flag;
 
     string get_signals_names() const;

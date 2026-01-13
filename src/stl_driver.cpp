@@ -42,9 +42,9 @@ STLDriver::STLDriver() :
     semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
-    report(""),
-    nb_test_pos(0),
-    nb_test_total(0),
+    // report(""),
+    // nb_test_pos(0),
+    // nb_test_total(0),
     error_flag(false)
 {
 
@@ -59,9 +59,9 @@ STLDriver::STLDriver(trace_data _trace) :
     semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
-    report(""),
-    nb_test_pos(0),
-    nb_test_total(0),
+    // report(""),
+    // nb_test_pos(0),
+    // nb_test_total(0),
     error_flag(false)
 {
 
@@ -87,12 +87,12 @@ STLDriver::STLDriver(const STLDriver &other) :
     param_map(other.param_map),
     signal_map(other.signal_map),
     data(other.data),
-    stl_test_map(other.stl_test_map),
-    trace_test_queue(other.trace_test_queue),
-    report(other.report),
-    test_log(other.test_log),
-    nb_test_pos(other.nb_test_pos),
-    nb_test_total(other.nb_test_total),
+    // stl_test_map(other.stl_test_map),
+    // trace_test_queue(other.trace_test_queue),
+    // report(other.report),
+    // test_log(other.test_log),
+    // nb_test_pos(other.nb_test_pos),
+    // nb_test_total(other.nb_test_total),
     error_flag(other.error_flag)
 {
     // Deep copy of formula_map
@@ -122,12 +122,12 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         param_map = other.param_map;
         signal_map = other.signal_map;
         data = other.data;
-        stl_test_map = other.stl_test_map;
-        trace_test_queue = other.trace_test_queue;
-        report = other.report;
-        test_log = other.test_log;
-        nb_test_pos = other.nb_test_pos;
-        nb_test_total = other.nb_test_total;
+        // stl_test_map = other.stl_test_map;
+        // trace_test_queue = other.trace_test_queue;
+        // report = other.report;
+        // test_log = other.test_log;
+        // nb_test_pos = other.nb_test_pos;
+        // nb_test_total = other.nb_test_total;
         error_flag = other.error_flag;
 
         // Deep copy of formula_map
@@ -152,12 +152,12 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
     signal_map(std::move(other.signal_map)),
     data(std::move(other.data)),
     formula_map(std::move(other.formula_map)),
-    stl_test_map(std::move(other.stl_test_map)),
-    trace_test_queue(std::move(other.trace_test_queue)),
-    report(std::move(other.report)),
-    test_log(std::move(other.test_log)),
-    nb_test_pos(other.nb_test_pos),
-    nb_test_total(other.nb_test_total),
+    // stl_test_map(std::move(other.stl_test_map)),
+    // trace_test_queue(std::move(other.trace_test_queue)),
+    // report(std::move(other.report)),
+    // test_log(std::move(other.test_log)),
+    // nb_test_pos(other.nb_test_pos),
+    // nb_test_total(other.nb_test_total),
     error_flag(other.error_flag)
 {
     other.formula_map.clear();
@@ -183,12 +183,12 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         signal_map = std::move(other.signal_map);
         data = std::move(other.data);
         formula_map = std::move(other.formula_map);
-        stl_test_map = std::move(other.stl_test_map);
-        trace_test_queue = std::move(other.trace_test_queue);
-        report = std::move(other.report);
-        test_log = std::move(other.test_log);
-        nb_test_pos = other.nb_test_pos;
-        nb_test_total = other.nb_test_total;
+        // stl_test_map = std::move(other.stl_test_map);
+        // trace_test_queue = std::move(other.trace_test_queue);
+        // report = std::move(other.report);
+        // test_log = std::move(other.test_log);
+        // nb_test_pos = other.nb_test_pos;
+        // nb_test_total = other.nb_test_total;
         error_flag = other.error_flag;
 
         other.formula_map.clear();
