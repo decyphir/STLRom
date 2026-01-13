@@ -258,6 +258,66 @@ void STLDriver::error(const std::string &m)
 }
 
 
+double STLDriver::get_param(const string &param)
+{
+    if (param_map.find(param) != param_map.end())
+    {
+        return param_map[param];
+    }
+    return 0;
+}
+
+void STLDriver::set_param(const string &param, double n)
+{
+    // Update param map
+    if (param_map.find(param) != param_map.end())
+    {
+        param_map[param] = n;
+    }
+    // Update param map for all formulas
+    for (auto it = formula_map.begin(); it != formula_map.end(); it++)
+    {
+        ((*it).second)->set_param(param, n);
+    }
+}
+
+
+vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
+{
+    // static vector<double> out_rob;
+    vector<double> out_rob;
+    if (data.empty())
+    {
+        cout << "Empty data" << endl;
+        return out_rob;
+    }
+
+    if (formula_map.find(phi_in) == formula_map.end())
+    {
+        cout << "Formula " << phi_in << " not found in formula_map." << endl;
+        return out_rob;
+    }
+    transducer *phi = formula_map[phi_in];
+    phi->set_trace_data_ptr(data);
+    phi->set_param_map_ptr(param_map);
+    Signal::semantics = semantics;
+    Signal::interpol = interpol;
+    phi->reset();
+    phi->set_horizon(t0, t0);
+    double rob = phi->compute_robustness();
+    double lower_rob = phi->compute_lower_rob();
+    double upper_rob = phi->compute_upper_rob();
+    out_rob = {rob, lower_rob, upper_rob};
+
+    return out_rob;
+}
+
+vector<double> STLDriver::get_online_rob(const string &phi_in)
+{
+    return get_online_rob(phi_in, 0.);
+}
+
+
 void STLDriver::increaseLocation(unsigned int loc) {
     m_location += loc;
     //cout << "increaseLocation(): " << loc << ", total = " << m_location << endl;

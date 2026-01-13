@@ -287,6 +287,15 @@ public:
      * e.g. to a dialog box. */
     void error(const std::string &m);
     
+    /** returns value of parameter param */
+    double get_param(const string &param);
+    void set_param(const string &param, double n);
+
+    /** monitor a single formula requires data is not empty */
+    vector<double> get_online_rob(const string &phi_in);
+    vector<double> get_online_rob(const string &phi_in, double);
+
+
     /**
      * Switch scanner input stream. Default is standard input (std::cin).
      * It will also reset AST.
