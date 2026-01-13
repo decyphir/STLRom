@@ -240,6 +240,23 @@ void STLDriver::switchInputStream(std::istream *is) {
     // TODO : clear AST, etc.
 }
 
+// TODO: improve error messages by adding location info from scanner
+// TODO: call error messages from parser
+/** Error handling with associated line number. This can be modified to
+ * output the error e.g. to a dialog box. */
+void STLDriver::error(const class location &l,
+                        const std::string &m)
+{
+    std::cerr << l << ": " << m << std::endl;
+}
+
+/** General error handling. This can be modified to output the error
+ * e.g. to a dialog box. */
+void STLDriver::error(const std::string &m)
+{
+    std::cerr << m << std::endl;
+}
+
 
 void STLDriver::increaseLocation(unsigned int loc) {
     m_location += loc;

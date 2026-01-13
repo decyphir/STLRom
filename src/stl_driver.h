@@ -274,6 +274,18 @@ public:
      * Print AST
      */
     std::string str() const;
+
+    // To demonstrate pure handling of parse errors, instead of
+    // simply dumping them on the standard error output, we will pass
+    // them to the driver using the following two member functions.
+
+    /** Error handling with associated line number. This can be modified to
+     * output the error e.g. to a dialog box. */
+    void error(const class location &l, const std::string &m);
+
+    /** General error handling. This can be modified to output the error
+     * e.g. to a dialog box. */
+    void error(const std::string &m);
     
     /**
      * Switch scanner input stream. Default is standard input (std::cin).
