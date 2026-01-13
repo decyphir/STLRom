@@ -10,10 +10,11 @@ set(CMAKE_CXX_STANDARD 11)
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Source files 
 file (GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
-file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.h" "${CMAKE_SOURCE_DIR}/src/*.hh")
+file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/include/*.hh")
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 enable_testing()
