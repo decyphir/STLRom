@@ -317,6 +317,45 @@ vector<double> STLDriver::get_online_rob(const string &phi_in)
     return get_online_rob(phi_in, 0.);
 }
 
+STLMonitor STLDriver::get_monitor(const string &id) const
+{
+    STLMonitor phi;
+    auto it = formula_map.find(id); // FYI was map<string,transducer*>::const_iterator it;
+
+    if (it != formula_map.end() && it->second != nullptr)
+    {
+        if (it->second != nullptr)
+        {
+            try
+            {
+                phi.interpol = interpol;
+                phi.semantics = semantics;
+                phi.data = data;
+                phi.formula = (it->second)->clone();
+                phi.signal_map = signal_map;
+                phi.param_map = param_map;
+                phi.start_time = 0.;
+                phi.end_time = 0.;
+                phi.rob = 0.;
+                phi.lower_rob = -Signal::BigM;
+                phi.upper_rob = Signal::BigM;
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Error while cloning or setting up the formula: " << e.what() << std::endl;
+                // Handle the error appropriately, possibly by returning an empty or default-initialized STLMonitor
+                return STLMonitor();
+            }
+        }
+    }
+    else
+    {
+        cout << "WARNING: Formula " << id << " undefined." << endl;
+    }
+
+    return phi;
+}
+
 
 void STLDriver::increaseLocation(unsigned int loc) {
     m_location += loc;
