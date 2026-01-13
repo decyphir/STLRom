@@ -1,8 +1,13 @@
 # Simple formula
 
 signal x, y
+
+param p = 1
+param q = 2
+param p = 3
+
 mux := x[t]>0
-muy := y[t]>0
+muy := y[t]>p
 
 phi := alw_[0, 5] mux or ev_[3, 4] y[t]<5
 phi_until := mux until_[0, 1] muy
