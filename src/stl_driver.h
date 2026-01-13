@@ -313,6 +313,29 @@ public:
      */
     friend class Parser;
     friend class Scanner;
+
+    // more utility functions
+    /** Prints driver to stream output */
+    void print(ostream &out) const;
+
+    /** Prints driver to standard output */
+    inline void print() const { print(cout); };
+    inline void disp() { print(cout); };
+
+    /** Read a trace file */
+    inline bool read_trace_file(string trace_file_name)
+    {
+        data.clear();
+        return read_trace(trace_file_name, data);
+    }
+
+
+    /** dump all assigned formulas satisfaction function to a file */
+    void dump();
+    void dump_trace_file(const string &);
+    // bool dump_test_log_file(const string &);
+    void print_trace(ostream &os);
+    void print_trace();
     
 private:
     

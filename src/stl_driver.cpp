@@ -384,3 +384,102 @@ string STLDriver::get_signals_names() const
     return signal_map_to_string(signal_map);
 }
 
+void STLDriver::print_trace(ostream &os)
+{
+    for (auto ii = data.begin(); ii != data.end(); ii++)
+    {
+        for (auto jj = (*ii).begin(); jj != (*ii).end(); jj++)
+        {
+            os << *jj << " ";
+        }
+        os << endl;
+    }
+}
+
+void STLDriver::print_trace()
+{
+    print_trace(cout);
+}
+
+void STLDriver::dump_trace_file(const string &filename)
+{
+    fstream ofs;
+    ofs.open(filename.c_str(), std::ofstream::out);
+    if (ofs.is_open())
+    {
+        for (auto ii = data.begin(); ii != data.end(); ii++)
+        {
+            for (auto jj = (*ii).begin(); jj != (*ii).end(); jj++)
+            {
+                ofs << *jj << " ";
+            }
+            ofs << endl;
+        }
+        ofs.close();
+    }
+    else
+    {
+        cout << "Couldn't open file " << filename.c_str() << " for writing signal" << endl; // TODO implement exception
+    }
+}
+
+/** compute robustness for all formulas defined in the driver and write results in files */
+void STLDriver::dump()
+{
+
+    // transducer::param_map = param_map; FIXME
+
+    for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
+    {
+        formula->second->trace_data_ptr = &data;
+        formula->second->init_horizon();
+        formula->second->compute_robustness();
+        (formula->second->z).dumpFile(formula->first + ".out");
+    }
+}
+
+void STLDriver::print(ostream &out) const
+{
+
+    out << "\nAssigned formulas:" << endl;
+    out << "-------------------" << endl;
+
+    for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
+    {
+        out << formula->first << ":" << endl;
+        out << *(formula->second) << endl;
+    }
+
+    out << "\nDefault Parameters:" << endl;
+    out << "---------------------" << endl;
+
+    for (auto param = param_map.begin(); param != param_map.end(); param++)
+    {
+        out << param->first << "=";
+        out << param->second << endl;
+    }
+
+    // Not using tests at the moments, will see if we keep/update them...
+    // out << "\nTrace tests:" << endl;
+    // out << "---------------" << endl;
+
+    // string indent = "    ";
+    // for (auto it = trace_test_queue.begin(); it != trace_test_queue.end(); it++)
+    // {
+
+    // 	out << (*it).id << ": ";
+    // 	out << (*it).env << ", ";
+    // 	out << "SimTime: " << (*it).sim_time << " Visu:" << (*it).visu << endl;
+    // 	for (auto its = (*it).tests.begin(); its != (*it).tests.end(); its++)
+    // 	{
+    // 		// transducer->param_map =  param_map; FIXME probably needs a set_param for transducers
+    // 		out << indent << its->test_id << endl;
+    // 		for (auto elem = its->param_map.begin(); elem != its->param_map.end(); elem++)
+    // 			out << indent << indent << elem->first << "=" << elem->second << endl;
+
+    // 		out << indent << indent << *(*its).formula << endl;
+    // 	}
+    // 	out << endl;
+    // }
+    out << endl;
+}
