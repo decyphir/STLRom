@@ -534,5 +534,5 @@ void STLRom::Parser::error(const location &loc , const std::string &message) {
         // Let's grab location directly from driver class.
 	// cout << "Error: " << message << endl << "Location: " << loc << endl;
 	
-        cout << RED << "Error: " << message << endl << "Error location: " << driver.location() << RESET << endl;
+        std::cerr << "Error: " << message << endl << "Error location: " << driver.location() << endl;
 }
