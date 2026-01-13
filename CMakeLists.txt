@@ -14,6 +14,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # Source files 
 file (GLOB SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file (GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.h" "${CMAKE_SOURCE_DIR}/src/*.hh")
+add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 enable_testing()
 
@@ -22,4 +23,10 @@ FLEX_TARGET(MyScanner ${CMAKE_SOURCE_DIR}/src/scanner.l  ${CMAKE_SOURCE_DIR}/src
 ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 
 add_executable(STLRom2 ${SOURCE_FILES} ${HEADER_FILES} ${BISON_MyParser_OUTPUTS} ${FLEX_MyScanner_OUTPUTS})
+
+add_library(stlromlib SHARED
+    ${SOURCE_FILES}
+    ${BISON_MyParser_OUTPUTS}
+    ${FLEX_MyScanner_OUTPUTS})     
+
 
