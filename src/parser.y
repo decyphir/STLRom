@@ -247,14 +247,14 @@ signal_unaryexpr : signal_atom
             $$->param_map = driver.param_map;
             $$->signal_map = driver.signal_map;
         }
-        | MINUS signal_atom %prec UNARY_OPERATOR
+        | MINUS signal_unaryexpr %prec UNARY_OPERATOR /* unary operators only work with abs, constants, and parenthesized stuff, so not signal_expr */
         {
             $$ = new unary_minus_transducer($2);
             $$->trace_data_ptr = &driver.data;
             $$->param_map = driver.param_map;
             $$->signal_map = driver.signal_map;
         }
-        | PLUS signal_atom %prec UNARY_OPERATOR
+        | PLUS signal_unaryexpr %prec UNARY_OPERATOR
         {
             $$ = $2;
         }
@@ -263,7 +263,7 @@ signal_multexpr : signal_unaryexpr
         {
 	      $$ = $1;
 	    }
-        | signal_addexpr MULT signal_atom
+        | signal_multexpr MULT signal_unaryexpr /* changed for precedence */
           {
 	      $$ = new mult_transducer($1, $3);
           $$->trace_data_ptr = &driver.data;
@@ -275,14 +275,14 @@ signal_addexpr : signal_multexpr
         {
 	      $$ = $1;
 	    }
-        | signal_addexpr PLUS signal_atom
+        | signal_addexpr PLUS signal_multexpr
           {
 	      $$ = new plus_transducer($1, $3);
           $$->trace_data_ptr = &driver.data;
           $$->param_map = driver.param_map;
           $$->signal_map = driver.signal_map;
           }
-        | signal_addexpr MINUS signal_atom
+        | signal_addexpr MINUS signal_multexpr
           {
 	        $$ = new minus_transducer($1, $3);
             $$->trace_data_ptr = &driver.data;
