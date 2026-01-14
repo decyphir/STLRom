@@ -43,8 +43,9 @@
 	// This will track current scanner location.
 	// Action is called when length of the token is known.
 	#define YY_USER_ACTION \
-        yylloc.columns(yyleng); \
-        yylloc.step();
+        yylloc.step(); \
+        yylloc.columns(yyleng);
+        
 	
 	// !!!WARNING!!!
 	// Location API is used, but the location is not initialized, 'cause I'm lazy. When making

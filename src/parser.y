@@ -531,5 +531,5 @@ start_semicolon : start SEMICOLON
 
 // Bison expects us to provide implementation - otherwise linker complains
 void STLRom::Parser::error(const location &loc , const std::string &message) {	
-        std::cerr << "Error: " << message << endl << "At line " << loc.begin.line << ", columns " << loc.begin.column << "-" << loc.end.column << std::endl;
+        std::cerr << "Error: " << message << endl << "At line " << loc.begin.line << ", columns " << loc.begin.column << "-" << (loc.end.column - 1) << std::endl;
 }
