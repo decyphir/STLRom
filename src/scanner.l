@@ -136,7 +136,7 @@
        
 }
 
-[-+]?[0-9]*\.[0-9]+     { 
+[0-9]*\.[0-9]+     { 
     //yylval->stringVal = new std::string(yytext, yyleng);
     //cout <<  *yylval->stringVal  << " is a CONSTANT "<< endl; 
  
@@ -145,11 +145,11 @@
 
 }
 
-[-+]?[0-9]*\. {
+[0-9]*\. {
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 
-[-+]?[0-9]+             { 
+[0-9]+             { 
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 

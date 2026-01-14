@@ -149,6 +149,9 @@
 %left IMPLIES
 %left LT GT
 %left BOX DIAMOND UNTIL ASSIGN
+%left PLUS MINUS
+%left MULT
+%left UNARY_OPERATOR
 %nonassoc LPAREN RPAREN
 
 
@@ -243,6 +246,17 @@ signal_unaryexpr : signal_atom
             $$->trace_data_ptr = &driver.data;
             $$->param_map = driver.param_map;
             $$->signal_map = driver.signal_map;
+        }
+        | MINUS signal_atom %prec UNARY_OPERATOR
+        {
+            $$ = new minus_transducer(new constant_transducer(0.0), $2);
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
+        }
+        | PLUS signal_atom %prec UNARY_OPERATOR
+        {
+            $$ = $2;
         }
 
 signal_multexpr : signal_unaryexpr
