@@ -38,11 +38,13 @@
 
 	// Original yyterminate() macro returns int. Since we're using Bison 3 variants
 	// as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
-	#define yyterminate() STLRom::Parser::make_END(STLRom::location());
+	#define yyterminate() STLRom::Parser::make_END(yylloc);
 
 	// This will track current scanner location.
 	// Action is called when length of the token is known.
-	#define YY_USER_ACTION m_driver.increaseLocation(yyleng);
+	#define YY_USER_ACTION \
+        yylloc.columns(yyleng); \
+        yylloc.step();
 	
 	// !!!WARNING!!!
 	// Location API is used, but the location is not initialized, 'cause I'm lazy. When making
@@ -63,73 +65,73 @@
 
 %%
 
-"<>"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
-"<>_"     { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
-"[]"      { return STLRom::Parser::make_BOX(STLRom::location()); }
-"[]_"     { return STLRom::Parser::make_BOX(STLRom::location()); }
-"["       { return STLRom::Parser::make_LINT(STLRom::location()); }
-"]"       { return STLRom::Parser::make_RINT(STLRom::location()); }
-"("       { return STLRom::Parser::make_LPAREN(STLRom::location()); }
-")"       { return STLRom::Parser::make_RPAREN(STLRom::location()); }
-"=>"      { return STLRom::Parser::make_IMPLIES(STLRom::location()); }
-"->"      { return STLRom::Parser::make_IMPLIES(STLRom::location()); }
-"<"       { return STLRom::Parser::make_LT(STLRom::location()); }
-">"       { return STLRom::Parser::make_GT(STLRom::location()); }
-"<="      { return STLRom::Parser::make_LT(STLRom::location()); }
-">="      { return STLRom::Parser::make_GT(STLRom::location()); }
-"!"       { return STLRom::Parser::make_NOT(STLRom::location()); }
-","       { return STLRom::Parser::make_COMMA(STLRom::location()); }
-"&"       { return STLRom::Parser::make_AND(STLRom::location()); }
-"|"       { return STLRom::Parser::make_OR(STLRom::location()); }
-":="      { return STLRom::Parser::make_ASSIGN(STLRom::location()); }
-"+"       { return STLRom::Parser::make_PLUS(STLRom::location()); }
-"-"       { return STLRom::Parser::make_MINUS(STLRom::location()); }
-"*"       { return STLRom::Parser::make_MULT(STLRom::location()); }
-"="     { return STLRom::Parser::make_PARAM_EQ(STLRom::location()); }
+"<>"      { return STLRom::Parser::make_DIAMOND(yylloc); }
+"<>_"     { return STLRom::Parser::make_DIAMOND(yylloc); }
+"[]"      { return STLRom::Parser::make_BOX(yylloc); }
+"[]_"     { return STLRom::Parser::make_BOX(yylloc); }
+"["       { return STLRom::Parser::make_LINT(yylloc); }
+"]"       { return STLRom::Parser::make_RINT(yylloc); }
+"("       { return STLRom::Parser::make_LPAREN(yylloc); }
+")"       { return STLRom::Parser::make_RPAREN(yylloc); }
+"=>"      { return STLRom::Parser::make_IMPLIES(yylloc); }
+"->"      { return STLRom::Parser::make_IMPLIES(yylloc); }
+"<"       { return STLRom::Parser::make_LT(yylloc); }
+">"       { return STLRom::Parser::make_GT(yylloc); }
+"<="      { return STLRom::Parser::make_LT(yylloc); }
+">="      { return STLRom::Parser::make_GT(yylloc); }
+"!"       { return STLRom::Parser::make_NOT(yylloc); }
+","       { return STLRom::Parser::make_COMMA(yylloc); }
+"&"       { return STLRom::Parser::make_AND(yylloc); }
+"|"       { return STLRom::Parser::make_OR(yylloc); }
+":="      { return STLRom::Parser::make_ASSIGN(yylloc); }
+"+"       { return STLRom::Parser::make_PLUS(yylloc); }
+"-"       { return STLRom::Parser::make_MINUS(yylloc); }
+"*"       { return STLRom::Parser::make_MULT(yylloc); }
+"="     { return STLRom::Parser::make_PARAM_EQ(yylloc); }
 
-"F"       { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
-"F_"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
-"ev"      { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
-"ev_"     { return STLRom::Parser::make_DIAMOND(STLRom::location()); }
+"F"       { return STLRom::Parser::make_DIAMOND(yylloc); }
+"F_"      { return STLRom::Parser::make_DIAMOND(yylloc); }
+"ev"      { return STLRom::Parser::make_DIAMOND(yylloc); }
+"ev_"     { return STLRom::Parser::make_DIAMOND(yylloc); }
 
-"G"       { return STLRom::Parser::make_BOX(STLRom::location()); }
-"G_"      { return STLRom::Parser::make_BOX(STLRom::location()); }
-"alw"     { return STLRom::Parser::make_BOX(STLRom::location()); }
-"alw_"    { return STLRom::Parser::make_BOX(STLRom::location()); }
+"G"       { return STLRom::Parser::make_BOX(yylloc); }
+"G_"      { return STLRom::Parser::make_BOX(yylloc); }
+"alw"     { return STLRom::Parser::make_BOX(yylloc); }
+"alw_"    { return STLRom::Parser::make_BOX(yylloc); }
 
-"U"       { return STLRom::Parser::make_UNTIL(STLRom::location()); }
-"U_"      { return STLRom::Parser::make_UNTIL(STLRom::location()); }
-"until"   { return STLRom::Parser::make_UNTIL(STLRom::location()); }
-"until_"  { return STLRom::Parser::make_UNTIL(STLRom::location()); }
+"U"       { return STLRom::Parser::make_UNTIL(yylloc); }
+"U_"      { return STLRom::Parser::make_UNTIL(yylloc); }
+"until"   { return STLRom::Parser::make_UNTIL(yylloc); }
+"until_"  { return STLRom::Parser::make_UNTIL(yylloc); }
 
-"and"     { return STLRom::Parser::make_AND(STLRom::location()); }
-"or"      { return STLRom::Parser::make_OR(STLRom::location()); }
-"not"     { return STLRom::Parser::make_NOT(STLRom::location()); }
+"and"     { return STLRom::Parser::make_AND(yylloc); }
+"or"      { return STLRom::Parser::make_OR(yylloc); }
+"not"     { return STLRom::Parser::make_NOT(yylloc); }
 
-"true"    { return STLRom::Parser::make_BOOL_TRUE(true, STLRom::location()); }
-"false"   { return STLRom::Parser::make_BOOL_FALSE(false, STLRom::location()); }
+"true"    { return STLRom::Parser::make_BOOL_TRUE(true, yylloc); }
+"false"   { return STLRom::Parser::make_BOOL_FALSE(false, yylloc); }
 
-"t"       { return STLRom::Parser::make_TIME(STLRom::location()); }
-"abs"     { return STLRom::Parser::make_ABS(STLRom::location()); }
-"param"   { return STLRom::Parser::make_PARAM_DECL(STLRom::location()); }
-"test"    { return STLRom::Parser::make_TEST(STLRom::location()); }
-"signal"  { return STLRom::Parser::make_SIGNAL_DECL(STLRom::location()); }
+"t"       { return STLRom::Parser::make_TIME(yylloc); }
+"abs"     { return STLRom::Parser::make_ABS(yylloc); }
+"param"   { return STLRom::Parser::make_PARAM_DECL(yylloc); }
+"test"    { return STLRom::Parser::make_TEST(yylloc); }
+"signal"  { return STLRom::Parser::make_SIGNAL_DECL(yylloc); }
 
 [a-zA-Z][A-Za-z0-9_]*     { 
 
     if (m_driver.formula_map.find(yytext) != m_driver.formula_map.end()) {
-        return STLRom::Parser::make_PHI_ID(yytext, STLRom::location());
+        return STLRom::Parser::make_PHI_ID(yytext, yylloc);
     }
     else        
     if (m_driver.param_map.find(yytext) != m_driver.param_map.end()) {
-        return STLRom::Parser::make_PARAM_ID(yytext, STLRom::location());
+        return STLRom::Parser::make_PARAM_ID(yytext, yylloc);
     }
     else 
     if (m_driver.signal_map.find(yytext) != m_driver.signal_map.end()) {
-        return STLRom::Parser::make_SIGNAL_ID(yytext, STLRom::location());
+        return STLRom::Parser::make_SIGNAL_ID(yytext, yylloc);
     }
     else 
-        return STLRom::Parser::make_NEW_ID(yytext, STLRom::location());;
+        return STLRom::Parser::make_NEW_ID(yytext, yylloc);;
        
 }
 
@@ -138,30 +140,31 @@
     //cout <<  *yylval->stringVal  << " is a CONSTANT "<< endl; 
  
   //return token::CONSTANT;
-  return STLRom::Parser::make_CONSTANT(yytext, STLRom::location());
+  return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 
 }
 
 [-+]?[0-9]*\. {
-    return STLRom::Parser::make_CONSTANT(yytext, STLRom::location());
+    return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 
 [-+]?[0-9]+             { 
-    return STLRom::Parser::make_CONSTANT(yytext, STLRom::location());
+    return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 
 \"(\\.|[^\\"])*\" { // "
     // TODO: check if stringVal can be constructed differently
     std::string stringVal(yytext+1, yyleng-2);
-    return STLRom::Parser::make_STRING(stringVal, STLRom::location());
+    return STLRom::Parser::make_STRING(stringVal, yylloc);
 }
 
 
 \n {
-
+    yylloc.lines(yyleng);
+    yylloc.step();
 }
 
-;   { return STLRom::Parser::make_SEMICOLON(STLRom::location()); }
+;   { return STLRom::Parser::make_SEMICOLON(yylloc); }
 
 [ \t\r]+    { /* skip whitespace */ }
 

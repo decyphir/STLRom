@@ -31,6 +31,9 @@
 %defines
 %define api.parser.class { Parser }
 
+%locations
+
+
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -88,7 +91,6 @@
 %lex-param { STLRom::STLDriver &driver }
 %parse-param { STLRom::Scanner &scanner }
 %parse-param { STLRom::STLDriver &driver }
-%locations
 %define parse.trace
 %define parse.error verbose
 
@@ -528,11 +530,6 @@ start_semicolon : start SEMICOLON
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
-void STLRom::Parser::error(const location &loc , const std::string &message) {
-        
-        // Location should be initialized inside scanner action, but is not in this example.
-        // Let's grab location directly from driver class.
-	// cout << "Error: " << message << endl << "Location: " << loc << endl;
-	
-        std::cerr << "Error: " << message << endl << "Error location: " << driver.location() << endl;
+void STLRom::Parser::error(const location &loc , const std::string &message) {	
+        std::cerr << "Error: " << message << endl << "At line " << loc.begin.line << ", columns " << loc.begin.column << "-" << loc.end.column << std::endl;
 }

@@ -43,6 +43,8 @@
 #include <FlexLexer.h>
 #endif
 
+#include "location.hh"
+
 // Scanner method signature is defined by this macro. Original yylex() returns int.
 // Sinice Bison 3 uses symbol_type, we must change returned type. We also rename it
 // to something sane, since you cannot overload return type.
@@ -58,9 +60,11 @@ class STLDriver;
     
 class Scanner : public yyFlexLexer {
 public:
-        Scanner(STLDriver &driver) : m_driver(driver) {}
+        Scanner(STLDriver &driver) : m_driver(driver) { yylloc.initialize(); }
 	virtual ~Scanner() {}
 	virtual STLRom::Parser::symbol_type get_next_token();
+
+    STLRom::location yylloc;  /**< location as required by bison %locations option */
         
 private:
     STLDriver &m_driver;
