@@ -177,6 +177,38 @@ namespace STLRom
         };
     };
 
+    class unary_minus_transducer : public unary_transducer
+    {
+    public:
+        explicit unary_minus_transducer(transducer *_child) : transducer(), unary_transducer(_child)
+        {
+        }
+
+        virtual unary_minus_transducer *clone() const
+        {
+            transducer *child_clone = child->clone();
+            return new unary_minus_transducer(child_clone);
+        }
+
+        virtual ~unary_minus_transducer()
+        {
+        }
+
+        double compute_robustness();
+
+        void print() const
+        {
+            print(cout);
+        };
+
+        virtual void print(ostream &os) const
+        {
+            os << "-(";
+            child->print(os);
+            os << ")";
+        };
+    };
+
     /* binary signal operators - all operators assume that left and right operand have the
      * same number of samples.
      */

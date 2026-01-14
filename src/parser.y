@@ -249,7 +249,7 @@ signal_unaryexpr : signal_atom
         }
         | MINUS signal_atom %prec UNARY_OPERATOR
         {
-            $$ = new minus_transducer(new constant_transducer(0.0), $2);
+            $$ = new unary_minus_transducer($2);
             $$->trace_data_ptr = &driver.data;
             $$->param_map = driver.param_map;
             $$->signal_map = driver.signal_map;

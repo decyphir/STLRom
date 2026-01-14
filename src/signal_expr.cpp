@@ -31,6 +31,22 @@ double abs_transducer::compute_robustness() {
 	return z.front().value;
 }
 
+double unary_minus_transducer::compute_robustness() {
+
+	// update child robustness
+	child->compute_robustness();
+
+	auto iter = child->z.begin();
+	
+	for (; iter != child->z.end();
+			iter++) {
+		double t= (*iter).time;
+		double v = (*iter).value;
+		z.appendSample(t, -v);
+	}
+	return z.front().value;
+}
+
 /* Binary signal operators - all operators assume that left and right operand have the
  * same number of samples.
  */
