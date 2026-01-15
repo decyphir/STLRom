@@ -46,6 +46,7 @@ STLDriver::STLDriver() :
     semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
+    verbose_parser(false),
     // report(""),
     // nb_test_pos(0),
     // nb_test_total(0),
@@ -63,6 +64,7 @@ STLDriver::STLDriver(trace_data _trace) :
     semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
+    verbose_parser(false),
     // report(""),
     // nb_test_pos(0),
     // nb_test_total(0),
@@ -87,6 +89,7 @@ STLDriver::STLDriver(const STLDriver &other) :
     interpol(other.interpol),
     trace_scanning(other.trace_scanning),
     trace_parsing(other.trace_parsing),
+    verbose_parser(other.verbose_parser),
     streamname(other.streamname),
     param_map(other.param_map),
     signal_map(other.signal_map),
@@ -122,6 +125,7 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         interpol = other.interpol;
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
+        verbose_parser = other.verbose_parser;
         streamname = other.streamname;
         param_map = other.param_map;
         signal_map = other.signal_map;
@@ -151,6 +155,7 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
     interpol(other.interpol),
     trace_scanning(other.trace_scanning),
     trace_parsing(other.trace_parsing),
+    verbose_parser(other.verbose_parser),
     streamname(std::move(other.streamname)),
     param_map(std::move(other.param_map)),
     signal_map(std::move(other.signal_map)),
@@ -182,6 +187,7 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         interpol = other.interpol;
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
+        verbose_parser = other.verbose_parser;
         streamname = std::move(other.streamname);
         param_map = std::move(other.param_map);
         signal_map = std::move(other.signal_map);

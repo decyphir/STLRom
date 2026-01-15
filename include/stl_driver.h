@@ -119,6 +119,9 @@ public:
     /** enable debug output in the bison parser */
     bool trace_parsing;
 
+    /** enable verbose mode for parser */
+    bool verbose_parser;
+
     /** stream name (file or input stream) used for error messages */
     std::string streamname;
 

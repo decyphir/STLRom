@@ -93,7 +93,7 @@
 %lex-param { STLRom::STLDriver &driver }
 %parse-param { STLRom::Scanner &scanner }
 %parse-param { STLRom::STLDriver &driver }
-%define parse.trace
+
 %define parse.error verbose
 
 %define api.token.prefix {TOKEN_}
@@ -405,8 +405,8 @@ stl_formula :
 assignement : NEW_ID ASSIGN stl_formula
             {
                 driver.formula_map[$1] = $3;
-                cout << CYAN << "Defined formula " << $1 << " = " << *$3 << RESET << endl;
-                // cout << CYAN << "Defined formula " << $1 << " = " << $3->toString() << RESET << endl;
+                if (driver.verbose_parser)
+                    cout << CYAN << "Defined formula " << $1 << " = " << *$3 << RESET << endl;
             }
 
 /* trace_env: TEST NEW_ID ':' STRING
@@ -441,14 +441,16 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
-                    cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
                  }
                  | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
                     driver.param_map[$1] = val;
-                    cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
                  }
 
 param_assignement_list: param_assignement
@@ -497,9 +499,10 @@ param_assignements: PARAM_DECL param_assignement_list
 
 signal_new: NEW_ID
           {
-             short idx =  driver.signal_map.size()+1;
-             driver.signal_map[$1] = idx;
-             cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
+                short idx =  driver.signal_map.size()+1;
+                driver.signal_map[$1] = idx;
+                if (driver.verbose_parser)
+                    cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }
           | SIGNAL_ID
           {
