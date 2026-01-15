@@ -201,7 +201,6 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
 }
 
 
-// TODO: debug levels in lexer and parser
 
 bool STLDriver::parse_stream(std::istream &in) {
     m_scanner.switch_streams(&in, NULL);
@@ -246,7 +245,17 @@ int STLDriver::parse() {
 }
 
 void STLDriver::clear() {
-    // TODO : clear AST, etc.
+    for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
+		{
+			if (formula->second != 0)
+			{
+				delete formula->second;
+				formula->second = 0;
+			}
+		}
+
+		formula_map.clear();
+		param_map.clear();
 }
 
 std::string STLDriver::str() const {
