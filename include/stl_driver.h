@@ -148,7 +148,7 @@ public:
     // string test_log;
     // int nb_test_pos;
     // int nb_test_total;
-    bool error_flag;
+    // bool error_flag;
 
     string get_signals_names() const;
 
