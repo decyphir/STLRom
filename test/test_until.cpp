@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     // STLDriver is the class implementing the parser.            
     
     STLDriver stl_driver = STLDriver();	  
-    string s="../../test/spec.stl";
+    string s="../test/spec.stl";
     bool parse_success = stl_driver.parse_file(s);
     
     if (parse_success) {
