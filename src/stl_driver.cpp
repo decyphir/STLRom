@@ -212,7 +212,7 @@ bool STLDriver::parse_file(const std::string &filename) {
     std::ifstream in(filename.c_str());
     
     if (!in.good()) {
-        std::cerr << RED << "STLDriver::parse_file(): Could not open file: " << filename << std::endl;
+        std::cerr << RED << "STLDriver::parse_file(): Could not open file: " << filename << std::endl << RED;
         return false;
     }
 

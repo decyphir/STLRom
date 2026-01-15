@@ -34,6 +34,8 @@
 
 constexpr const char* CYAN  = "\033[36m";
 constexpr const char* RESET = "\033[0m";
+constexpr const char* RED  = "\033[31m";
+
 
 using namespace STLRom;
 using namespace std;
@@ -47,7 +49,7 @@ int main(int argc, char **argv) {
     if (argc > 1) {
         inFile.open(argv[1]);
         if (!inFile) {
-            cerr << "Error: cannot open input file " << argv[1] << endl;
+            cerr << RED << "Error: cannot open input file " << argv[1] << endl << RESET;
             return 1;
         }
         
