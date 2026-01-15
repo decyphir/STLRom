@@ -33,6 +33,8 @@
 
 %locations
 
+%debug
+
 
 %define api.token.constructor
 %define api.value.type variant

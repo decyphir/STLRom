@@ -41,6 +41,8 @@ using namespace std;
 int main(int argc, char **argv) {
     STLDriver i;
     std::ifstream inFile;
+    // i.trace_parsing = true; // Enable parser debug output
+    // i.trace_scanning = true; // Enable scanner debug output
 
     if (argc > 1) {
         inFile.open(argv[1]);

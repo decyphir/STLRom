@@ -34,6 +34,10 @@
 
 using namespace STLRom;
 
+constexpr const char* CYAN  = "\033[36m";
+constexpr const char* RED  = "\033[31m";
+constexpr const char* RESET = "\033[0m";
+
 STLDriver::STLDriver() :
     m_scanner(*this),
     m_parser(m_scanner, *this),
@@ -201,14 +205,14 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
 
 bool STLDriver::parse_stream(std::istream &in) {
     m_scanner.switch_streams(&in, NULL);
-    return (m_parser.parse() == 0);
+    return (parse() == 0);
 }
 
 bool STLDriver::parse_file(const std::string &filename) {
     std::ifstream in(filename.c_str());
     
     if (!in.good()) {
-        std::cerr << "STLDriver::parse_file(): Could not open file: " << filename << std::endl;
+        std::cerr << RED << "STLDriver::parse_file(): Could not open file: " << filename << std::endl;
         return false;
     }
 
@@ -223,6 +227,8 @@ bool STLDriver::parse_string(const std::string &input) {
 
 int STLDriver::parse() {
     m_location = 0;
+    m_parser.set_debug_level(trace_parsing);
+    m_scanner.set_debug(trace_scanning);
     return m_parser.parse();
 }
 

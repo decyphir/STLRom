@@ -64,6 +64,8 @@
 %option yyclass="Scanner"
 %option prefix="STLRom_"
 
+%option debug
+
 %%
 
 "<>"      { return STLRom::Parser::make_DIAMOND(yylloc); }
