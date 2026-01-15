@@ -41,7 +41,6 @@ constexpr const char* RESET = "\033[0m";
 STLDriver::STLDriver() :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    m_location(0),
     interpol(Interpol::LINEAR),
     semantics(Semantics::SPACE),
     trace_scanning(false),
@@ -58,7 +57,6 @@ STLDriver::STLDriver() :
 STLDriver::STLDriver(trace_data _trace) :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    m_location(0),
     data(std::move(_trace)),
     interpol(Interpol::LINEAR),
     semantics(Semantics::SPACE),
@@ -84,7 +82,6 @@ STLDriver::~STLDriver()
 STLDriver::STLDriver(const STLDriver &other) :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    m_location(other.m_location),
     semantics(other.semantics),
     interpol(other.interpol),
     trace_scanning(other.trace_scanning),
@@ -120,7 +117,6 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         }
         formula_map.clear();
 
-        m_location = other.m_location;
         semantics = other.semantics;
         interpol = other.interpol;
         trace_scanning = other.trace_scanning;
@@ -150,7 +146,6 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
 STLDriver::STLDriver(STLDriver &&other) noexcept :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    m_location(other.m_location),
     semantics(other.semantics),
     interpol(other.interpol),
     trace_scanning(other.trace_scanning),
@@ -182,7 +177,6 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
             delete pair.second;
         }
 
-        m_location = other.m_location;
         semantics = other.semantics;
         interpol = other.interpol;
         trace_scanning = other.trace_scanning;
@@ -246,14 +240,12 @@ bool STLDriver::parse_string(const std::string &input) {
 
 
 int STLDriver::parse() {
-    m_location = 0;
     m_parser.set_debug_level(trace_parsing);
     m_scanner.set_debug(trace_scanning);
     return m_parser.parse();
 }
 
 void STLDriver::clear() {
-    m_location = 0;
     // TODO : clear AST, etc.
 }
 
@@ -382,15 +374,6 @@ STLMonitor STLDriver::get_monitor(const string &id) const
     return phi;
 }
 
-
-void STLDriver::increaseLocation(unsigned int loc) {
-    m_location += loc;
-    //cout << "increaseLocation(): " << loc << ", total = " << m_location << endl;
-}
-
-unsigned int STLDriver::location() const {
-    return m_location;
-}
 
 void STLDriver::add_sample(vector<double> s)
 {

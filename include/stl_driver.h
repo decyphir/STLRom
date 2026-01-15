@@ -348,18 +348,11 @@ public:
     void print_trace(ostream &os);
     void print_trace();
     
-private:
-    
-    // Used internally by Scanner YY_USER_ACTION to update location indicator
-    void increaseLocation(unsigned int loc);
-    
-    // Used to get last Scanner location. Used in error messages.
-    unsigned int location() const;
+
 
 private:
     Scanner m_scanner;
     Parser m_parser;
-    unsigned int m_location;          // Used by scanner
 };
 
 }
