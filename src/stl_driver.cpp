@@ -209,11 +209,25 @@ bool STLDriver::parse_stream(std::istream &in) {
 }
 
 bool STLDriver::parse_file(const std::string &filename) {
+    return parse_file(filename, false);
+}
+
+bool STLDriver::parse_file(const std::string &filename, bool verbose) {
     std::ifstream in(filename.c_str());
     
     if (!in.good()) {
         std::cerr << RED << "STLDriver::parse_file(): Could not open file: " << filename << std::endl << RED;
         return false;
+    }
+    
+    if (verbose) {
+        cout << CYAN << "Parsing from file with content:" << RESET << endl;
+        cout << CYAN << "----------------------------------------" << RESET << endl;
+        cout << CYAN << in.rdbuf() << RESET << endl;
+        cout << CYAN << "----------------------------------------" << RESET << endl;
+
+        in.clear(); // clear eof flag
+        in.seekg(0, ios::beg); // rewind to beginning
     }
 
     return parse_stream(in);

@@ -267,6 +267,14 @@ public:
      */
     bool parse_file(const std::string &filename);
 
+    /** Invoke the scanner and parser on a file and print file content. Use parse_stream with a
+     * std::ifstream if detection of file reading errors is required.
+     * @param filename	input file name
+     * @param verbose   enable verbose output
+     * @return		true if successfully parsed
+     */
+    bool parse_file(const std::string &filename, bool verbose);
+
     // Creates an independant monitor with its own data
     STLMonitor get_monitor(const string &id) const;
     

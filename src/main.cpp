@@ -43,27 +43,18 @@ using namespace std;
 int main(int argc, char **argv) {
     STLDriver i;
     std::ifstream inFile;
+    bool res;
+
     // i.trace_parsing = true; // Enable parser debug output
     // i.trace_scanning = true; // Enable scanner debug output
 
     if (argc > 1) {
-        inFile.open(argv[1]);
-        if (!inFile) {
-            cerr << RED << "Error: cannot open input file " << argv[1] << endl << RESET;
-            return 1;
-        }
-        
-        cout << CYAN << "Parsing from file with content:" << RESET << endl;
-        cout << CYAN << "----------------------------------------" << RESET << endl;
-        cout << CYAN << inFile.rdbuf() << RESET << endl;
-        cout << CYAN << "----------------------------------------" << RESET << endl;
-
-        inFile.clear(); // clear eof flag
-        inFile.seekg(0, ios::beg); // rewind to beginning
-        i.switchInputStream(&inFile);
+        res = i.parse_file(argv[1], false);
+    } else {
+        cout << CYAN << "Parsing from standard input. Type your input and press Ctrl+D (Linux/Mac) or Ctrl+Z (Windows) to end input." << RESET << endl;
+        res = i.parse_stream(std::cin);
     }
 
-    int res = i.parse();
     cout << CYAN << "Parse complete. Result = " << res << RESET << endl;
     return res;
 }
