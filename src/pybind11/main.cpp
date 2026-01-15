@@ -151,7 +151,12 @@ PYBIND11_MODULE(stlrom, m) {
 	//Class STLDriver
 	py::class_<STLRom::STLDriver>(m, "STLDriver")
 		.def(py::init<>())
-		.def("parse_file",&STLRom::STLDriver::parse_file)
+		.def("parse_file", [](STLRom::STLDriver &self, const std::string &filename) {
+        return self.parse_file(filename);
+    	})
+    	.def("parse_file", [](STLRom::STLDriver &self, const std::string &filename, bool verbose) {
+        return self.parse_file(filename, verbose);
+    	})
 		.def("parse_string",&STLRom::STLDriver::parse_string)
 		.def("disp",&STLRom::STLDriver::disp)		
 		.def("add_sample",&STLRom::STLDriver::add_sample)
