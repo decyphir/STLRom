@@ -444,6 +444,15 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
                  }
+                 | PARAM_ID PARAM_EQ MINUS CONSTANT
+                 {
+                    double val;
+                    s_to_d( $4, val );
+                    val = -val;
+                    driver.param_map[$1] = val;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
+                 }
                  | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
