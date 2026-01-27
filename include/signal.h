@@ -92,6 +92,8 @@ public:
 			semantics = Semantics::LEFT_TIME;
 		} else if (sem == "RIGHT_TIME") {
 			semantics = Semantics::RIGHT_TIME;
+		} else if (sem == "BOOLEAN") {
+			semantics = Semantics::BOOLEAN;
 		} else {
 			throw std::invalid_argument("Invalid semantics string");
 		}
@@ -105,6 +107,8 @@ public:
 				return "LEFT_TIME";
 			case Semantics::RIGHT_TIME:
 				return "RIGHT_TIME";
+			case Semantics::BOOLEAN:
+				return "BOOLEAN";
 			default:
 				throw std::invalid_argument("Invalid semantics value");
 		}

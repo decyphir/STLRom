@@ -58,6 +58,10 @@ namespace STLRom {
                 z_space = z;
                 z.compute_right_time_rob(z_space);
                 return z.front().value;
+            case Semantics::BOOLEAN:
+                z_space = z;
+                z.compute_boolean(z_space);
+                return z.front().value;
 			default:
 				throw std::invalid_argument("Invalid semantics value");
 		}    
