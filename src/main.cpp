@@ -98,5 +98,7 @@ int main(int argc, char **argv) {
     }
 
     cout << CYAN << "Parse complete. Result = " << boolalpha << res << RESET << endl;
+
+    driver.disp();
     return res;
 }
