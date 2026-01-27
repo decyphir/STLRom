@@ -498,7 +498,7 @@ namespace STLRom {
     };
 
     enum comparator {
-        LESSTHAN, GREATERTHAN
+        LESSTHAN, GREATERTHAN, EQUAL
     };
 
     /* Atoms and signal expressions */
@@ -523,8 +523,10 @@ namespace STLRom {
         {
             if (cp.compare("<") == 0)
                 comp = comparator::LESSTHAN;
-            else
+            else if (cp.compare(">") == 0)
                 comp = comparator::GREATERTHAN;
+            else
+                comp = comparator::EQUAL;
         }
         ;
 
@@ -547,6 +549,9 @@ namespace STLRom {
                 break;
             case (comparator::GREATERTHAN):
                 os << " > ";
+                break;
+            case (comparator::EQUAL):
+                os << " == ";
                 break;
             }
 

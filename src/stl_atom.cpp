@@ -41,8 +41,16 @@ namespace STLRom {
 		
             if (comp == comparator::LESSTHAN )
                 z.appendSample(t, vR-vL, dR-dL);
-            else
-                z.appendSample(t, vL-vR, dL-dR);	
+            else if (comp == comparator::GREATERTHAN)
+                z.appendSample(t, vL-vR, dL-dR);
+            else {
+                double eps = 0.1;
+                if (fabs(vL-vR) < eps) {
+                    z.appendSample(t, 2.0, dL-dR);
+                } else {
+                    z.appendSample(t, -2.0, dL-dR);
+                }
+            }	
         }
         z.endTime = childL->z.endTime;
 
