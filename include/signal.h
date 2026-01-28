@@ -78,6 +78,7 @@ class Signal : public std::deque<Sample> {
 public:
 
 	static double BigM;
+	static double Eps;
 	
 	// Guess that should be else where... 
 	
@@ -142,6 +143,14 @@ public:
 
 	inline static int get_BigM(){
 		return BigM;
+	}
+
+	inline static void set_Eps(double val){
+		Eps=val;
+	}
+
+	inline static int get_Eps(){
+		return Eps;
 	}
 
 

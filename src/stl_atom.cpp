@@ -44,11 +44,10 @@ namespace STLRom {
             else if (comp == comparator::GREATERTHAN)
                 z.appendSample(t, vL-vR, dL-dR);
             else {
-                double eps = 0.1;
-                if (fabs(vL-vR) < eps) {
-                    z.appendSample(t, 2.0, dL-dR);
+                if (fabs(vL-vR) < Signal::Eps) {
+                    z.appendSample(t, Signal::BigM, dL-dR);
                 } else {
-                    z.appendSample(t, -2.0, dL-dR);
+                    z.appendSample(t, -fabs(vL-vR), dL-dR);
                 }
             }	
         }
