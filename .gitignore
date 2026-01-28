@@ -38,3 +38,4 @@ src/location.hh
 src/scanner.cpp
 build/*
 *.out*
+src/stlrom/__pycache__/*

@@ -54,7 +54,7 @@ void print_monitor(STLDriver& d) {
 }
 
 
-PYBIND11_MODULE(stlrom, m) {
+PYBIND11_MODULE(_stlrom, m) {
 	//Class Point
 	py::class_<STLRom::Point>(m, "Point")
 		.def(py::init<double,double>())
