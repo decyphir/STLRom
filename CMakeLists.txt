@@ -32,13 +32,13 @@ if (BUILD_PYTHON_EXTENSION)
   find_package(Python COMPONENTS Interpreter Development REQUIRED)
   find_package(pybind11 CONFIG REQUIRED)
 
-  pybind11_add_module(stlrom
+  pybind11_add_module(_stlrom
      src/pybind11/main.cpp 
      ${SOURCE_FILES})
 
   install (
-    TARGETS stlrom
-   DESTINATION .
+    TARGETS _stlrom
+   DESTINATION stlrom
   )
 else()
   message(STATUS "Building C++ library only.")
