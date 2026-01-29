@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
 
 def plot(self, label=None, fig=None):
+    import matplotlib.pyplot as plt
+
     samples_list = self.get_samples_list()
 
     if fig is None:
