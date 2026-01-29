@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
 
     auto print_help = []() {
         cout << CYAN <<
-            "Usage: STLRom2 [options]\n"
+            "Usage: STLRomParser [options]\n"
             "\nOptions:\n"
             "  -f, --file <filename>   Parse input from file\n"
             "  -v, --verbose           Enable verbose parser output\n"

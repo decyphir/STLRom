@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(STLRom2 VERSION 0.1 LANGUAGES CXX)
+project(STLRom VERSION 0.1 LANGUAGES CXX)
 
 # Required stuff
 find_package(FLEX)
@@ -25,7 +25,7 @@ BISON_TARGET(MyParser ${CMAKE_SOURCE_DIR}/src/parser.y ${CMAKE_SOURCE_DIR}/src/p
 FLEX_TARGET(MyScanner ${CMAKE_SOURCE_DIR}/src/scanner.l  ${CMAKE_SOURCE_DIR}/src/scanner.cpp)
 ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 
-add_executable(STLRom2 ${SOURCE_FILES} ${HEADER_FILES} ${BISON_MyParser_OUTPUTS} ${FLEX_MyScanner_OUTPUTS})
+add_executable(STLRomParser ${SOURCE_FILES} ${HEADER_FILES} ${BISON_MyParser_OUTPUTS} ${FLEX_MyScanner_OUTPUTS})
 
 if (BUILD_PYTHON_EXTENSION)
   message(STATUS "Building Python Extension module.")
