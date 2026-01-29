@@ -1,0 +1,31 @@
+[build-system]
+requires = [ "scikit-build-core>=0.11", "pybind11>=3.0" ]
+build-backend = "scikit_build_core.build"
+
+[project]
+
+name = "stlrom"
+version = "0.2.4"
+authors = [
+    {name = "Alexandre Donzé", email = "alexandre.donze@univ-grenoble-alpes.fr"},
+]
+description = "A library for robust online monitoring of STL specifications."
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["cpp", "cmake", "extension", ""]
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "matplotlib",
+]
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.args = [
+    "-DBUILD_PYTHON_EXTENSION=ON" 
+]
+
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+enable = ["pypy"]

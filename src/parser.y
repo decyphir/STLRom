@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLROM.com>
+ * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@STLRom.com>
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -31,23 +31,32 @@
 %defines
 %define api.parser.class { Parser }
 
+%locations
+
+%debug
+
+
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
-%define api.namespace { STLROM }
+%define api.namespace { STLRom }
 %code requires
 {
     #include <iostream>
     #include <string>
     #include <vector>
     #include <stdint.h>
-    #include "command.h"
+    #include "transducer.h"
+    #include "interval.h"
+    #include "tools.h"
+    #include "signal_expr.h"
+    #include "robustness.h"
 
     using namespace std;
 
-    namespace STLROM {
+    namespace STLRom {
         class Scanner;
-        class Interpreter;
+        class STLDriver;
     }
 }
 
@@ -61,11 +70,15 @@
     #include <iostream>
     #include "scanner.h"
     #include "parser.hpp"
-    #include "interpreter.h"
+    #include "stl_driver.h"
     #include "location.hh"
+
+    constexpr const char* CYAN  = "\033[36m";
+    constexpr const char* RED  = "\033[31m";
+    constexpr const char* RESET = "\033[0m";
     
     // yylex() arguments are defined in parser.y
-    static STLROM::Parser::symbol_type yylex(STLROM::Scanner &scanner, STLROM::Interpreter &driver) {
+    static STLRom::Parser::symbol_type yylex(STLRom::Scanner &scanner, STLRom::STLDriver &driver) {
         return scanner.get_next_token();
     }
     
@@ -73,102 +86,468 @@
     // x and y are same as in above static function
     // #define yylex(x, y) scanner.get_next_token()
     
-    using namespace STLROM;
+    using namespace STLRom;
 }
 
-%lex-param { STLROM::Scanner &scanner }
-%lex-param { STLROM::Interpreter &driver }
-%parse-param { STLROM::Scanner &scanner }
-%parse-param { STLROM::Interpreter &driver }
-%locations
-%define parse.trace
+%lex-param { STLRom::Scanner &scanner }
+%lex-param { STLRom::STLDriver &driver }
+%parse-param { STLRom::Scanner &scanner }
+%parse-param { STLRom::STLDriver &driver }
+
 %define parse.error verbose
 
 %define api.token.prefix {TOKEN_}
 
-%token END 0 "end of file"
-%token <std::string> STRING  "string";
+//%token END 0 "end of file"
+//%token <std::string> STRING  "string";
 %token <uint64_t> NUMBER "number";
-%token LEFTPAR "leftpar";
-%token RIGHTPAR "rightpar";
 %token SEMICOLON "semicolon";
-%token COMMA "comma";
+//%token COMMA "comma";
 
-%type< STLROM::Command > command;
-%type< std::vector<uint64_t> > arguments;
+%token                 LINT            "["
+%token                 RINT            "]"
+%token                 LPAREN          "("
+%token                 RPAREN          ")"
+%token                 LT              "<"
+%token                 NOT             "not"
+%token                 GT              ">"
+%token                 AND             "and"
+%token                 OR              "or"
+%token                 IMPLIES         "=>"
+%token                 PARAM_EQ        "="
+%token                 BOX             "alw"
+%token                 DIAMOND         "ev"
+%token                 UNTIL           "until"
+%token                 TIME            "time"
+%token                 COMMA           ","
+%token                 END	       0   "end of file"
+%token                 EOL             "end of line"
+%token                 ASSIGN          ":="
+%token                 PLUS            "+"
+%token                 MINUS           "-"
+%token                 MULT            "*"
+%token                 ABS             "abs"
+%token                 PARAM_DECL      "param_decl"
+%token                 SIGNAL_DECL     "signal_decl"
+%token                 TEST            "test"
 
-%start program
+%token                 CONSTANT_IDENTIFIER "constant_identifier"
+
+
+%token <bool>          BOOL_TRUE       "true"
+%token <bool>          BOOL_FALSE      "false"
+%token <double>        DOUBLE		   "double"
+%token <std::string>   CONSTANT        "constant"
+%token <std::string>   PARAM_ID        "param_id"
+%token <std::string>   PHI_ID          "phi_id"
+%token <std::string>   NEW_ID          "new_id"
+%token <std::string>   SIGNAL_ID       "signal_id"
+%token <std::string>   STL_TEST_ID     "stl_test_id"
+%token <std::string>   STRING		   "string"
+
+%left AND
+%left OR
+%left NOT
+%left IMPLIES
+%left LT GT
+%left BOX DIAMOND UNTIL ASSIGN
+%left PLUS MINUS
+%left MULT
+%left UNARY_OPERATOR
+%nonassoc LPAREN RPAREN
+
+
+
+%type <STLRom::transducer*> signal stl_atom
+%type <STLRom::transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryexpr
+%type <STLRom::transducer*> constant_signal
+%type <STLRom::transducer*> stl_formula
+%type <STLRom::interval*>   interval
+%type <std::string>            op
+%type <std::string>            constant
+/* %type <bool>           boolean */
+/* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
+
+%start start
 
 %%
 
-program :   {
-                cout << "*** RUN ***" << endl;
-                cout << "Type function with list of parmeters. Parameter list can be empty" << endl
-                     << "or contain positive integers only. Examples: " << endl
-                     << " * function()" << endl
-                     << " * function(1,2,3)" << endl
-                     << "Terminate listing with ; to see parsed AST" << endl
-                     << "Terminate parser with Ctrl-D" << endl;
-                
-                cout << endl << "prompt> ";
-                
-                driver.clear();
+constant : CONSTANT
+        {
+            $$ = $1;
+        }
+        ;
+        | PARAM_ID
+        {
+           $$ = $1;
+        };
+
+
+constant_signal : CONSTANT
+        {
+            $$ = new constant_transducer($1);
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
+        }
+        ;
+        | PARAM_ID
+        {
+           $$ = new constant_transducer($1);
+           $$->trace_data_ptr = &driver.data;
+           $$->param_map = driver.param_map;
+           $$->signal_map = driver.signal_map;
+        };
+
+signal: SIGNAL_ID LINT TIME RINT
+        {
+            $$ = new signal_transducer($1);
+
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
+
+
+            // WARNING TODO:
+            // this will never be called because if signal is not defined,
+            // scanner will not return SIGNAL_ID token but rather a NEW_ID token
+            // need to fix this properly later
+            int i = driver.signal_map[$1];
+
+            if (i==0) {
+                cout << "Parsing error: unknown signal " << $1 << endl;
+                delete $$;
+                $$ = nullptr;
+                YYERROR;
             }
-        | program command
-            {
-                const Command &cmd = $2;
-                cout << "command parsed, updating AST" << endl;
-                driver.addCommand(cmd);
-                cout << endl << "prompt> ";
-            }
-        | program SEMICOLON
-            {
-                cout << "*** STOP RUN ***" << endl;
-                cout << driver.str() << endl;
-            }
+        }
         ;
 
+signal_atom : signal
+        {
+            $$ = $1;
+        }
+        ;
+        | constant_signal
+        {
+            $$ = $1;
+        }
+        ;
+        | LPAREN signal_expr RPAREN
+        {
+	       $$ = $2;
+	    }
 
-command : STRING LEFTPAR RIGHTPAR
+signal_unaryexpr : signal_atom
         {
-            string &id = $1;
-            cout << "ID: " << id << endl;
-            $$ = Command(id);
-        }
-    | STRING LEFTPAR arguments RIGHTPAR
+	      $$ = $1;
+	    }
+        | ABS LPAREN signal_expr RPAREN
         {
-            string &id = $1;
-            const std::vector<uint64_t> &args = $3;
-            cout << "function: " << id << ", " << args.size() << endl;
-            $$ = Command(id, args);
+            $$ = new abs_transducer($3);
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
         }
-    ;
+        | MINUS signal_unaryexpr %prec UNARY_OPERATOR /* unary operators only work with abs, constants, and parenthesized stuff, so not signal_expr */
+        {
+            $$ = new unary_minus_transducer($2);
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
+        }
+        | PLUS signal_unaryexpr %prec UNARY_OPERATOR
+        {
+            $$ = $2;
+        }
 
-arguments : NUMBER
+signal_multexpr : signal_unaryexpr
         {
-            uint64_t number = $1;
-            $$ = std::vector<uint64_t>();
-            $$.push_back(number);
-            cout << "first argument: " << number << endl;
-        }
-    | arguments COMMA NUMBER
+	      $$ = $1;
+	    }
+        | signal_multexpr MULT signal_unaryexpr /* changed for precedence */
+          {
+	      $$ = new mult_transducer($1, $3);
+          $$->trace_data_ptr = &driver.data;
+          $$->param_map = driver.param_map;
+          $$->signal_map = driver.signal_map;
+          }
+
+signal_addexpr : signal_multexpr
         {
-            uint64_t number = $3;
-            std::vector<uint64_t> &args = $1;
-            args.push_back(number);
-            $$ = args;
-            cout << "next argument: " << number << ", arg list size = " << args.size() << endl;
+	      $$ = $1;
+	    }
+        | signal_addexpr PLUS signal_multexpr
+          {
+	      $$ = new plus_transducer($1, $3);
+          $$->trace_data_ptr = &driver.data;
+          $$->param_map = driver.param_map;
+          $$->signal_map = driver.signal_map;
+          }
+        | signal_addexpr MINUS signal_multexpr
+          {
+	        $$ = new minus_transducer($1, $3);
+            $$->trace_data_ptr = &driver.data;
+            $$->param_map = driver.param_map;
+            $$->signal_map = driver.signal_map;
+          }
+
+signal_expr : signal_addexpr
+        {
+            $$ = $1;
         }
-    ;
-    
+
+
+stl_atom : signal_expr op signal_expr
+          {
+              $$ = new stl_atom($1, $2, $3);
+              $$->trace_data_ptr = &driver.data;
+              $$->param_map = driver.param_map;
+              $$->signal_map = driver.signal_map;
+          }
+          ;
+
+op        : LT { $$ = "<"; }
+          | GT { $$ = ">"; }
+          ;
+
+interval : LINT constant COMMA constant RINT
+         {
+             $$ = new interval($2, $4);
+         }
+         ;
+         | LINT constant constant RINT
+         {
+             $$ = new interval($2, $3);
+         }
+
+stl_formula :
+             stl_atom
+             {
+                 $$ = $1;
+             }
+             | NOT stl_formula %prec NOT
+             {
+                 $$ = new not_transducer($2);
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
+             }
+             | stl_formula AND stl_formula %prec AND
+             {
+                 $$ = new and_transducer($1, $3);
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
+             }
+             | stl_formula OR stl_formula %prec AND
+             {
+                 $$ = new or_transducer($1, $3);
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
+
+             }
+             | stl_formula IMPLIES stl_formula %prec AND
+             {
+                 $$ = new implies_transducer($1, $3);
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
+
+             }
+             | DIAMOND interval stl_formula %prec DIAMOND
+             {
+                $$ = new ev_transducer($2, $3);
+                $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
+
+             }
+             | BOX interval stl_formula %prec BOX
+             {
+                 $$ = new alw_transducer($2, $3);
+                 $$->trace_data_ptr = &driver.data;
+                 $$->param_map = driver.param_map;
+                 $$->signal_map = driver.signal_map;
+
+             }
+             | stl_formula UNTIL interval stl_formula %prec UNTIL
+             {
+                $$ = new until_transducer($1, $3, $4);
+                $$->trace_data_ptr = &driver.data;
+                $$->param_map = driver.param_map;
+                $$->signal_map = driver.signal_map;
+
+             }
+             | LPAREN stl_formula RPAREN
+             {
+                 $$ = $2;
+             }
+             | PHI_ID
+             {
+
+                 transducer * ref = driver.formula_map[$1];
+
+                 if (ref==nullptr) {
+                     cout << "Parsing error: unknown identifier " << $1 << endl;
+                     $$ = nullptr;
+                     YYERROR;
+                 }
+                 else {
+                     $$ = ref->clone();
+                     // TODO: copy variables (should be done in clone() no?)
+                 }
+             }
+;
+
+
+assignement : NEW_ID ASSIGN stl_formula
+            {
+                driver.formula_map[$1] = $3;
+                if (driver.verbose_parser)
+                    cout << CYAN << "Defined formula " << $1 << " = " << *$3 << RESET << endl;
+            }
+
+/* trace_env: TEST NEW_ID ':' STRING
+         {
+             double x;
+             driver.add_trace_test(*$2, *$4, 0., false);
+             delete $2;
+         }
+         | TEST NEW_ID ':' STRING COMMA CONSTANT COMMA boolean  //test id: environment, simulation time, visualization 
+         {
+             double x;
+             s_to_d(*$6, x);
+             driver.add_trace_test(*$2, *$4, x, $8);
+             delete $2;
+             delete $4;
+             delete $6;
+         } */
+
+/* boolean: BOOL_TRUE
+       {
+           $$ = true;
+       }
+       | BOOL_FALSE
+       {
+           $$ = false;
+       } */
+
+// Parameters
+
+param_assignement: PARAM_ID PARAM_EQ CONSTANT
+                 {
+                    double val;
+                    s_to_d( $3, val );
+                    driver.param_map[$1] = val;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
+                 }
+                 | PARAM_ID PARAM_EQ MINUS CONSTANT
+                 {
+                    double val;
+                    s_to_d( $4, val );
+                    val = -val;
+                    driver.param_map[$1] = val;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
+                 }
+                 | NEW_ID PARAM_EQ CONSTANT
+                 {
+                    double val;
+                    s_to_d( $3, val );
+                    driver.param_map[$1] = val;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
+                 }
+                 | NEW_ID PARAM_EQ MINUS CONSTANT
+                 {
+                    double val;
+                    s_to_d( $4, val );
+                    val = -val;
+                    driver.param_map[$1] = val;
+                    if (driver.verbose_parser)
+                        cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
+                 }
+
+param_assignement_list: param_assignement
+                      | param_assignement_list COMMA param_assignement
+
+param_assignements: PARAM_DECL param_assignement_list
+
+
+
+/* local_param_assignement: PARAM_ID PARAM_EQ CONSTANT
+*                 {
+*
+*                    double val;
+*                    s_to_d( $3, val );
+*
+*                    $$ = new map<string,double>();
+*                    (*$$)[$1] = val;
+*                 }
+*                 | NEW_ID PARAM_EQ CONSTANT
+*                 {
+*                    double val;
+*                    s_to_d( $3, val );
+*                    $$ = new map<string,double>();
+*                    (*$$)[$1] = val;
+*                 }
+*
+*
+*local_param_assignement_list: local_param_assignement
+*                            | local_param_assignement_list COMMA local_param_assignement
+*{
+*    $$ = new map<string,double>(*$1);
+*    auto elem = $3->begin();
+*    (*$$)[elem->first] = elem->second;
+*}
+*
+*local_param_assignements: /* empty */
+/*                       {
+*                          $$ = new map<string,double>();
+*                       }
+*                       | LPAREN local_param_assignement_list RPAREN
+*                       {
+*                           $$ = $2;
+*                       } */
+
+// Signals
+
+signal_new: NEW_ID
+          {
+                short idx =  driver.signal_map.size()+1;
+                driver.signal_map[$1] = idx;
+                if (driver.verbose_parser)
+                    cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
+          }
+          | SIGNAL_ID
+          {
+          }
+
+signal_new_list: signal_new
+                      | signal_new_list COMMA signal_new
+
+signal_decl: SIGNAL_DECL signal_new_list
+
+
+
+start : assignement
+      | param_assignements
+      | signal_decl
+      | start assignement
+      | start param_assignements
+      | start END
+
+
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
-void STLROM::Parser::error(const location &loc , const std::string &message) {
-        
-        // Location should be initialized inside scanner action, but is not in this example.
-        // Let's grab location directly from driver class.
-	// cout << "Error: " << message << endl << "Location: " << loc << endl;
-	
-        cout << "Error: " << message << endl << "Error location: " << driver.location() << endl;
+void STLRom::Parser::error(const location &loc , const std::string &message) {	
+        std::cerr << RED << "Error: " << message << endl << "At line " << loc.begin.line;
+        if (loc.begin.column == loc.end.column - 1)
+            std::cerr << ", column " << loc.begin.column << std::endl << RESET;
+        else
+            std::cerr << ", columns " << loc.begin.column << "-" << (loc.end.column - 1) << std::endl << RESET;
 }

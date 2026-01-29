@@ -26,7 +26,7 @@ build/CMakeFiles/stlrom2.dir/flags.make
 build/CMakeFiles/stlrom2.dir/link.txt
 build/CMakeFiles/stlrom2.dir/progress.make
 build/CMakeFiles/stlrom2.dir/src/command.cpp.o
-build/CMakeFiles/stlrom2.dir/src/interpreter.cpp.o
+build/CMakeFiles/stlrom2.dir/src/stl_driver.cpp.o
 build/CMakeFiles/stlrom2.dir/src/main.cpp.o
 build/CMakeFiles/stlrom2.dir/src/parser.cpp.o
 build/CMakeFiles/stlrom2.dir/src/scanner.cpp.o
@@ -36,3 +36,7 @@ src/parser.hpp
 src/parser.cpp
 src/location.hh
 src/scanner.cpp
+build/*
+*.out*
+src/stlrom/__pycache__/*
+uv.lock

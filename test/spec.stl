@@ -1,0 +1,9 @@
+# Simple formula
+
+signal x, y
+mux := x[t]>0
+muy := y[t]>0
+
+phi := alw_[0, 5] mux or ev_[3, 4] y[t]<5
+phi_until := mux until_[0, 1] muy
+phi_until2 := muy until_[0, 1] phi_until
