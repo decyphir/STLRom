@@ -51,3 +51,14 @@ add_library(stlromlib SHARED
     ${FLEX_MyScanner_OUTPUTS})     
 
 
+# Enables make test-cpp and make test-python to run python and cpp files separately
+# labels are added to tests in test/CMakeLists.txt
+add_custom_target(test-cpp
+    COMMAND ${CMAKE_CTEST_COMMAND} -L cpp --output-on-failure
+    COMMENT "Running C++ unit tests..."
+)
+
+add_custom_target(test-python
+    COMMAND ${CMAKE_CTEST_COMMAND} -L python --output-on-failure
+    COMMENT "Running Python extension tests..."
+)

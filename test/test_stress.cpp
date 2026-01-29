@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     for (int i_trace = 0; i_trace < num_traces; i_trace++)
     {
         STLDriver stl_driver = STLDriver();
-        string s = "../../test/stress.stl";
+        string s = "../test/stress.stl";
         bool parse_success = stl_driver.parse_file(s);
 
         if (!parse_success)
