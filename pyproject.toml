@@ -16,6 +16,9 @@ keywords = ["cpp", "cmake", "extension", ""]
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
+dependencies = [
+    "matplotlib",
+]
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
