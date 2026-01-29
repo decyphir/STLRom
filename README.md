@@ -28,28 +28,41 @@ uv pip install -e .
 ```
 Note this requires compiling the C++ library, so cmake and a C++ compiler must be available.
 
-### Installing from PyPI
-
-stlrom is available on Pypi, so it can be installed in any Python environment with pip:
+It is also possible to install the Python interface by simply running the following command in the project's root directory:
 
 ```bash
-pip install stlrom
+uv sync
 ```
+
+Note, however, that this does not activate the virtual environment. You can run Python files that use the created `stlrom` library by running:
+
+```bash
+uv run python filename.py
+```
+
+Or you can activate the virtual environment by running
+```bash
+source .venv/bin/activate
+```
+and then using Python normally inside the virtual enviornment.
 
 ### Testing the C++ Library
 
-In the test folder, `test_driver.cpp` is an example of using the C++ library. Go into build/test and run it with 
+After running `cmake` in the `build` folder and building the C++ library using `make`, you can run:
+```bash
+make test-cpp
 ```
-./test_driver
-```
+to run C++ test files in the `test` folder.
 
 ### Testing the python bindings
 
 In the build folder, execute
+```bash
+make test-python
 ```
-make test
-```
-It will run the unit tests python programs from the `test` folder.
+This will run the unit tests python programs from the `test` folder. This assumes having run `cmake`, having built the Python library, and having activated the `uv` virtual environment.
+
+**Note**: you can also execute `make test` to run both C++ and Python test units.
 
 ## Usage
 
