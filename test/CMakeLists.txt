@@ -1,60 +1,34 @@
 project(STLRomtest)
 
-add_executable(test_driver
-  "${CMAKE_SOURCE_DIR}/test/test_driver.cpp"  
-)
-target_link_libraries(test_driver PRIVATE stlromlib)
+# C++ Test Executables
+set(CPP_TESTS test_driver test_until test_monitor test_stress)
 
-add_executable(test_until
-  "${CMAKE_SOURCE_DIR}/test/test_until.cpp"
-)
-target_link_libraries(test_until PRIVATE stlromlib)
+foreach(t ${CPP_TESTS})
+    add_executable(${t} "${CMAKE_CURRENT_SOURCE_DIR}/${t}.cpp")
+    target_link_libraries(${t} PRIVATE stlromlib)
+    
+    add_test(NAME cpp_${t} COMMAND ${t} WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    set_tests_properties(cpp_${t} PROPERTIES LABELS "cpp")
+endforeach()
 
-add_executable(test_monitor
-"${CMAKE_SOURCE_DIR}/test/test_monitor.cpp"
-)
-target_link_libraries(test_monitor PRIVATE stlromlib)
 
-add_executable(test_stress
-"${CMAKE_SOURCE_DIR}/test/test_stress.cpp"
-)
-target_link_libraries(test_stress PRIVATE stlromlib)
+# Python test scripts
+# Helper function
+function(add_python_test TEST_NAME SCRIPT_NAME)
+    add_test(NAME ${TEST_NAME} 
+             COMMAND python ${SCRIPT_NAME} 
+             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    set_tests_properties(${TEST_NAME} PROPERTIES LABELS "python")
+endfunction()
 
-add_test(NAME test_cpp_until
-COMMAND test_until
-WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-)
 
-add_test(NAME test_cpp_driver
-          COMMAND test_driver
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-)
 
-add_test(NAME test_t0
-          COMMAND python test_online_rob_t0.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-
-add_test(NAME test_>
-          COMMAND python test_prog1.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_<
-          COMMAND python test_prog2.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_or
-          COMMAND python test_prog3.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_always
-          COMMAND python test_prog4.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_eventually
-          COMMAND python test_prog5.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_implies
-          COMMAND python test_prog6.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_until
-          COMMAND python test_prog7.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
-add_test(NAME test_SetBigM
-          COMMAND python test_prog8.py
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
+add_python_test(test_t0         test_online_rob_t0.py)
+add_python_test(test_>          test_prog1.py)
+add_python_test(test_<          test_prog2.py)
+add_python_test(test_or         test_prog3.py)
+add_python_test(test_always     test_prog4.py)
+add_python_test(test_eventually test_prog5.py)
+add_python_test(test_implies    test_prog6.py)
+add_python_test(test_until      test_prog7.py)
+add_python_test(test_SetBigM    test_prog8.py)

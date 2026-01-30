@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(STLRom2 VERSION 0.1 LANGUAGES CXX)
+project(STLRom VERSION 0.1 LANGUAGES CXX)
 
 # Required stuff
 find_package(FLEX)
@@ -21,11 +21,11 @@ enable_testing()
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 
-BISON_TARGET(MyParser ${CMAKE_SOURCE_DIR}/src/parser.y ${CMAKE_SOURCE_DIR}/src/parser.cpp)
+BISON_TARGET(MyParser ${CMAKE_SOURCE_DIR}/src/parser.y ${CMAKE_SOURCE_DIR}/src/parser.cpp DEFINES_FILE ${CMAKE_SOURCE_DIR}/include/parser.hpp)
 FLEX_TARGET(MyScanner ${CMAKE_SOURCE_DIR}/src/scanner.l  ${CMAKE_SOURCE_DIR}/src/scanner.cpp)
 ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 
-add_executable(STLRom2 ${SOURCE_FILES} ${HEADER_FILES} ${BISON_MyParser_OUTPUTS} ${FLEX_MyScanner_OUTPUTS})
+add_executable(STLRomParser ${SOURCE_FILES} ${HEADER_FILES} ${BISON_MyParser_OUTPUTS} ${FLEX_MyScanner_OUTPUTS})
 
 if (BUILD_PYTHON_EXTENSION)
   message(STATUS "Building Python Extension module.")
@@ -34,7 +34,9 @@ if (BUILD_PYTHON_EXTENSION)
 
   pybind11_add_module(_stlrom
      src/pybind11/main.cpp 
-     ${SOURCE_FILES})
+     ${SOURCE_FILES}
+     ${BISON_MyParser_OUTPUTS}
+     ${FLEX_MyScanner_OUTPUTS})
 
   install (
     TARGETS _stlrom
@@ -51,3 +53,14 @@ add_library(stlromlib SHARED
     ${FLEX_MyScanner_OUTPUTS})     
 
 
+# Enables make test-cpp and make test-python to run python and cpp files separately
+# labels are added to tests in test/CMakeLists.txt
+add_custom_target(test-cpp
+    COMMAND ${CMAKE_CTEST_COMMAND} -L cpp --output-on-failure
+    COMMENT "Running C++ unit tests..."
+)
+
+add_custom_target(test-python
+    COMMAND ${CMAKE_CTEST_COMMAND} -L python --output-on-failure
+    COMMENT "Running Python extension tests..."
+)
