@@ -45,7 +45,7 @@ namespace STLRom {
                 z.appendSample(t, vL-vR, dL-dR);
             else {
                 if (fabs(vL-vR) < Signal::Eps) {
-                    z.appendSample(t, Signal::BigM, dL-dR);
+                    z.appendSample(t, Signal::BigM, 0);
                 } else {
                     z.appendSample(t, -fabs(vL-vR), dL-dR);
                 }
