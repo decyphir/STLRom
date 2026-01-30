@@ -34,7 +34,9 @@ if (BUILD_PYTHON_EXTENSION)
 
   pybind11_add_module(_stlrom
      src/pybind11/main.cpp 
-     ${SOURCE_FILES})
+     ${SOURCE_FILES}
+     ${BISON_MyParser_OUTPUTS}
+     ${FLEX_MyScanner_OUTPUTS})
 
   install (
     TARGETS _stlrom
