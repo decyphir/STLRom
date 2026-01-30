@@ -21,7 +21,7 @@ enable_testing()
 add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 
-BISON_TARGET(MyParser ${CMAKE_SOURCE_DIR}/src/parser.y ${CMAKE_SOURCE_DIR}/src/parser.cpp)
+BISON_TARGET(MyParser ${CMAKE_SOURCE_DIR}/src/parser.y ${CMAKE_SOURCE_DIR}/src/parser.cpp DEFINES_FILE ${CMAKE_SOURCE_DIR}/include/parser.hpp)
 FLEX_TARGET(MyScanner ${CMAKE_SOURCE_DIR}/src/scanner.l  ${CMAKE_SOURCE_DIR}/src/scanner.cpp)
 ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 
@@ -34,7 +34,9 @@ if (BUILD_PYTHON_EXTENSION)
 
   pybind11_add_module(_stlrom
      src/pybind11/main.cpp 
-     ${SOURCE_FILES})
+     ${SOURCE_FILES}
+     ${BISON_MyParser_OUTPUTS}
+     ${FLEX_MyScanner_OUTPUTS})
 
   install (
     TARGETS _stlrom

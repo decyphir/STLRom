@@ -32,7 +32,7 @@ build/CMakeFiles/stlrom2.dir/src/parser.cpp.o
 build/CMakeFiles/stlrom2.dir/src/scanner.cpp.o
 src/stack.hh
 src/position.hh
-src/parser.hpp
+include/parser.hpp
 src/parser.cpp
 src/location.hh
 src/scanner.cpp
