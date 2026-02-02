@@ -1578,4 +1578,58 @@ Signal * plateauMin(Signal * x, double a) {
 }
 
 
+// COMPUTE OPERATORS
+Signal * compute_comparisons(Signal * childL, Signal * childR, comparator comp) {
+	Signal * z = new Signal();
+	z->beginTime = fmax(childL->beginTime, childR->beginTime);
+	z->endTime = fmin(childL->endTime, childR->endTime);
+
+	auto itL = childL->z.begin();
+	auto itR = childR->z.begin();
+
+	// Skip elements outside the overlap in the beginning
+	while (itL != childL->z.end() && itL->time < z->beginTime) ++itL;
+	while (itR != childR->z.end() && itR->time < z->beginTime) ++itR;
+
+	// Iterate over both simultaneously
+	while(itL != childL->z.end() && itR != childR->z.end()) {
+		// Stop when we overtake the overlap
+		double tL = (*itL).time;
+		double tR = (*itR).time;
+		double vL = (*itL).value;
+		double vR = (*itR).value;
+		double dL = (*itL).derivative;
+		double dR = (*itR).derivative;
+
+		if(fmin(tL, tR) > z->endTiime) break;
+
+		double t;
+
+		bool advance_L = false;
+		bool advance_R = false;
+
+		if(tL < tR) {
+			t = tL;
+			advance_L = true;
+		} else if (tL > tR) {
+			t = tR;
+			advance_R = true;
+		} else { // equality (might cause issues)
+			t = tL;
+			advance_L = true;
+			advance_R = true;
+		}
+
+		// TODO : fill z at time t
+
+		if (advance_L) itL++;
+		if (advance_R) itR++;
+	}
+
+
+
+
+
+}
+
 }

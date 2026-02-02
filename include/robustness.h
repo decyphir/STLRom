@@ -49,5 +49,11 @@ Signal * computeBoundedEventually(Signal *, double);
 Signal * plateauMin(Signal *, double);
 Signal * computeBoundedGlobally(Signal *, double);
 
+enum comparator {
+        LESSTHAN, GREATERTHAN, EQUAL
+    };
+
+Signal * computeComparisons(Signal * childL, Signal * childR, comparator comp)
+
 }
 
