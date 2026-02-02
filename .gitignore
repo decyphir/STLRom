@@ -39,4 +39,3 @@ src/scanner.cpp
 build/*
 *.out*
 src/stlrom/__pycache__/*
-uv.lock
