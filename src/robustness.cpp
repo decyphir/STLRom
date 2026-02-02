@@ -1579,20 +1579,20 @@ Signal * plateauMin(Signal * x, double a) {
 
 
 // COMPUTE OPERATORS
-Signal * compute_comparisons(Signal * childL, Signal * childR, comparator comp) {
+Signal * compute_comparisons(Signal * zL, Signal * zR, comparator comp) {
 	Signal * z = new Signal();
-	z->beginTime = fmax(childL->beginTime, childR->beginTime);
-	z->endTime = fmin(childL->endTime, childR->endTime);
+	z->beginTime = fmax(zL->beginTime, zL->beginTime);
+	z->endTime = fmin(zL->endTime, zL->endTime);
 
-	auto itL = childL->z.begin();
-	auto itR = childR->z.begin();
+	auto itL = zL->begin();
+	auto itR = zR->begin();
 
 	// Skip elements outside the overlap in the beginning
-	while (itL != childL->z.end() && itL->time < z->beginTime) ++itL;
-	while (itR != childR->z.end() && itR->time < z->beginTime) ++itR;
+	while (itL != zL->end() && itL->time < z->beginTime) ++itL;
+	while (itR != zR->end() && itR->time < z->beginTime) ++itR;
 
 	// Iterate over both simultaneously
-	while(itL != childL->z.end() && itR != childR->z.end()) {
+	while(itL != zL->end() && itR != zR->end()) {
 		// Stop when we overtake the overlap
 		double tL = (*itL).time;
 		double tR = (*itR).time;
@@ -1601,7 +1601,7 @@ Signal * compute_comparisons(Signal * childL, Signal * childR, comparator comp) 
 		double dL = (*itL).derivative;
 		double dR = (*itR).derivative;
 
-		if(fmin(tL, tR) > z->endTiime) break;
+		if(fmin(tL, tR) > z->endTime) break;
 
 		double t;
 
@@ -1628,7 +1628,7 @@ Signal * compute_comparisons(Signal * childL, Signal * childR, comparator comp) 
 
 
 
-
+	return z;
 
 }
 

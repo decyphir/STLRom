@@ -1,6 +1,9 @@
 #include <cmath>
 #include "signal.h"
 
+#ifndef STLROM_ROBUSTNESS_H
+#define STLROM_ROBUSTNESS_H
+
 namespace STLRom {
 
 /*
@@ -53,7 +56,8 @@ enum comparator {
         LESSTHAN, GREATERTHAN, EQUAL
     };
 
-Signal * computeComparisons(Signal * childL, Signal * childR, comparator comp)
+Signal * computeComparisons(Signal * childL, Signal * childR, comparator comp);
 
 }
 
+#endif

@@ -497,10 +497,7 @@ namespace STLRom {
 
     };
 
-    enum comparator {
-        LESSTHAN, GREATERTHAN, EQUAL
-    };
-
+    
     /* Atoms and signal expressions */
     class stl_atom: public binary_transducer {
 
