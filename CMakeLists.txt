@@ -7,6 +7,7 @@ find_package(FLEX)
 find_package(BISON)
 
 set(CMAKE_CXX_STANDARD 11)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fsanitize=address")
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -64,3 +65,4 @@ add_custom_target(test-python
     COMMAND ${CMAKE_CTEST_COMMAND} -L python --output-on-failure
     COMMENT "Running Python extension tests..."
 )
+

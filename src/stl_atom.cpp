@@ -25,33 +25,92 @@ namespace STLRom {
         printf(">> stl_atom::compute_robustness:              IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
-        // Assumes childL and childR have signals with same number of samples
-        // TODO should be eventually improved with proper operations on signals
     
         childL->compute_robustness();
         childR->compute_robustness();
+
+        z.beginTime = fmax(childL->z.beginTime, childR->z.beginTime);
+        double endTime = fmin(childL->z.endTime, childR->z.endTime);
+
+
         auto itL = childL->z.begin();
         auto itR = childR->z.begin();
-        for (; itL != childL->z.end() &&  itR != childR->z.end() ;itL++, itR++) {
-            double t = (*itL).time;
-            double vL = (*itL).value;
-            double vR = (*itR).value;
+
+        // Skip elements outside the overlap in the beginning
+        while (itL != childL->z.end() && itL->time < z.beginTime) ++itL;
+        while (itR != childR->z.end() && itR->time < z.beginTime) ++itR;
+
+        // Iterate over both simultaneously
+        while(itL != childL->z.end() && itR != childR->z.end()) {
+            double tL = (*itL).time;
+            double tR = (*itR).time;
             double dL = (*itL).derivative;
             double dR = (*itR).derivative;
-		
-            if (comp == comparator::LESSTHAN )
-                z.appendSample(t, vR-vL, dR-dL);
-            else if (comp == comparator::GREATERTHAN)
-                z.appendSample(t, vL-vR, dL-dR);
-            else {
+            double vR, vL;
+
+            std::cerr << "tL " << tL << endl;
+            std::cerr << "tR " << tR << endl;
+
+            // Stop when we overtake the overlap
+            if(fmin(tL, tR) > endTime) break;
+
+            double t, vt, dt;
+
+            bool advance_L = false;
+            bool advance_R = false;
+
+            if(tL < tR) {
+                t = tL;
+                advance_L = true;
+
+                vL = (*itL).value;
+                vR = (*itR).valueAt(t);
+            } else if (tL > tR) {
+                t = tR;
+                advance_R = true;
+
+                vL = (*itL).value;
+                vR = (*itR).valueAt(t);
+            } else { // equality (might cause issues)
+                t = tL;
+                advance_L = true;
+                advance_R = true;
+
+                vL = (*itL).value;
+                vR = (*itR).value;
+            }
+
+            // TODO : fill z at time t
+            switch (comp)
+            {
+            case comparator::LESSTHAN:
+                vt = vR - vL;
+                dt = dR - dL;
+                break;
+            case comparator::GREATERTHAN:
+                vt = vL - vR;
+                dt = dL - dR;
+                break;
+            case comparator::EQUAL:
                 if (fabs(vL-vR) < Signal::Eps) {
-                    z.appendSample(t, Signal::BigM, 0);
+                        vt = Signal::BigM;
+                        dt = 0;
                 } else {
-                    z.appendSample(t, -fabs(vL-vR), dL-dR);
+                    vt = -fabs(vL-vR);
+                    dt = (vL > vR) ? dL - dR : dR - dL;
                 }
-            }	
+                break;
+            }
+
+            std::cerr << "appending " << t << " " << vt << " " << dt << endl;
+            z.appendSample(t, vt, dt);
+
+            if (advance_L) itL++;
+            if (advance_R) itR++;
+
         }
-        z.endTime = childL->z.endTime;
+
+        z.endTime = endTime;
 
         Signal z_space;
         switch (Signal::semantics) {
