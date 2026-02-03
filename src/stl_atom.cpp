@@ -48,9 +48,6 @@ namespace STLRom {
             double dR = (*itR).derivative;
             double vR, vL;
 
-            std::cerr << "tL " << tL << endl;
-            std::cerr << "tR " << tR << endl;
-
             // Stop when we overtake the overlap
             if(fmin(tL, tR) > endTime) break;
 
@@ -102,7 +99,6 @@ namespace STLRom {
                 break;
             }
 
-            std::cerr << "appending " << t << " " << vt << " " << dt << endl;
             z.appendSample(t, vt, dt);
 
             if (advance_L) itL++;
