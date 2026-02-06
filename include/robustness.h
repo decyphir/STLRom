@@ -4,6 +4,10 @@
 #ifndef STLROM_ROBUSTNESS_H
 #define STLROM_ROBUSTNESS_H
 
+// TODO be better that
+#define ZERO_POS 1e-14
+#define ZERO_NEG -1e-14
+
 namespace STLRom {
 
 /*

@@ -43,6 +43,7 @@ namespace STLRom {
         // Iterate over both simultaneously
         bool first_pass = true;
         double t_prev, v_prev, d_prev;
+
         while(itL != childL->z.end() || itR != childR->z.end()) {
             double tL = (*itL).time;
             double tR = (*itR).time;
@@ -93,20 +94,23 @@ namespace STLRom {
             case comparator::EQUAL:
                 if (fabs(vL-vR) < Signal::Eps) {
                         vt = Signal::BigM;
-                        dt = 0.;
+                        dt = ZERO_POS;
                 } else {
                     vt = -fabs(vL-vR);
-                    dt = (vL > vR) ? dL - dR : dR - dL;
+                    dt = (vL > vR) ? dR - dL : dL - dR;
                 }
                 break;
             }
 
-                        
             if (!first_pass) {
-                if (v_prev * vt < 0) {
+                if ((v_prev < 0 && d_prev > 0) || (v_prev > 0 && d_prev < 0)) {
                     double t_zero_cross = t_prev-v_prev/d_prev;
-                    z.appendSample(t_zero_cross, 0., d_prev);
-                    cout << "added zero cross" << endl;
+                    if (t_zero_cross < t) {
+                        // cout << t_prev << " " << t_zero_cross << " " << t << endl;
+                        if (comp == comparator::EQUAL) z.appendSample(t_zero_cross, Signal::BigM, ZERO_POS);
+                        else if (v_prev < 0) z.appendSample(t_zero_cross, ZERO_POS, d_prev);
+                        else z.appendSample(t_zero_cross, ZERO_NEG, d_prev);
+                    }
                 }
             }
 
