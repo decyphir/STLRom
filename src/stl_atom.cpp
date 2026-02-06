@@ -41,7 +41,9 @@ namespace STLRom {
         while (itR != childR->z.end() && itR->time < z.beginTime) ++itR;
 
         // Iterate over both simultaneously
-        while(itL != childL->z.end() && itR != childR->z.end()) {
+        bool first_pass = true;
+        double t_prev, v_prev, d_prev;
+        while(itL != childL->z.end() || itR != childR->z.end()) {
             double tL = (*itL).time;
             double tR = (*itR).time;
             double dL = (*itL).derivative;
@@ -91,7 +93,7 @@ namespace STLRom {
             case comparator::EQUAL:
                 if (fabs(vL-vR) < Signal::Eps) {
                         vt = Signal::BigM;
-                        dt = 0;
+                        dt = 0.;
                 } else {
                     vt = -fabs(vL-vR);
                     dt = (vL > vR) ? dL - dR : dR - dL;
@@ -99,11 +101,26 @@ namespace STLRom {
                 break;
             }
 
+                        
+            if (!first_pass) {
+                if (v_prev * vt < 0) {
+                    double t_zero_cross = t_prev-v_prev/d_prev;
+                    z.appendSample(t_zero_cross, 0., d_prev);
+                    cout << "added zero cross" << endl;
+                }
+            }
+
+
             z.appendSample(t, vt, dt);
+
+            t_prev = t;
+            v_prev = vt;
+            d_prev = dt;
 
             if (advance_L) itL++;
             if (advance_R) itR++;
 
+            first_pass = false;
         }
 
         z.endTime = endTime;
