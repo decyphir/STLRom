@@ -54,10 +54,11 @@ namespace STLRom {
             // Stop when we overtake the overlap
             if(fmin(tL, tR) > endTime) break;
 
-            double t, vt, dt;
+            double t, vt, dt, dgeq;
 
             bool advance_L = false;
             bool advance_R = false;
+            bool equals = false;
 
             if(tL < tR) {
                 t = tL;
@@ -80,7 +81,7 @@ namespace STLRom {
                 vR = (*itR).value;
             }
 
-            // TODO : fill z at time t
+            // fill z at time t
             switch (comp)
             {
             case comparator::LESSTHAN:
@@ -94,7 +95,9 @@ namespace STLRom {
             case comparator::EQUAL:
                 if (fabs(vL-vR) < Signal::Eps) {
                         vt = Signal::BigM;
-                        dt = ZERO_POS;
+                        dt = 0.;
+                        dgeq = (vL > vR) ? dR - dL : dL - dR;
+                        equals = true;
                 } else {
                     vt = -fabs(vL-vR);
                     dt = (vL > vR) ? dR - dL : dL - dR;
@@ -103,19 +106,35 @@ namespace STLRom {
             }
 
             if (!first_pass) {
+                // Note: 0 derivative is ok because it does not pass this check
                 if ((v_prev < 0 && d_prev > 0) || (v_prev > 0 && d_prev < 0)) {
                     double t_zero_cross = t_prev-v_prev/d_prev;
                     if (t_zero_cross < t) {
                         // cout << t_prev << " " << t_zero_cross << " " << t << endl;
-                        if (comp == comparator::EQUAL) z.appendSample(t_zero_cross, Signal::BigM, ZERO_POS);
-                        else if (v_prev < 0) z.appendSample(t_zero_cross, ZERO_POS, d_prev);
-                        else z.appendSample(t_zero_cross, ZERO_NEG, d_prev);
+                        if (comp == comparator::EQUAL) {
+                            double t_minus = t_prev + (-Signal::Eps-v_prev) / d_prev; // t at which v is -eps
+                            z.appendSample(t_minus, -Signal::Eps, -d_prev*v_prev/fabs(v_prev));
+
+                            z.appendSample(t_zero_cross, Signal::BigM, 0.);
+
+                            double t_plus = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
+                            if (t_plus < t) z.appendSample(t_plus, -Signal::Eps, d_prev*v_prev/fabs(v_prev));
+
+                        }
+                        else if (v_prev < 0) z.appendSample(t_zero_cross, 0., d_prev);
+                        else z.appendSample(t_zero_cross, 0., d_prev);
                     }
                 }
             }
 
 
             z.appendSample(t, vt, dt);
+
+            if (equals && dgeq != 0) {
+                double t_plus = t + (Signal::Eps) / fabs(dgeq); // t at which v is +eps or -eps
+                z.appendSample(t_plus, -Signal::Eps, dgeq);
+
+            }
 
             t_prev = t;
             v_prev = vt;
