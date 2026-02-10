@@ -44,9 +44,13 @@ namespace STLRom {
         bool first_pass = true;
         double t_prev, v_prev, d_prev;
 
-        while(itL != childL->z.end() || itR != childR->z.end()) {
-            double tL = (*itL).time;
-            double tR = (*itR).time;
+
+        double tL = -1, tR = -1;
+
+        while(tL < endTime || tR < endTime) {
+            tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
+            tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
+
             double dL = (*itL).derivative;
             double dR = (*itR).derivative;
             double vR, vL;
@@ -70,8 +74,8 @@ namespace STLRom {
                 t = tR;
                 advance_R = true;
 
-                vL = (*itL).value;
-                vR = (*itR).valueAt(t);
+                vL = (*itL).valueAt(t);
+                vR = (*itR).value;
             } else { // equality (might cause issues)
                 t = tL;
                 advance_L = true;
@@ -107,7 +111,7 @@ namespace STLRom {
 
             if (!first_pass) {
                 // Note: 0 derivative is ok because it does not pass this check
-                if ((v_prev < 0 && d_prev > 0) || (v_prev > 0 && d_prev < 0)) {
+                if (v_prev * d_prev < 0) {
                     double t_zero_cross = t_prev-v_prev/d_prev;
                     if (t_zero_cross < t) {
                         // cout << t_prev << " " << t_zero_cross << " " << t << endl;
