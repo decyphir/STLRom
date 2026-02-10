@@ -54,7 +54,7 @@ namespace STLRom {
             // Stop when we overtake the overlap
             if(fmin(tL, tR) > endTime) break;
 
-            double t, vt, dt, dgeq;
+            double t, vt, dt, d_neq;
 
             bool advance_L = false;
             bool advance_R = false;
@@ -96,7 +96,7 @@ namespace STLRom {
                 if (fabs(vL-vR) < Signal::Eps) {
                         vt = Signal::BigM;
                         dt = 0.;
-                        dgeq = (vL > vR) ? dR - dL : dL - dR;
+                        d_neq = (vL > vR) ? dR - dL : dL - dR;
                         equals = true;
                 } else {
                     vt = -fabs(vL-vR);
@@ -130,9 +130,9 @@ namespace STLRom {
 
             z.appendSample(t, vt, dt);
 
-            if (equals && dgeq != 0) {
-                double t_plus = t + (Signal::Eps) / fabs(dgeq); // t at which v is +eps or -eps
-                z.appendSample(t_plus, -Signal::Eps, dgeq);
+            if (equals && d_neq != 0) {
+                double t_plus = t + (Signal::Eps) / fabs(d_neq); // t at which v is +eps or -eps
+                z.appendSample(t_plus, -Signal::Eps, d_neq);
 
             }
 
