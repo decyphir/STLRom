@@ -309,6 +309,7 @@ stl_atom : signal_expr op signal_expr
 
 op        : LT { $$ = "<"; }
           | GT { $$ = ">"; }
+          | PARAM_EQ PARAM_EQ { $$ = "="; }
           ;
 
 interval : LINT constant COMMA constant RINT

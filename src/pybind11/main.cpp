@@ -101,6 +101,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_static("get_interpol",  &STLRom::Signal::get_interpol)
 		.def_static("set_BigM",&STLRom::Signal::set_BigM)
 		.def_static("get_BigM",&STLRom::Signal::get_BigM)
+		.def_static("set_Eps",&STLRom::Signal::set_Eps)
+		.def_static("get_Eps",&STLRom::Signal::get_Eps)
 		.def("copy", [](const STLRom::Signal &self) { return STLRom::Signal(self); })
 		.def("__copy__", [](const STLRom::Signal &self) { return STLRom::Signal(self); })
 		.def("__deepcopy__", [](const STLRom::Signal &self, py::dict) { return STLRom::Signal(self); })
