@@ -1,6 +1,13 @@
 #include <cmath>
 #include "signal.h"
 
+#ifndef STLROM_ROBUSTNESS_H
+#define STLROM_ROBUSTNESS_H
+
+// TODO be better that
+#define ZERO_POS 1e-14
+#define ZERO_NEG -1e-14
+
 namespace STLRom {
 
 /*
@@ -49,5 +56,12 @@ Signal * computeBoundedEventually(Signal *, double);
 Signal * plateauMin(Signal *, double);
 Signal * computeBoundedGlobally(Signal *, double);
 
+enum comparator {
+        LESSTHAN, GREATERTHAN, EQUAL
+    };
+
+Signal * computeComparisons(Signal * childL, Signal * childR, comparator comp);
+
 }
 
+#endif

@@ -1,4 +1,3 @@
-
 def plot(self, label=None, fig=None):
     import matplotlib.pyplot as plt
 
