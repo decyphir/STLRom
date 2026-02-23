@@ -6,11 +6,15 @@
 #include <fstream>
 #include <limits>
 #include <iomanip>
+#include <cmath>
 //#include <math.h>
 //#include <algorithm>
 // TODO maybe make TOP and BOTTOM static signal attribute ...
 #define BOTTOM (-Signal::BigM) //-std::numeric_limits<double>::infinity()
 #define TOP (Signal::BigM) //std::numeric_limits<double>::infinity()
+// TODO be better that
+#define ZERO_POS 1e-14
+#define ZERO_NEG -1e-14
 
 using namespace std;
 
