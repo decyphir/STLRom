@@ -155,6 +155,7 @@ namespace STLRom {
         Signal z_space;
         switch (Signal::semantics) {
 			case Semantics::SPACE:
+                z.simplify();
 	        	return z.front().value;    
 			case Semantics::LEFT_TIME:
                 z_space = z;
