@@ -128,7 +128,7 @@ namespace STLRom {
         push_back(front());
         pop_front();
         while (front().time != beginTime) {
-            if( back().valueAt(front().time) != front().value || back().derivative != front().derivative ) {
+            if( fabs(back().valueAt(front().time) - front().value) > ZERO_POS || fabs(back().derivative - front().derivative) > ZERO_POS) {
                 push_back(front());
             }
             pop_front();
@@ -140,7 +140,7 @@ namespace STLRom {
 
 #ifdef DEBUG___	
         cout << "OUT: " << *this << endl;
-        printf("<<<Signal::simplify:                          OUT.\n";
+        printf("<<<Signal::simplify:                          OUT.\n");
 #endif
     }
 
