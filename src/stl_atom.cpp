@@ -125,8 +125,8 @@ namespace STLRom {
                             if (t_plus < t) z.appendSample(t_plus, -Signal::Eps, d_prev*v_prev/fabs(v_prev));
 
                         }
-                        else if (v_prev < 0) z.appendSample(t_zero_cross, 0., d_prev);
-                        else z.appendSample(t_zero_cross, 0., d_prev);
+                        else if (v_prev < 0) z.appendSample(t_zero_cross, ZERO_POS/10, d_prev);
+                        else z.appendSample(t_zero_cross, ZERO_NEG/10, d_prev);
                     }
                 }
             }
