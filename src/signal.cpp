@@ -66,7 +66,41 @@ namespace STLRom {
     }
     
     void Signal::appendSample(double t, double v) {
-        appendSample(t,v,0.);
+        if ((t <= endTime) && size() > 0)
+            return;
+
+        switch (Signal::interpol)
+        {
+        case Interpol::PREVIOUS:
+            if (size() == 0)
+            {
+                push_back(Sample(t, v, 0.));
+                beginTime = t;
+                endTime = t;
+            }
+            else
+            {
+                push_back(Sample(t, v, 0.));
+                endTime = t;
+            }
+            break;
+        case Interpol::LINEAR:
+            if (size() == 0)
+            {
+                push_back(Sample(t, v, 0.));
+                beginTime = t;
+                endTime = t;
+            }
+            else
+            {
+                back().derivative = (v - back().value) / (t - back().time);
+                push_back(Sample(t, v, 0.));
+                endTime = t;
+            }
+            break;
+        default:
+            throw invalid_argument("Invalid interpolation value");
+        }
     }
 
     void Signal::appendSample(double t, double v, double d)
@@ -98,7 +132,7 @@ namespace STLRom {
             }
             else
             {
-                back().derivative = (v - back().value) / (t - back().time);
+                // back().derivative = (v - back().value) / (t - back().time);
                 push_back(Sample(t, v, d));
                 endTime = t;
             }

@@ -42,7 +42,9 @@ namespace STLRom {
 
         // Iterate over both simultaneously
         bool first_pass = true;
-        double t_prev, v_prev, d_prev;
+        double t_prev, v_prev, d_prev, v_prev_neq, d_prev_neq;
+
+        bool previous_was_equal = false;
 
 
         double tL = -1, tR = -1;
@@ -58,11 +60,12 @@ namespace STLRom {
             // Stop when we overtake the overlap
             if(fmin(tL, tR) > endTime) break;
 
-            double t, vt, dt, d_neq;
+            double t, vt, dt, d_neq, v_neq;
 
             bool advance_L = false;
             bool advance_R = false;
             bool equals = false;
+            bool first_eq_ineq = false; // first point in a subseries of equality points or inequality points (for comp::equal)
 
             if(tL < tR) {
                 t = tL;
@@ -84,6 +87,11 @@ namespace STLRom {
                 vL = (*itL).value;
                 vR = (*itR).value;
             }
+            
+
+
+
+
 
             // fill z at time t
             switch (comp)
@@ -91,37 +99,58 @@ namespace STLRom {
             case comparator::LESSTHAN:
                 vt = vR - vL;
                 dt = dR - dL;
+                d_neq = dt;
+                v_neq = vt;
                 break;
             case comparator::GREATERTHAN:
                 vt = vL - vR;
                 dt = dL - dR;
+                d_neq = dt;
+                v_neq = vt;
                 break;
             case comparator::EQUAL:
                 if (fabs(vL-vR) < Signal::Eps) {
                         vt = Signal::BigM;
                         dt = 0.;
-                        d_neq = (vL > vR) ? dR - dL : dL - dR;
                         equals = true;
                 } else {
                     vt = -fabs(vL-vR);
                     dt = (vL > vR) ? dR - dL : dL - dR;
                 }
+
+                d_neq = dR - dL;
+                v_neq = vR - vL;
+
+                if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)
+                previous_was_equal = equals;
                 break;
             }
 
             if (!first_pass) {
+                // if current point is the first to be equal in a series of equalities, need to add +- eps
+                if (equals && first_eq_ineq) {
+                    double signed_eps = v_prev > 0 ? Signal::Eps : -Signal::Eps;
+                    double t_minus = t_prev + (signed_eps - v_prev) / d_prev; // logically should never crash
+                    z.appendSample(t_minus, Signal::BigM, 0.);
+                }
+
                 // Note: 0 derivative is ok because it does not pass this check
                 if (v_prev * d_prev < 0) {
                     double t_zero_cross = t_prev-v_prev/d_prev;
                     if (t_zero_cross < t) {
                         // cout << t_prev << " " << t_zero_cross << " " << t << endl;
                         if (comp == comparator::EQUAL) {
-                            double t_minus = t_prev + (-Signal::Eps-v_prev) / d_prev; // t at which v is -eps
-                            z.appendSample(t_minus, -Signal::Eps, -d_prev*v_prev/fabs(v_prev));
+                            double t_minus_eps = t_prev + (-Signal::Eps-v_prev) / d_prev; // t at which v is -eps
+                            double t_plus_eps = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
+                            
+                            double t_minus = t_minus_eps < t_plus_eps ? t_minus_eps : t_plus_eps;
+                            double t_plus = t_minus_eps < t_plus_eps ? t_plus_eps : t_minus_eps;
+                            
+                            if (t_minus > 0) z.appendSample(t_minus, Signal::BigM, 0);
 
                             z.appendSample(t_zero_cross, Signal::BigM, 0.);
 
-                            double t_plus = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
+                            
                             if (t_plus < t) z.appendSample(t_plus, -Signal::Eps, d_prev*v_prev/fabs(v_prev));
 
                         }
@@ -131,18 +160,26 @@ namespace STLRom {
                 }
             }
 
+            // if current point is the first to be not equal in a series of inequalities, need to add +- eps
+            if (!first_pass && !equals && first_eq_ineq) {
+                double t_plus = t_prev + (Signal::Eps - v_prev_neq) / d_prev_neq;
+                if (t_plus < t_prev) {
+                    t_plus = t_prev + (-Signal::Eps - v_prev_neq) / d_prev_neq;
+                }
+                z.appendSample(t_plus, -Signal::Eps, -fabs(d_prev_neq));
+
+            }
 
             z.appendSample(t, vt, dt);
 
-            if (equals && d_neq != 0) {
-                double t_plus = t + (Signal::Eps) / fabs(d_neq); // t at which v is +eps or -eps
-                z.appendSample(t_plus, -Signal::Eps, d_neq);
 
-            }
+            
 
             t_prev = t;
             v_prev = vt;
             d_prev = dt;
+            d_prev_neq = d_neq;
+            v_prev_neq = v_neq;
 
             if (advance_L) itL++;
             if (advance_R) itR++;
