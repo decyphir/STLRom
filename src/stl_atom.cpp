@@ -116,6 +116,7 @@ namespace STLRom {
                 } else {
                     vt = -fabs(vL-vR);
                     dt = (vL > vR) ? dR - dL : dL - dR;
+                    equals = false;
                 }
 
                 d_neq = dR - dL;
@@ -171,7 +172,7 @@ namespace STLRom {
             }
 
             z.appendSample(t, vt, dt);
-
+            
 
             
 
