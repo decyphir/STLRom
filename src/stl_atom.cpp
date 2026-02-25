@@ -109,7 +109,7 @@ namespace STLRom {
                 v_neq = vt;
                 break;
             case comparator::EQUAL:
-                if (fabs(vL-vR) < Signal::Eps) {
+                if (vL-vR < Signal::Eps && vL-vR >= Signal::Eps) {
                         vt = Signal::BigM;
                         dt = 0.;
                         equals = true;
