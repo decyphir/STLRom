@@ -174,7 +174,7 @@ namespace STLRom {
             z.appendSample(t, vt, dt);
             
 
-            
+
 
             t_prev = t;
             v_prev = vt;
@@ -194,6 +194,9 @@ namespace STLRom {
         switch (Signal::semantics) {
 			case Semantics::SPACE:
                 z.simplify();
+                if (!z.empty() && z.back().time == endTime) {
+                    z.pop_back();
+                }
 	        	return z.front().value;    
 			case Semantics::LEFT_TIME:
                 z_space = z;
