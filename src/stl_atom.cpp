@@ -109,7 +109,7 @@ namespace STLRom {
                 v_neq = vt;
                 break;
             case comparator::EQUAL:
-                if (vL-vR < Signal::Eps && vL-vR >= Signal::Eps) {
+                if (vL-vR < Signal::Eps && vL-vR >= -Signal::Eps) {
                         vt = Signal::BigM;
                         dt = 0.;
                         equals = true;
@@ -119,10 +119,10 @@ namespace STLRom {
                     equals = false;
                 }
 
-                d_neq = dR - dL;
-                v_neq = vR - vL;
+                d_neq = dL - dR;
+                v_neq = vL - vR;
 
-                if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)
+                if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)                
                 previous_was_equal = equals;
                 break;
             }
