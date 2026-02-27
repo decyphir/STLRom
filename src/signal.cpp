@@ -154,14 +154,17 @@ namespace STLRom {
 
     //remove linear interpolations
     void Signal::simplify() {
+#define DEBUG___
 #ifdef DEBUG___
         printf(">>>Signal::simplify:                          IN." );
         cout << "IN: " << *this << endl;
 #endif
 
+        double first_time = front().time;
         push_back(front());
         pop_front();
-        while (front().time != beginTime) {
+        
+        while (front().time != first_time) {
             if( fabs(back().valueAt(front().time) - front().value) > ZERO_POS || fabs(back().derivative - front().derivative) > ZERO_POS) {
                 push_back(front());
             }
