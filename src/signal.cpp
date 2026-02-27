@@ -159,9 +159,11 @@ namespace STLRom {
         cout << "IN: " << *this << endl;
 #endif
 
+        double first_time = front().time;
         push_back(front());
         pop_front();
-        while (front().time != beginTime) {
+        
+        while (front().time != first_time) {
             if( fabs(back().valueAt(front().time) - front().value) > ZERO_POS || fabs(back().derivative - front().derivative) > ZERO_POS) {
                 push_back(front());
             }
