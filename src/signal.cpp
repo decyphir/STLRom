@@ -154,6 +154,7 @@ namespace STLRom {
 
     //remove linear interpolations
     void Signal::simplify() {
+#define DEBUG___
 #ifdef DEBUG___
         printf(">>>Signal::simplify:                          IN." );
         cout << "IN: " << *this << endl;
