@@ -10,7 +10,7 @@ In an environment with pip, first make sure that `python-dev` or equivalent is i
 ```bash
 sudo apt install python-dev-is-python3
 ```
-Then build and install with pip:
+To build the library, `bison` and `flex` are also required.  Then build and install with pip:
 
 ```bash
 pip install stlrom
@@ -18,8 +18,18 @@ pip install stlrom
 
 ### Install from source 
 
-### Python bindings
+Requirements: same as above (`bison`,`flex` and `python-dev`).
 
+### Python
+
+#### Using `pip`
+
+From the `stlrom` folder, install with 
+```bash
+pip install -e .
+```
+
+#### Using `uv`
 A python interface for stlrom is implemented with pybind11. To build and install it in a local virtual environment we recommend using [uv](https://docs.astral.sh/uv/getting-started/installation/).
 To create a virtual environment, build and install stlrom, run:
 
