@@ -42,7 +42,7 @@ void Signal::compute_boolean(const Signal &y) {
 			// 	}
 			// }		
 		}
-		else if (v<0.) {
+		else {
 			push_back(Sample(i->time, 0. , 0.));
 			// cout << "pushing 0 at " << i->time << endl;
 			// if ((v<0.)&&(d>0.)) {
@@ -52,10 +52,6 @@ void Signal::compute_boolean(const Signal &y) {
 			// 		cout << "pushing 1 at " << t_zero_cross << endl;
 			// 	}
 			// }
-		} else if (d>0.) {
-			push_back(Sample(i->time, 1. , 0.));
-		} else {
-			push_back(Sample(i->time, 0. , 0.));
 		}
 	}
 	simplify();
