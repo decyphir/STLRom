@@ -90,8 +90,8 @@ namespace STLRom {
             
 
 
-
-
+            v_neq = vL - vR;
+            d_neq = dL - dR;
 
             // fill z at time t
             switch (comp)
@@ -99,14 +99,18 @@ namespace STLRom {
             case comparator::LESSTHAN:
                 vt = vR - vL;
                 dt = dR - dL;
-                d_neq = dt;
-                v_neq = vt;
+
+                if (v_neq < Signal::Eps || (v_neq == Signal::Eps && dt < 0)) {
+                    vt += Signal::Eps;
+                }
                 break;
             case comparator::GREATERTHAN:
                 vt = vL - vR;
                 dt = dL - dR;
-                d_neq = dt;
-                v_neq = vt;
+
+                if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
+                    vt -= Signal::Eps;
+                }
                 break;
             case comparator::EQUAL:
                 if (vL-vR < Signal::Eps && vL-vR >= -Signal::Eps) {
@@ -119,57 +123,195 @@ namespace STLRom {
                     equals = false;
                 }
 
-                d_neq = dL - dR;
-                v_neq = vL - vR;
-
                 if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)                
                 previous_was_equal = equals;
                 break;
             }
 
             if (!first_pass) {
-                // if current point is the first to be equal in a series of equalities, need to add +- eps
-                if (equals && first_eq_ineq) {
-                    double signed_eps = v_prev > 0 ? Signal::Eps : -Signal::Eps;
-                    double t_minus = t_prev + (signed_eps - v_prev) / d_prev; // logically should never crash
-                    z.appendSample(t_minus, Signal::BigM, 0.);
+          
+                // check for +epsilon crossing
+                bool plus_descending_cross = v_prev_neq > Signal::Eps && d_prev_neq < 0 && v_neq < Signal::Eps;
+                bool plus_ascending_cross = v_prev_neq < Signal::Eps && d_prev_neq > 0 && v_neq > Signal::Eps;
+                bool plus_epsilon_cross = plus_ascending_cross || plus_descending_cross;
+                double t_plus_epsilon_cross;
+                if (plus_epsilon_cross) {
+                    t_plus_epsilon_cross = t_prev + (Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is +eps
                 }
 
-                // Note: 0 derivative is ok because it does not pass this check
-                if (v_prev * d_prev < 0) {
-                    double t_zero_cross = t_prev-v_prev/d_prev;
-                    if (t_zero_cross < t) {
-                        // cout << t_prev << " " << t_zero_cross << " " << t << endl;
-                        if (comp == comparator::EQUAL) {
-                            double t_minus_eps = t_prev + (-Signal::Eps-v_prev) / d_prev; // t at which v is -eps
-                            double t_plus_eps = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
-                            
-                            double t_minus = t_minus_eps < t_plus_eps ? t_minus_eps : t_plus_eps;
-                            double t_plus = t_minus_eps < t_plus_eps ? t_plus_eps : t_minus_eps;
-                            
-                            if (t_minus > 0) z.appendSample(t_minus, Signal::BigM, 0);
+                // check for -epsilon crossing
+                bool minus_descending_cross = v_prev_neq > -Signal::Eps && d_prev_neq < 0 && v_neq < -Signal::Eps;
+                bool minus_ascending_cross = v_prev_neq < -Signal::Eps && d_prev_neq > 0 && v_neq > -Signal::Eps;
+                bool minus_epsilon_cross = minus_ascending_cross || minus_descending_cross;
+                double t_minus_epsilon_cross;
+                if (minus_epsilon_cross) {
+                    t_minus_epsilon_cross = t_prev + (-Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is -eps
+                }
 
-                            z.appendSample(t_zero_cross, Signal::BigM, 0.);
-
-                            
-                            if (t_plus < t) z.appendSample(t_plus, -Signal::Eps, d_prev*v_prev/fabs(v_prev));
-
+                if (plus_epsilon_cross && !minus_epsilon_cross) {
+                    if (plus_descending_cross) {
+                        switch(comp) {
+                            case comparator::LESSTHAN:
+                                z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                                break;
+                            case comparator::GREATERTHAN:
+                                z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                                break;
+                            case comparator::EQUAL:
+                                z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
+                                break;
                         }
-                        else if (v_prev < 0) z.appendSample(t_zero_cross, ZERO_POS/10, d_prev);
-                        else z.appendSample(t_zero_cross, ZERO_NEG/10, d_prev);
+                    } else { // plus ascending cross
+                        switch(comp) {
+                            case comparator::LESSTHAN:
+                                z.appendSample(t_plus_epsilon_cross, -Signal::Eps, d_prev);
+                                break;
+                            case comparator::GREATERTHAN:
+                                z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
+                                break;
+                            case comparator::EQUAL:
+                                z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                                break;
+                        }
+                    }
+                } else if (!plus_epsilon_cross && minus_epsilon_cross) {
+                    if (comp == comparator::EQUAL) {
+                        if (minus_descending_cross) {
+                            z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                        } else {
+                            z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
+                        }
+                    }
+                } else if (plus_epsilon_cross && minus_epsilon_cross) {
+                    if (t_minus_epsilon_cross < t_plus_epsilon_cross) { 
+                        if (comp == comparator::EQUAL) {
+                            if (minus_descending_cross) {
+                                z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                            } else {
+                                z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
+                            }
+                        }
+
+                        if (plus_descending_cross) {
+                            switch(comp) {
+                                case comparator::LESSTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                                    break;
+                                case comparator::GREATERTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                                    break;
+                                case comparator::EQUAL:
+                                    z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
+                                    break;
+                            }
+                        } else { // plus ascending cross
+                            switch(comp) {
+                                case comparator::LESSTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, -Signal::Eps, d_prev);
+                                    break;
+                                case comparator::GREATERTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
+                                    break;
+                                case comparator::EQUAL:
+                                    z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                                    break;
+                            }
+                        }
+                    } else {
+                        if (plus_descending_cross) {
+                            switch(comp) {
+                                case comparator::LESSTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                                    break;
+                                case comparator::GREATERTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                                    break;
+                                case comparator::EQUAL:
+                                    z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
+                                    break;
+                            }
+                        } else { // plus ascending cross
+                            switch(comp) {
+                                case comparator::LESSTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, -Signal::Eps, d_prev);
+                                    break;
+                                case comparator::GREATERTHAN:
+                                    z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
+                                    break;
+                                case comparator::EQUAL:
+                                    z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                                    break;
+                            }
+                        }
+
+                        if (comp == comparator::EQUAL) {
+                            if (minus_descending_cross) {
+                                z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                            } else {
+                                z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
+                            }
+                        }
                     }
                 }
+
+                // double t_epsilon_cross = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
+                // if (descending_cross) {
+                //     switch(comp) {
+                //         case comparator::LESSTHAN:
+                //             z.appendSample(t_epsilon_cross, Signal::BigM, 0.);
+                //             break;
+                //         case comparator::GREATERTHAN:
+                            
+                //             break;
+                //         case comparator::EQUAL:
+                            
+                //             break;
+                //     }
+                // }
+
+
+                // // if current point is the first to be equal in a series of equalities, need to add +- eps
+                // if (equals && first_eq_ineq) {
+                //     double signed_eps = v_prev > 0 ? Signal::Eps : -Signal::Eps;
+                //     double t_minus = t_prev + (signed_eps - v_prev) / d_prev; // logically should never crash
+                //     z.appendSample(t_minus, Signal::BigM, 0.);
+                // }
+
+                // // Note: 0 derivative is ok because it does not pass this check
+                // if (v_prev * d_prev < 0) {
+                //     double t_zero_cross = t_prev-v_prev/d_prev;
+                //     if (t_zero_cross < t) {
+                //         // cout << t_prev << " " << t_zero_cross << " " << t << endl;
+                //         if (comp == comparator::EQUAL) {
+                //             double t_minus_eps = t_prev + (-Signal::Eps-v_prev) / d_prev; // t at which v is -eps
+                //             double t_plus_eps = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
+                            
+                //             double t_minus = t_minus_eps < t_plus_eps ? t_minus_eps : t_plus_eps;
+                //             double t_plus = t_minus_eps < t_plus_eps ? t_plus_eps : t_minus_eps;
+                            
+                //             if (t_minus > 0) z.appendSample(t_minus, Signal::BigM, 0);
+
+                //             z.appendSample(t_zero_cross, Signal::BigM, 0.);
+
+                            
+                //             if (t_plus < t) z.appendSample(t_plus, -Signal::Eps, d_prev*v_prev/fabs(v_prev));
+
+                //         }
+                //         else if (v_prev < 0) z.appendSample(t_zero_cross, ZERO_POS/10, d_prev);
+                //         else z.appendSample(t_zero_cross, ZERO_NEG/10, d_prev);
+                //     }
+                // }
             }
 
-            // if current point is the first to be not equal in a series of inequalities, need to add +- eps
-            if (!first_pass && !equals && first_eq_ineq) {
-                double t_plus = t_prev + (Signal::Eps - v_prev_neq) / d_prev_neq;
-                if (t_plus < t_prev) {
-                    t_plus = t_prev + (-Signal::Eps - v_prev_neq) / d_prev_neq;
-                }
-                z.appendSample(t_plus, -Signal::Eps, -fabs(d_prev_neq));
+            // // if current point is the first to be not equal in a series of inequalities, need to add +- eps
+            // if (!first_pass && !equals && first_eq_ineq) {
+            //     double t_plus = t_prev + (Signal::Eps - v_prev_neq) / d_prev_neq;
+            //     if (t_plus < t_prev) {
+            //         t_plus = t_prev + (-Signal::Eps - v_prev_neq) / d_prev_neq;
+            //     }
+            //     z.appendSample(t_plus, -Signal::Eps, -fabs(d_prev_neq));
 
-            }
+            // }
 
             z.appendSample(t, vt, dt);
             
