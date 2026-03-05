@@ -13,6 +13,13 @@
 
 namespace STLRom {
 
+    // struct used to track epsilon crossings
+    struct Crossing {
+        double t;
+        bool isPlus;
+        bool isAscending;
+    };
+
     constant_transducer::constant_transducer(const string &p) {
 
         value = 0.;
@@ -135,6 +142,10 @@ namespace STLRom {
             }
 
             if (!first_pass) {
+
+                // array to track +/- epsilon crossings
+                Crossing events[2];
+                int crossing_count = 0;
           
                 // check for +epsilon crossing
                 bool plus_descending_cross = v_prev_neq > Signal::Eps && d_prev_neq < 0 && v_neq < Signal::Eps;
@@ -143,6 +154,7 @@ namespace STLRom {
                 double t_plus_epsilon_cross;
                 if (plus_epsilon_cross) {
                     t_plus_epsilon_cross = t_prev + (Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is +eps
+                    events[crossing_count++] = {t_plus_epsilon_cross, true, plus_ascending_cross};
                 }
 
                 // check for -epsilon crossing
@@ -152,101 +164,133 @@ namespace STLRom {
                 double t_minus_epsilon_cross;
                 if (minus_epsilon_cross) {
                     t_minus_epsilon_cross = t_prev + (-Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is -eps
+                    events[crossing_count++] = {t_minus_epsilon_cross, false, minus_ascending_cross};
                 }
 
-                if (plus_epsilon_cross && !minus_epsilon_cross) {
-                    if (plus_descending_cross) {
-                        switch(comp) {
-                            case comparator::LESSTHAN:
-                            case comparator::GREATERTHAN:
-                                z.appendSample(t_plus_epsilon_cross, 0., d_prev);
-                                break;
-                            case comparator::EQUAL:
-                                z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
-                                break;
+                // sort events in case both + and - epsilon crossings happen
+                if (crossing_count == 2 && events[0].t > events[1].t) {
+                    std::swap(events[0], events[1]);
+                }
+
+                for (int i = 0; i < crossing_count; i++) {
+                    auto e = events[i];
+
+                    if (e.isPlus) {
+                        if (comp == comparator::EQUAL) {
+                            if (e.isAscending) {
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                            } else {
+                                z.appendSample(e.t, Signal::BigM, 0.);
+                            }
+                        } else { // comp is LESSTHAN or GREATERTHAN
+                            if (e.isAscending) {
+                                z.appendSample(e.t, Signal::Eps, d_prev);
+                            } else {
+                                z.appendSample(e.t, 0, d_prev);
+                            }
                         }
-                    } else { // plus ascending cross
-                        switch(comp) {
-                            case comparator::LESSTHAN:
-                            case comparator::GREATERTHAN:
-                                z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
-                                break;
-                            case comparator::EQUAL:
-                                z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
-                                break;
-                        }
-                    }
-                } else if (!plus_epsilon_cross && minus_epsilon_cross) {
-                    if (comp == comparator::EQUAL) {
-                        if (minus_descending_cross) {
-                            z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                    } else if (comp == comparator::EQUAL) { // for -eps cross, only deal with EQUAL
+                        if (e.isAscending) {
+                            z.appendSample(e.t, Signal::BigM, 0.);
                         } else {
-                            z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
-                        }
-                    }
-                } else if (plus_epsilon_cross && minus_epsilon_cross) {
-                    if (t_minus_epsilon_cross < t_plus_epsilon_cross) { 
-                        if (comp == comparator::EQUAL) {
-                            if (minus_descending_cross) {
-                                z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
-                            } else {
-                                z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
-                            }
-                        }
-
-                        if (plus_descending_cross) {
-                            switch(comp) {
-                                case comparator::LESSTHAN:
-                                case comparator::GREATERTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
-                                    break;
-                                case comparator::EQUAL:
-                                    z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
-                                    break;
-                            }
-                        } else { // plus ascending cross
-                            switch(comp) {
-                                case comparator::LESSTHAN:
-                                case comparator::GREATERTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
-                                    break;
-                                case comparator::EQUAL:
-                                    z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
-                                    break;
-                            }
-                        }
-                    } else {
-                        if (plus_descending_cross) {
-                            switch(comp) {
-                                case comparator::LESSTHAN:
-                                case comparator::GREATERTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
-                                    break;
-                                case comparator::EQUAL:
-                                    z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
-                                    break;
-                            }
-                        } else { // plus ascending cross
-                            switch(comp) {
-                                case comparator::LESSTHAN:
-                                case comparator::GREATERTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
-                                    break;
-                                case comparator::EQUAL:
-                                    z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
-                                    break;
-                            }
-                        }
-
-                        if (comp == comparator::EQUAL) {
-                            if (minus_descending_cross) {
-                                z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
-                            } else {
-                                z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
-                            }
+                            z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
                         }
                     }
                 }
+
+                // if (plus_epsilon_cross && !minus_epsilon_cross) {
+                //     if (plus_descending_cross) {
+                //         switch(comp) {
+                //             case comparator::LESSTHAN:
+                //             case comparator::GREATERTHAN:
+                //                 z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                //                 break;
+                //             case comparator::EQUAL:
+                //                 z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
+                //                 break;
+                //         }
+                //     } else { // plus ascending cross
+                //         switch(comp) {
+                //             case comparator::LESSTHAN:
+                //             case comparator::GREATERTHAN:
+                //                 z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
+                //                 break;
+                //             case comparator::EQUAL:
+                //                 z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                //                 break;
+                //         }
+                //     }
+                // } else if (!plus_epsilon_cross && minus_epsilon_cross) {
+                //     if (comp == comparator::EQUAL) {
+                //         if (minus_descending_cross) {
+                //             z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                //         } else {
+                //             z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
+                //         }
+                //     }
+                // } else if (plus_epsilon_cross && minus_epsilon_cross) {
+                //     if (t_minus_epsilon_cross < t_plus_epsilon_cross) { 
+                //         if (comp == comparator::EQUAL) {
+                //             if (minus_descending_cross) {
+                //                 z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                //             } else {
+                //                 z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
+                //             }
+                //         }
+
+                //         if (plus_descending_cross) {
+                //             switch(comp) {
+                //                 case comparator::LESSTHAN:
+                //                 case comparator::GREATERTHAN:
+                //                     z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                //                     break;
+                //                 case comparator::EQUAL:
+                //                     z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
+                //                     break;
+                //             }
+                //         } else { // plus ascending cross
+                //             switch(comp) {
+                //                 case comparator::LESSTHAN:
+                //                 case comparator::GREATERTHAN:
+                //                     z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
+                //                     break;
+                //                 case comparator::EQUAL:
+                //                     z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                //                     break;
+                //             }
+                //         }
+                //     } else {
+                //         if (plus_descending_cross) {
+                //             switch(comp) {
+                //                 case comparator::LESSTHAN:
+                //                 case comparator::GREATERTHAN:
+                //                     z.appendSample(t_plus_epsilon_cross, 0., d_prev);
+                //                     break;
+                //                 case comparator::EQUAL:
+                //                     z.appendSample(t_plus_epsilon_cross, Signal::BigM, 0.);
+                //                     break;
+                //             }
+                //         } else { // plus ascending cross
+                //             switch(comp) {
+                //                 case comparator::LESSTHAN:
+                //                 case comparator::GREATERTHAN:
+                //                     z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
+                //                     break;
+                //                 case comparator::EQUAL:
+                //                     z.appendSample(t_plus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                //                     break;
+                //             }
+                //         }
+
+                //         if (comp == comparator::EQUAL) {
+                //             if (minus_descending_cross) {
+                //                 z.appendSample(t_minus_epsilon_cross, -Signal::Eps, -fabs(d_prev_neq));
+                //             } else {
+                //                 z.appendSample(t_minus_epsilon_cross, Signal::BigM, 0.);
+                //             }
+                //         }
+                //     }
+                // }
 
                 // double t_epsilon_cross = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
                 // if (descending_cross) {
