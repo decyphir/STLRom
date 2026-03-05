@@ -153,7 +153,7 @@ public:
 		Eps=val;
 	}
 
-	inline static int get_Eps(){
+	inline static double get_Eps(){
 		return Eps;
 	}
 
