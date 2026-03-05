@@ -102,7 +102,7 @@ namespace STLRom {
                 v_neq = vt;
                 d_neq = dt;
 
-                if (vt< Signal::Eps || (vt == Signal::Eps && dt < 0)) {
+                if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
                     vt -= Signal::Eps;
                 }
                 break;
@@ -158,8 +158,6 @@ namespace STLRom {
                     if (plus_descending_cross) {
                         switch(comp) {
                             case comparator::LESSTHAN:
-                                z.appendSample(t_plus_epsilon_cross, 0., d_prev);
-                                break;
                             case comparator::GREATERTHAN:
                                 z.appendSample(t_plus_epsilon_cross, 0., d_prev);
                                 break;
@@ -170,8 +168,6 @@ namespace STLRom {
                     } else { // plus ascending cross
                         switch(comp) {
                             case comparator::LESSTHAN:
-                                z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
-                                break;
                             case comparator::GREATERTHAN:
                                 z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
                                 break;
@@ -201,8 +197,6 @@ namespace STLRom {
                         if (plus_descending_cross) {
                             switch(comp) {
                                 case comparator::LESSTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
-                                    break;
                                 case comparator::GREATERTHAN:
                                     z.appendSample(t_plus_epsilon_cross, 0., d_prev);
                                     break;
@@ -213,8 +207,6 @@ namespace STLRom {
                         } else { // plus ascending cross
                             switch(comp) {
                                 case comparator::LESSTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
-                                    break;
                                 case comparator::GREATERTHAN:
                                     z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
                                     break;
@@ -227,8 +219,6 @@ namespace STLRom {
                         if (plus_descending_cross) {
                             switch(comp) {
                                 case comparator::LESSTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, 0., d_prev);
-                                    break;
                                 case comparator::GREATERTHAN:
                                     z.appendSample(t_plus_epsilon_cross, 0., d_prev);
                                     break;
@@ -239,8 +229,6 @@ namespace STLRom {
                         } else { // plus ascending cross
                             switch(comp) {
                                 case comparator::LESSTHAN:
-                                    z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
-                                    break;
                                 case comparator::GREATERTHAN:
                                     z.appendSample(t_plus_epsilon_cross, Signal::Eps, d_prev);
                                     break;
