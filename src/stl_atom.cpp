@@ -198,10 +198,11 @@ namespace STLRom {
                     }
                 }
     
+            }
 
             z.appendSample(t, vt, dt);
-            
 
+            
 
 
             t_prev = t;
