@@ -9,7 +9,7 @@ namespace STLRom {
 
     double Signal::BigM = 10000.;
 
-    double Signal::Eps = 0.1;
+    double Signal::Eps = 1e-12;
 
     /* 
      * class Signal member functions
