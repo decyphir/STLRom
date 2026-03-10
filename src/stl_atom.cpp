@@ -109,9 +109,12 @@ namespace STLRom {
                 v_neq = vt;
                 d_neq = dt;
 
-                if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
+                if (fabs(vt) < Signal::Eps || (vt == Signal::Eps && dt < 0) || (vt == -Signal::Eps && dt > 0)) {
                     vt -= Signal::Eps;
                 }
+                // if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
+                //     vt -= Signal::Eps;
+                // }
                 break;
             case comparator::GREATERTHAN:
                 vt = vL - vR;
@@ -120,9 +123,13 @@ namespace STLRom {
                 v_neq = vt;
                 d_neq = dt;
 
-                if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
+                if (fabs(vt) < Signal::Eps || (vt == Signal::Eps && dt < 0) || (vt == -Signal::Eps && dt > 0)) {
                     vt -= Signal::Eps;
                 }
+
+                // if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
+                //     vt -= Signal::Eps;
+                // }
                 break;
             case comparator::EQUAL:
                 if (vL-vR < Signal::Eps && vL-vR >= -Signal::Eps) {
@@ -189,11 +196,19 @@ namespace STLRom {
                                 z.appendSample(e.t, 0, d_prev);
                             }
                         }
-                    } else if (comp == comparator::EQUAL) { // for -eps cross, only deal with EQUAL
-                        if (e.isAscending) {
-                            z.appendSample(e.t, Signal::BigM, 0.);
-                        } else {
-                            z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                    } else {
+                        if (comp == comparator::EQUAL) { // for -eps cross, only deal with EQUAL
+                            if (e.isAscending) {
+                                z.appendSample(e.t, Signal::BigM, 0.);
+                            } else {
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                            }
+                        } else { // comp is LESSTHAN or GREATERTHAN
+                            if (e.isAscending) {
+                                z.appendSample(e.t, -2*Signal::Eps, d_prev);
+                            } else {
+                                z.appendSample(e.t, -Signal::Eps, d_prev);
+                            }
                         }
                     }
                 }
