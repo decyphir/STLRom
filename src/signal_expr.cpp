@@ -68,6 +68,7 @@ double plus_transducer::compute_robustness() {
 	// 	double vR = (*iterR).value;
 	// 	z.appendSample(t, vL+vR);
 	// }
+	z.simplify();
 	return z.front().value;
 }
 
@@ -88,6 +89,7 @@ double minus_transducer::compute_robustness() {
 	// 	double vR = (*iterR).value;
 	// 	z.appendSample(t, vL-vR);
 	// }
+	z.simplify();
 	return z.front().value;
 }
 
@@ -107,6 +109,7 @@ double mult_transducer::compute_robustness() {
 	// 	double vR = (*iterR).value;
 	// 	z.appendSample(t, vL*vR);
 	// }
+	z.simplify();
 	return z.front().value;
 }
 
