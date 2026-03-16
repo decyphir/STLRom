@@ -56,16 +56,19 @@ double plus_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
-	auto iterL = childL->z.begin();
-	auto iterR = childR->z.begin();
+	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a + b;});
 
-	for (; iterL != childL->z.end();
-			iterL++, iterR++) {
-		double t= (*iterL).time;
-		double vL = (*iterL).value;
-		double vR = (*iterR).value;
-		z.appendSample(t, vL+vR);
-	}
+	// auto iterL = childL->z.begin();
+	// auto iterR = childR->z.begin();
+
+	// for (; iterL != childL->z.end();
+	// 		iterL++, iterR++) {
+	// 	double t= (*iterL).time;
+	// 	double vL = (*iterL).value;
+	// 	double vR = (*iterR).value;
+	// 	z.appendSample(t, vL+vR);
+	// }
+	z.simplify();
 	return z.front().value;
 }
 
@@ -74,16 +77,19 @@ double minus_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
-	auto iterL = childL->z.begin();
-	auto iterR = childR->z.begin();
+	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a - b;});
+	
+	// auto iterL = childL->z.begin();
+	// auto iterR = childR->z.begin();
 
-	for (; iterL != childL->z.end();
-			iterL++, iterR++) {
-		double t= (*iterL).time;
-		double vL = (*iterL).value;
-		double vR = (*iterR).value;
-		z.appendSample(t, vL-vR);
-	}
+	// for (; iterL != childL->z.end();
+	// 		iterL++, iterR++) {
+	// 	double t= (*iterL).time;
+	// 	double vL = (*iterL).value;
+	// 	double vR = (*iterR).value;
+	// 	z.appendSample(t, vL-vR);
+	// }
+	z.simplify();
 	return z.front().value;
 }
 
@@ -92,16 +98,18 @@ double mult_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
-	auto iterL = childL->z.begin();
-	auto iterR = childR->z.begin();
+	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a * b;});
+	// auto iterL = childL->z.begin();
+	// auto iterR = childR->z.begin();
 
-	for (; iterL != childL->z.end();
-			iterL++, iterR++) {
-		double t= (*iterL).time;
-		double vL = (*iterL).value;
-		double vR = (*iterR).value;
-		z.appendSample(t, vL*vR);
-	}
+	// for (; iterL != childL->z.end();
+	// 		iterL++, iterR++) {
+	// 	double t= (*iterL).time;
+	// 	double vL = (*iterL).value;
+	// 	double vR = (*iterR).value;
+	// 	z.appendSample(t, vL*vR);
+	// }
+	z.simplify();
 	return z.front().value;
 }
 
