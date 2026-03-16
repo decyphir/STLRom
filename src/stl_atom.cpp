@@ -13,10 +13,11 @@
 
 namespace STLRom {
 
+    enum CrossType { PLUS_EPS, ZERO, MINUS_EPS };
     // struct used to track epsilon crossings
     struct Crossing {
         double t;
-        bool isPlus;
+        CrossType type;
         bool isAscending;
     };
 
@@ -132,17 +133,20 @@ namespace STLRom {
                 // }
                 break;
             case comparator::EQUAL:
-                if (vL-vR < Signal::Eps && vL-vR >= -Signal::Eps) {
-                        vt = Signal::BigM;
-                        dt = 0.;
-                        equals = true;
-                } else {
-                    vt = -fabs(vL-vR);
-                    dt = (vL > vR) ? dR - dL : dL - dR;
-                    equals = false;
-                }
                 v_neq = vL - vR;
                 d_neq = dL - dR;
+                vt = -fabs(vL-vR);
+                // dt = (vL > vR) ? dR - dL : dL - dR;
+                if (vL > vR || (vL == vR && dL > dR)) {
+                    dt = dR - dL;
+                } else {
+                    dt = dL - dR;
+                }
+                equals = false;
+                if ((v_neq < Signal::Eps && v_neq > -Signal::Eps) || (v_neq == Signal::Eps && d_neq < 0) || (v_neq == -Signal::Eps && d_neq > 0)) {
+                    vt += Signal::Eps;   
+                    equals = true;
+                }
                 if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)                
                 previous_was_equal = equals;
                 break;
@@ -151,7 +155,7 @@ namespace STLRom {
             if (!first_pass) {
 
                 // array to track +/- epsilon crossings
-                Crossing events[2];
+                Crossing events[3];
                 int crossing_count = 0;
           
                 // check for +epsilon crossing
@@ -161,7 +165,7 @@ namespace STLRom {
                 double t_plus_epsilon_cross;
                 if (plus_epsilon_cross) {
                     t_plus_epsilon_cross = t_prev + (Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is +eps
-                    events[crossing_count++] = {t_plus_epsilon_cross, true, plus_ascending_cross};
+                    events[crossing_count++] = {t_plus_epsilon_cross, CrossType::PLUS_EPS, plus_ascending_cross};
                 }
 
                 // check for -epsilon crossing
@@ -171,23 +175,37 @@ namespace STLRom {
                 double t_minus_epsilon_cross;
                 if (minus_epsilon_cross) {
                     t_minus_epsilon_cross = t_prev + (-Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is -eps
-                    events[crossing_count++] = {t_minus_epsilon_cross, false, minus_ascending_cross};
+                    events[crossing_count++] = {t_minus_epsilon_cross, CrossType::MINUS_EPS, minus_ascending_cross};
                 }
 
-                // sort events in case both + and - epsilon crossings happen
-                if (crossing_count == 2 && events[0].t > events[1].t) {
-                    std::swap(events[0], events[1]);
+                // check for zero crossing
+                bool zero_descending_cross = v_prev_neq > 0 && d_prev_neq < 0 && v_neq < 0;
+                bool zero_ascending_cross = v_prev_neq < 0 && d_prev_neq > 0 && v_neq > 0;
+                bool zero_epsilon_cross = zero_ascending_cross || zero_descending_cross;
+                double t_zero_epsilon_cross;
+                if (zero_epsilon_cross) {
+                    t_zero_epsilon_cross = t_prev + (-v_prev_neq) / d_prev_neq; // t at which v is 0
+                    events[crossing_count++] = {t_zero_epsilon_cross, CrossType::ZERO, zero_ascending_cross};
+                }
+
+                // sort events by time
+                for (int i = 0; i < crossing_count - 1; ++i) {
+                    for (int j = i + 1; j < crossing_count; ++j) {
+                        if (events[i].t > events[j].t) {
+                            std::swap(events[i], events[j]);
+                        }
+                    }
                 }
 
                 for (int i = 0; i < crossing_count; i++) {
                     auto e = events[i];
 
-                    if (e.isPlus) {
+                    if (e.type == PLUS_EPS) {
                         if (comp == comparator::EQUAL) {
                             if (e.isAscending) {
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                                z.appendSample(e.t, -Signal::Eps, d_prev);
                             } else {
-                                z.appendSample(e.t, Signal::BigM, 0.);
+                                z.appendSample(e.t, 0., d_prev);
                             }
                         } else { // comp is LESSTHAN or GREATERTHAN
                             if (e.isAscending) {
@@ -196,12 +214,12 @@ namespace STLRom {
                                 z.appendSample(e.t, 0, d_prev);
                             }
                         }
-                    } else {
-                        if (comp == comparator::EQUAL) { // for -eps cross, only deal with EQUAL
+                    } else if (e.type == MINUS_EPS) {
+                        if (comp == comparator::EQUAL) { 
                             if (e.isAscending) {
-                                z.appendSample(e.t, Signal::BigM, 0.);
+                                z.appendSample(e.t, 0., d_prev);
                             } else {
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                                z.appendSample(e.t, -Signal::Eps, d_prev);
                             }
                         } else { // comp is LESSTHAN or GREATERTHAN
                             if (e.isAscending) {
@@ -209,6 +227,11 @@ namespace STLRom {
                             } else {
                                 z.appendSample(e.t, -Signal::Eps, d_prev);
                             }
+                        }
+                    } else { // zero crossing
+                        if (comp == comparator::EQUAL) {
+                            cout << "appending zero equal ";
+                            z.appendSample(e.t, Signal::Eps, -fabs(d_prev));
                         }
                     }
                 }
