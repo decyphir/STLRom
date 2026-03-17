@@ -33,3 +33,4 @@ build/CMakeFiles/stlrom2.dir/src/scanner.cpp.o
 build/*
 *.out*
 src/stlrom/__pycache__/*
+uv.lock

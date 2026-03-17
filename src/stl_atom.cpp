@@ -25,26 +25,132 @@ namespace STLRom {
         printf(">> stl_atom::compute_robustness:              IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
-        // Assumes childL and childR have signals with same number of samples
-        // TODO should be eventually improved with proper operations on signals
     
         childL->compute_robustness();
         childR->compute_robustness();
+
+        z.beginTime = fmax(childL->z.beginTime, childR->z.beginTime);
+        double endTime = fmin(childL->z.endTime, childR->z.endTime);
+
+
         auto itL = childL->z.begin();
         auto itR = childR->z.begin();
-        for (; itL != childL->z.end() &&  itR != childR->z.end() ;itL++, itR++) {
-            double t = (*itL).time;
-            double vL = (*itL).value;
-            double vR = (*itR).value;
+
+        // Skip elements outside the overlap in the beginning
+        while (itL != childL->z.end() && itL->time < z.beginTime) ++itL;
+        while (itR != childR->z.end() && itR->time < z.beginTime) ++itR;
+
+        // Iterate over both simultaneously
+        bool first_pass = true;
+        double t_prev, v_prev, d_prev;
+
+
+        double tL = -1, tR = -1;
+
+        while(tL < endTime || tR < endTime) {
+            tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
+            tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
+
             double dL = (*itL).derivative;
             double dR = (*itR).derivative;
-		
-            if (comp == comparator::LESSTHAN )
-                z.appendSample(t, vR-vL, dR-dL);
-            else
-                z.appendSample(t, vL-vR, dL-dR);	
+            double vR, vL;
+
+            // Stop when we overtake the overlap
+            if(fmin(tL, tR) > endTime) break;
+
+            double t, vt, dt, d_neq;
+
+            bool advance_L = false;
+            bool advance_R = false;
+            bool equals = false;
+
+            if(tL < tR) {
+                t = tL;
+                advance_L = true;
+
+                vL = (*itL).value;
+                vR = (*itR).valueAt(t);
+            } else if (tL > tR) {
+                t = tR;
+                advance_R = true;
+
+                vL = (*itL).valueAt(t);
+                vR = (*itR).value;
+            } else { // equality (might cause issues)
+                t = tL;
+                advance_L = true;
+                advance_R = true;
+
+                vL = (*itL).value;
+                vR = (*itR).value;
+            }
+
+            // fill z at time t
+            switch (comp)
+            {
+            case comparator::LESSTHAN:
+                vt = vR - vL;
+                dt = dR - dL;
+                break;
+            case comparator::GREATERTHAN:
+                vt = vL - vR;
+                dt = dL - dR;
+                break;
+            case comparator::EQUAL:
+                if (fabs(vL-vR) < Signal::Eps) {
+                        vt = Signal::BigM;
+                        dt = 0.;
+                        d_neq = (vL > vR) ? dR - dL : dL - dR;
+                        equals = true;
+                } else {
+                    vt = -fabs(vL-vR);
+                    dt = (vL > vR) ? dR - dL : dL - dR;
+                }
+                break;
+            }
+
+            if (!first_pass) {
+                // Note: 0 derivative is ok because it does not pass this check
+                if (v_prev * d_prev < 0) {
+                    double t_zero_cross = t_prev-v_prev/d_prev;
+                    if (t_zero_cross < t) {
+                        // cout << t_prev << " " << t_zero_cross << " " << t << endl;
+                        if (comp == comparator::EQUAL) {
+                            double t_minus = t_prev + (-Signal::Eps-v_prev) / d_prev; // t at which v is -eps
+                            z.appendSample(t_minus, -Signal::Eps, -d_prev*v_prev/fabs(v_prev));
+
+                            z.appendSample(t_zero_cross, Signal::BigM, 0.);
+
+                            double t_plus = t_prev + (Signal::Eps-v_prev) / d_prev; // t at which v is +eps
+                            if (t_plus < t) z.appendSample(t_plus, -Signal::Eps, d_prev*v_prev/fabs(v_prev));
+
+                        }
+                        else if (v_prev < 0) z.appendSample(t_zero_cross, 0., d_prev);
+                        else z.appendSample(t_zero_cross, 0., d_prev);
+                    }
+                }
+            }
+
+
+            z.appendSample(t, vt, dt);
+
+            if (equals && d_neq != 0) {
+                double t_plus = t + (Signal::Eps) / fabs(d_neq); // t at which v is +eps or -eps
+                z.appendSample(t_plus, -Signal::Eps, d_neq);
+
+            }
+
+            t_prev = t;
+            v_prev = vt;
+            d_prev = dt;
+
+            if (advance_L) itL++;
+            if (advance_R) itR++;
+
+            first_pass = false;
         }
-        z.endTime = childL->z.endTime;
+
+        z.endTime = endTime;
 
         Signal z_space;
         switch (Signal::semantics) {
