@@ -22,13 +22,14 @@ namespace STLRom
         double rob;
         double lower_rob;
         double upper_rob;
+        bool up_to_date; 
 
         double start_time, end_time;
         transducer *formula;
         Semantics semantics;
         Interpol interpol;
 
-        STLMonitor() : interpol(Interpol::LINEAR), semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), start_time(0.0), end_time(0.0) {}
+        STLMonitor() : interpol(Interpol::LINEAR), semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), up_to_date(false), start_time(0.0), end_time(0.0) {}
 
         // Copy constructor
         STLMonitor(const STLMonitor &other)
@@ -37,7 +38,9 @@ namespace STLRom
               data(other.data),
               param_map(other.param_map),
               signal_map(other.signal_map),
-              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), start_time(other.start_time), end_time(other.end_time)
+              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
+              up_to_date(other.up_to_date),
+              start_time(other.start_time), end_time(other.end_time)
         {
             if (other.formula)
             {
@@ -62,6 +65,7 @@ namespace STLRom
                 rob = other.rob;
                 lower_rob = other.lower_rob;
                 upper_rob = other.upper_rob;
+                up_to_date= other.up_to_date;
                 start_time = other.start_time;
                 end_time = other.end_time;
                 if (formula)
@@ -87,7 +91,9 @@ namespace STLRom
               data(std::move(other.data)),
               param_map(std::move(other.param_map)),
               signal_map(std::move(other.signal_map)),
-              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), start_time(other.start_time), end_time(other.end_time), formula(other.formula)
+              rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
+              up_to_date(other.up_to_date),
+              start_time(other.start_time), end_time(other.end_time), formula(other.formula)
         {
             other.formula = nullptr;
         }
@@ -105,6 +111,7 @@ namespace STLRom
                 rob = other.rob;
                 lower_rob = other.lower_rob;
                 upper_rob = other.upper_rob;
+                up_to_date = other.up_to_date;
                 start_time = other.start_time;
                 end_time = other.end_time;
                 if (formula)
@@ -231,6 +238,7 @@ namespace STLRom
         inline void reset_signal_data()
         {
             data.clear();
+            up_to_date = false;
         };
 
         inline double get_lower_rob() { return lower_rob; };
@@ -243,6 +251,7 @@ namespace STLRom
         {
             start_time = t_start;
             end_time = t_end;
+            up_to_date = false;
         }
 
         double eval_rob();
@@ -277,41 +286,58 @@ namespace STLRom
             }
         }
 
-        friend ostream &operator<<(ostream &os, const STLMonitor &monitor)
+        friend ostream &operator<<(ostream &out, const STLMonitor &monitor)
         {
-            os << "Signal Names: ";
+            // TODO harmonize with STLDriver's ?
+            out << "STL Monitor Object" << endl;
+            out << "Signal Names: ";
             bool first = true;
             for (const auto &signal : monitor.signal_map)
             {
-                os << signal.first;
+                out << signal.first;
                 if (&signal != &(*std::prev(monitor.signal_map.end())))
                 {
-                    os << ", ";
+                    out << ", ";
                 }
             }
-            os << endl;
-            os << "Parameters: ";
+            out << endl;
+            out << "Parameters: ";
             for (const auto &param : monitor.param_map)
             {
-                os << param.first << ": " << param.second;
+                out << param.first << ": " << param.second;
                 if (&param != &(*std::prev(monitor.param_map.end())))
                 {
-                    os << ", ";
+                    out << ", ";
                 }
             }
-            os << endl;
-            os << "Formula: ";
+            out << endl;
+            out << "Formula: ";
             if (monitor.formula)
             {
-                os << *monitor.formula;
+                out << *monitor.formula;
             }
             else
             {
-                os << "No formula set.";
+                out << "No formula set.";
             }
-            os << endl;
+            out << endl;
 
-            return os;
+            out << "\nData: ";
+            if (monitor.data.empty())
+            {
+                out << "No data yet.";                  
+            }
+            else
+            {
+                out << monitor.data.size() << " samples from t0=" << monitor.data.front().front() << " to t_end=" << monitor.data.back().front() << endl;
+            }            
+            out << "Robustness on [" << monitor.start_time << "," << monitor.end_time << "]:";
+            if (monitor.up_to_date)
+                out << endl << "at t=" << monitor.start_time << ":    lower_rob=" << monitor.lower_rob << "   <=    estimate=" << monitor.rob << "   <=    upper_rob= " << monitor.upper_rob <<  endl; 
+            else
+                out << " not up to date.";
+            
+            return out;
         }
     };
 }

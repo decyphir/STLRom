@@ -8,7 +8,6 @@ namespace STLRom {
     Interpol Signal::interpol = Interpol::LINEAR; 
 
     double Signal::BigM = 10000.;
-
     double Signal::Eps = 0.1;
 
     /* 
@@ -241,13 +240,15 @@ namespace STLRom {
      * friend functions
      */
     std::ostream & operator<<(std::ostream & out, const Point & point) {
-        out << point.time << ";" << point.value ;
+        out <<"time: " << point.time << " value: " << point.value ;
         return out;
     }
 
     std::ostream & operator<<(std::ostream & out, const Sample & sample) {
 
-        out << std::setprecision(8) << std::setw(12) << sample.time << "  " << std::setprecision(8) << std::setw(12)  << sample.value << "  " << sample.derivative;
+        out << "time: " << std::setprecision(4) << std::setw(10) << sample.time; 
+        out << "  value: " << std::setprecision(4) << std::setw(10)  << sample.value; 
+        out << "  derivative: " << std::setprecision(4) << std::setw(10)  << sample.derivative;
         return out;
     }
 
@@ -265,9 +266,11 @@ namespace STLRom {
     std::ostream & operator<<(std::ostream & out, const Signal & y) {
         Signal::const_iterator i;
 
-        if(y.begin() == y.end()) return out << "EMPTY" << std::endl;
-
-        out << "def = [" << y.beginTime << ", " << y.endTime << ")" << std::endl;
+        if(y.begin() == y.end()) return out << "Empty Signal." << std::endl;
+        
+        out << "begin_time: " << y.beginTime;
+        out << "  end_time: " << y.endTime <<  std::endl;
+        
         for(i = y.begin(); i != y.end(); i++) {
             out << *i << std::endl;
         }

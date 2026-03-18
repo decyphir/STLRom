@@ -383,7 +383,6 @@ STLMonitor STLDriver::get_monitor(const string &id) const
     return phi;
 }
 
-
 void STLDriver::add_sample(vector<double> s)
 {
     if (s.size() != signal_map.size() + 1)
@@ -445,7 +444,7 @@ void STLDriver::dump_trace_file(const string &filename)
 void STLDriver::dump()
 {
 
-    // transducer::param_map = param_map; FIXME
+    // transducer::param_map = param_map; FIXME fix what ??
 
     for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
     {
@@ -458,46 +457,47 @@ void STLDriver::dump()
 
 void STLDriver::print(ostream &out) const
 {
-
-    out << "\nAssigned formulas:" << endl;
-    out << "-------------------" << endl;
+    out << "# STLDriver object defined as" << endl;
+    out << "signal ";    
+    for (const auto &signal : signal_map)
+    {
+        out << signal.first;
+        if (&signal != &(*std::prev(signal_map.end())))
+        {
+            out << ", ";
+        }
+    }
+    out << endl;
+    
+    if (!param_map.empty()) {
+        out << "param ";        
+        for (const auto &param : param_map)
+        {
+            out << param.first<< "=" << param.second;            
+            if (&param != &(*std::prev(param_map.end())))
+            {
+                out << ", ";
+            }
+        }
+        out << endl;
+    }
+    
+    
+    out << "\n# With formulas" << endl;
 
     for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
     {
-        out << formula->first << ":" << endl;
-        out << *(formula->second) << endl;
+        out << formula->first << ":= " << *(formula->second) << endl;
     }
-
-    out << "\nDefault Parameters:" << endl;
-    out << "---------------------" << endl;
-
-    for (auto param = param_map.begin(); param != param_map.end(); param++)
+    
+    out << "\n# Data:" << endl;
+    if (data.empty())
     {
-        out << param->first << "=";
-        out << param->second << endl;
+        out << "# No data yet.";                  
+    }
+    else
+    {
+        out << "# "<< data.size() << " samples from t0=" << data.front().front() << " to t_end=" << data.back().front() << endl;
     }
 
-    // Not using tests at the moments, will see if we keep/update them...
-    // out << "\nTrace tests:" << endl;
-    // out << "---------------" << endl;
-
-    // string indent = "    ";
-    // for (auto it = trace_test_queue.begin(); it != trace_test_queue.end(); it++)
-    // {
-
-    // 	out << (*it).id << ": ";
-    // 	out << (*it).env << ", ";
-    // 	out << "SimTime: " << (*it).sim_time << " Visu:" << (*it).visu << endl;
-    // 	for (auto its = (*it).tests.begin(); its != (*it).tests.end(); its++)
-    // 	{
-    // 		// transducer->param_map =  param_map; FIXME probably needs a set_param for transducers
-    // 		out << indent << its->test_id << endl;
-    // 		for (auto elem = its->param_map.begin(); elem != its->param_map.end(); elem++)
-    // 			out << indent << indent << elem->first << "=" << elem->second << endl;
-
-    // 		out << indent << indent << *(*its).formula << endl;
-    // 	}
-    // 	out << endl;
-    // }
-    out << endl;
 }

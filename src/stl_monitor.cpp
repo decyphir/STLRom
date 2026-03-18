@@ -22,30 +22,34 @@ namespace STLRom
 			throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
 		}
 		data.push_back(s);
+		up_to_date = false;
 	}
 
     double STLMonitor::eval_rob() {
         return eval_rob(start_time, end_time);
     }
 
-    double STLMonitor::eval_rob(double t) {
-        return eval_rob(t,t);
+    double STLMonitor::eval_rob(double t) {        
+		return eval_rob(t,t);
     }
 	double STLMonitor::eval_rob(double t_start, double t_end)
         {
-            if (formula)
+			start_time = t_start;
+			end_time  = t_end;
+			if (formula)
             {
 				// Ensure formula reads the right data
 				formula->set_trace_data_ptr(data);
 				formula->set_param_map_ptr(param_map);
 				Signal::semantics=semantics;
-				Signal::interpol= interpol;
+				Signal::interpol = interpol;
 				formula->reset();				
 				formula->set_horizon(t_start, t_end);
 				rob = formula->compute_robustness();
                 lower_rob = formula->compute_lower_rob();
                 upper_rob = formula->compute_upper_rob();
-            }
+				up_to_date = true;
+			}			
             return rob;
         }
 }

@@ -84,6 +84,11 @@ PYBIND11_MODULE(_stlrom, m) {
 	//Class Signal
 	py::class_<STLRom::Signal>(m, "Signal")
 		.def(py::init<>())
+		.def("__str__", [](const Signal &sig) {
+            std::ostringstream oss;
+            oss << sig;
+            return oss.str();
+        })		
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
 		.def("compute_not",&STLRom::Signal::compute_not)	
@@ -116,7 +121,7 @@ PYBIND11_MODULE(_stlrom, m) {
 	//Class STLMonitor
 	py::class_<STLRom::STLMonitor>(m, "STLMonitor")
 		.def(py::init<>())
-		.def("__repr__", [](const STLMonitor &monitor) {
+		.def("__str__", [](const STLMonitor &monitor) {
             std::ostringstream oss;
             oss << monitor;
             return oss.str();
@@ -144,6 +149,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_readwrite("rob",&STLRom::STLMonitor::rob)
 		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
+		.def_readwrite("up_to_date",&STLRom::STLMonitor::up_to_date)		
 		.def_readwrite("formula",&STLRom::STLMonitor::formula)
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
@@ -152,7 +158,12 @@ PYBIND11_MODULE(_stlrom, m) {
 
 	//Class STLDriver
 	py::class_<STLRom::STLDriver>(m, "STLDriver")
-		.def(py::init<>())
+		.def(py::init<>())				
+		.def("__str__", [](const STLDriver &dd) {
+            std::ostringstream oss;
+            oss << dd;
+            return oss.str();
+        })				
 		.def("parse_file", [](STLRom::STLDriver &self, const std::string &filename) {
         return self.parse_file(filename);
     	})

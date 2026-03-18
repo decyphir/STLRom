@@ -12,7 +12,7 @@ def get_signal(self, sig):
         idx = get_signal_idx(self, sig)
     
     sig = Signal()
-    if idx is not -1:
+    if idx!=-1:
         for sample in self.data:
             sig.append_sample(sample[0], sample[idx+1])
     return sig

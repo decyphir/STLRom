@@ -338,7 +338,11 @@ public:
     /** Prints driver to standard output */
     inline void print() const { print(cout); };
     inline void disp() { print(cout); };
-
+    friend ostream &operator<<(ostream &os, const STLDriver &driver)
+    {
+        driver.print(os);
+        return os;
+    }
     /** Read a trace file */
     inline bool read_trace_file(string trace_file_name)
     {
