@@ -117,6 +117,23 @@ PYBIND11_MODULE(_stlrom, m) {
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
 	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
+	
+	//Class transducer 
+	py::class_<STLRom::transducer>(m, "transducer")
+		.def(py::init<>())
+		.def("__str__", [](const transducer &transducer) {
+            std::ostringstream oss;
+            oss << transducer;
+            return oss.str();
+        })
+		.def("get_child",&STLRom::transducer::get_child)		
+		.def("get_childL",&STLRom::transducer::get_childL)		
+		.def("get_childR",&STLRom::transducer::get_childR)
+		.def("get_formula_string",&STLRom::transducer::get_formula_string)				
+		.def_readwrite("z",&STLRom::transducer::z)
+		.def_readwrite("z_low",&STLRom::transducer::z_low)
+		.def_readwrite("z_up",&STLRom::transducer::z_up)
+		;
 
 	//Class STLMonitor
 	py::class_<STLRom::STLMonitor>(m, "STLMonitor")
@@ -138,14 +155,13 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("eval_rob",(double (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
-		.def("get_param",&STLRom::STLMonitor::get_param)
-		.def("get_signal",&STLRom::STLMonitor::get_signal)
+		.def("get_param",&STLRom::STLMonitor::get_param)		
  		.def("display_formula",&STLRom::STLMonitor::display_formula) 		
 		.def("copy", [](const STLRom::STLMonitor &self) { return STLRom::STLMonitor(self); })
 		.def("__copy__", [](const STLRom::STLMonitor &self) { return STLRom::STLMonitor(self); })
 		.def("__deepcopy__", [](const STLRom::STLMonitor &self, py::dict) { return STLRom::STLMonitor(self); })
 		.def("__del__", [](STLRom::STLMonitor *instance) { delete instance; }) // Bind the destructor
-
+		.def("get_signals_names",&STLRom::STLMonitor::get_signals_names) 
 		.def_readwrite("rob",&STLRom::STLMonitor::rob)
 		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)

@@ -8,7 +8,7 @@ namespace STLRom {
     Interpol Signal::interpol = Interpol::LINEAR; 
 
     double Signal::BigM = 10000.;
-    double Signal::Eps = 0.1;
+    double Signal::Eps = 1e-10;
 
     /* 
      * class Signal member functions
@@ -71,8 +71,9 @@ namespace STLRom {
     void Signal::appendSample(double t, double v, double d)
     {
         if ((t <= endTime) && size() > 0)
+        {            
             return;
-
+        }
         switch (Signal::interpol)
         {
         case Interpol::PREVIOUS:

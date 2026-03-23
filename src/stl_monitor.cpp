@@ -52,4 +52,10 @@ namespace STLRom
 			}			
             return rob;
         }
+	
+	string STLMonitor::get_signals_names() const
+	{
+    	return signal_map_to_string(signal_map);
+	}
+	
 }

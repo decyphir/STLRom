@@ -132,6 +132,8 @@ namespace STLRom
             }
         }
 
+        string get_signals_names() const;
+
         inline void set_semantics(const std::string &sem)
         {
             if (sem == "SPACE")
@@ -259,12 +261,7 @@ namespace STLRom
         double eval_rob(double, double);
 
         string get_signal_names() const;
-
-        inline Signal get_signal() const
-        {
-            return formula->get_signal();
-        }
-
+    
         // display stuff
         inline void display_signal_names() const
         {

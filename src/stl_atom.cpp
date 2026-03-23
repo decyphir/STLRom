@@ -10,6 +10,7 @@
 #ifdef IS_PC
 #include <minmax.h>
 #endif
+//#define DEBUG__
 
 namespace STLRom {
 
@@ -150,8 +151,9 @@ namespace STLRom {
             first_pass = false;
         }
 
-        z.endTime = endTime;
-
+        //z.endTime = endTime;        
+        z.endTime = end_time; // I know, can be confusing. 
+        
         Signal z_space;
         switch (Signal::semantics) {
 			case Semantics::SPACE:
@@ -197,8 +199,8 @@ namespace STLRom {
 			}
 		}
 
-        if (t>end_time)  
-            z.endTime = end_time;
+        //if (t>end_time)  
+        z.endTime = end_time;
         
         if (z.endTime>start_time)
             z.resize(start_time, max(start_time,z.endTime),v);  // if we reached start_time trim everything before

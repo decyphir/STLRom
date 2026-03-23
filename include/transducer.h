@@ -39,7 +39,10 @@ namespace STLRom {
         transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
         
         virtual transducer * clone() const {return NULL;};
-
+        virtual transducer * get_child()  const {return NULL;};
+        virtual transducer * get_childL()  const {return NULL;};
+        virtual transducer * get_childR()  const {return NULL;}; 
+        
         virtual ~transducer() {};
 
         // Reset z, z_low, z_up
@@ -64,7 +67,14 @@ namespace STLRom {
         {
             param_map_ptr= &map;
         }
-                        
+        
+        inline double get_last_data_time() const 
+        {
+            if (trace_data_ptr->empty())
+                return 0.; // reasonable default ? 
+            else
+                return (trace_data_ptr->back()).front(); // time of last data sample
+        }
         // compute quantitative semantics for current data
         virtual double compute_robustness(){    
             return 0;};
@@ -84,13 +94,19 @@ namespace STLRom {
         //TODO fix print mess
         virtual void print() const {};
         virtual void print(ostream &os) const {};
-
+        friend std::ostream& operator<<(std::ostream& os, const transducer& t);
+        string get_formula_string() const
+        {
+            ostringstream os;
+            os << *this;
+            return  os.str();
+        };  
+            
         void print_trace(); 
 
         // looks into param_map for a parameter value - returns success
         bool get_param(const string&, double &);
         virtual void set_param(const string&, double); 
-        Signal get_signal() const;
 
     };
 
@@ -118,6 +134,9 @@ namespace STLRom {
             param_map_ptr= &map;
             child->set_param_map_ptr(map);            
         }
+
+        virtual transducer * get_child()  const {return child;};
+        
 
         // update quantitative semantics based on new data
         virtual double update_robustness();
@@ -163,6 +182,10 @@ namespace STLRom {
             childL->set_param_map_ptr(map);
             childR->set_param_map_ptr(map);
         }
+
+        virtual transducer * get_childL()  const {return childL;};
+        virtual transducer * get_childR()  const {return childR;}; 
+        
 
         virtual ~binary_transducer() {
             delete childL;

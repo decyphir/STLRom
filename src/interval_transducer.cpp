@@ -1,7 +1,7 @@
 #include <transducer.h>
 #include <algorithm>
 #include <math.h>
-//#define DEBUG__
+#define DEBUG__
 
 namespace STLRom {
 
@@ -11,33 +11,50 @@ namespace STLRom {
     // the ends 
     double transducer::compute_lower_rob(){
 #ifdef DEBUG__
-        printf(">  transducer:computer_lower_rob              IN.\n");
-#endif
+        printf(">  transducer:compute_lower_rob              IN.\n");
+        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
+        cout << "last data time:" << get_last_data_time() << endl; 
+        #endif
         compute_robustness();
-        if (z.endTime < start_time) {
-            
-            z_low.appendSample(start_time, BOTTOM); 
-        }
-        else
-            z_low = z;
 #ifdef DEBUG__
-        printf( "<  transducer:computer_lower_rob              OUT.\n");
+        cout << "z:" << z << endl;
+#endif
+
+        z_low = z;
+        double missing_time = end_time-get_last_data_time();
+        if (missing_time>0) 
+        {   
+            z_low.endTime = get_last_data_time();         
+            z_low.appendSample(get_last_data_time()+min(Signal::Eps, missing_time), BOTTOM); 
+            z_low.endTime = end_time;
+        }
+        
+#ifdef DEBUG__
+        printf( "<  transducer:compute_lower_rob              OUT.\n");
 #endif
         return z_low.front().value;
     };
 
     double transducer::compute_upper_rob(){
 #ifdef DEBUG__
-        printf( ">  transducer:computer_upper_rob              IN.\n");
+        printf( ">  transducer:compute_upper_rob              IN.\n");
 #endif
         compute_robustness();
-        if (z.endTime < start_time) {
-            z_up.appendSample(start_time, BOTTOM); 
-        }
-        else
-            z_up = z;
 #ifdef DEBUG__
-        printf( "<  transducer:computer_upper_rob              OUT.\n");
+        cout << "z:" << z << endl;
+#endif
+        z_up = z;
+        double missing_time = end_time-get_last_data_time();
+        if (missing_time>0) 
+        {                        
+            z_up.endTime = get_last_data_time();
+            z_up.appendSample(get_last_data_time()+min(Signal::Eps, missing_time), TOP); 
+            z_up.endTime = end_time;
+            
+        }
+        
+#ifdef DEBUG__
+        printf( "<  transducer:compute_upper_rob              OUT.\n");
 #endif
         return z_up.front().value;
     };
@@ -45,7 +62,7 @@ namespace STLRom {
     
     double and_transducer::compute_lower_rob(){
 #ifdef DEBUG__
-        printf( ">  and_transducer:computer_lower_rob           IN.\n");
+        printf( ">  and_transducer:compute_lower_rob           IN.\n");
 #endif
         childL->compute_lower_rob();  
         childR->compute_lower_rob();
@@ -54,14 +71,14 @@ namespace STLRom {
         if (z_low.empty())
             z_low.appendSample(start_time, BOTTOM);
 #ifdef DEBUG__
-        printf( "<  and_transducer:computer_lower_rob           OUT.\n");
+        printf( "<  and_transducer:compute_lower_rob           OUT.\n");
 #endif
         return z_low.front().value;
     };
 
     double and_transducer::compute_upper_rob(){
 #ifdef DEBUG__
-        printf( ">  and_transducer:computer_upper_rob           IN.\n");
+        printf( ">  and_transducer:compute_upper_rob           IN.\n");
 #endif
         childL->compute_upper_rob();
         childR->compute_upper_rob();
@@ -70,7 +87,7 @@ namespace STLRom {
         if (z_up.empty())
             z_up.appendSample(start_time,TOP);
 #ifdef DEBUG__
-        printf( "<  and_transducer:computer_upper_rob           OUT.\n");
+        printf( "<  and_transducer:compute_upper_rob           OUT.\n");
 #endif
         return z_up.front().value;
     };
