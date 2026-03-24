@@ -204,23 +204,23 @@ namespace STLRom {
                     if (e.type == PLUS_EPS) {
                         if (comp == comparator::EQUAL) {
                             if (e.isAscending) {
-                                z.appendSample(e.t, -Signal::Eps, d_prev);
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev));
                             } else {
-                                z.appendSample(e.t, 0., d_prev);
+                                z.appendSample(e.t, ZERO_POS, fabs(d_prev));
                             }
                         } else { // comp is LESSTHAN or GREATERTHAN
                             if (e.isAscending) {
                                 z.appendSample(e.t, Signal::Eps, d_prev);
                             } else {
-                                z.appendSample(e.t, 0, d_prev);
+                                z.appendSample(e.t, ZERO_NEG, d_prev);
                             }
                         }
                     } else if (e.type == MINUS_EPS) {
                         if (comp == comparator::EQUAL) { 
                             if (e.isAscending) {
-                                z.appendSample(e.t, 0., d_prev);
+                                z.appendSample(e.t, ZERO_POS, fabs(d_prev));
                             } else {
-                                z.appendSample(e.t, -Signal::Eps, d_prev);
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev));
                             }
                         } else { // comp is LESSTHAN or GREATERTHAN
                             if (e.isAscending) {
