@@ -4,20 +4,32 @@ STLRom is a C++ library with python bindings for Robust online monitoring of Sig
 
 ## Install
 
-stlrom is only available on Linux based systems.
+### Install from pypi 
 
-### Building the C++ library 
-
-STLRom is primarily a C++ library. It comes with a standard cmake configuration file. Assuming cmake and a C++ development environment are installed, a library called stlromlib can be built with
-
+In an environment with pip, first make sure that `python-dev` or equivalent is installed, e.g., in Ubuntu 24.04:
+```bash
+sudo apt install python-dev-is-python3
 ```
-mkdir build; cd build
-cmake ..
-make
+To build the library, `bison` and `flex` are also required.  Then build and install with pip:
+
+```bash
+pip install stlrom
 ```
 
-### Python bindings
+### Install from source 
 
+Requirements: same as above (`bison`,`flex` and `python-dev`).
+
+### Python
+
+#### Using `pip`
+
+From the `stlrom` folder, install with 
+```bash
+pip install -e .
+```
+
+#### Using `uv`
 A python interface for stlrom is implemented with pybind11. To build and install it in a local virtual environment we recommend using [uv](https://docs.astral.sh/uv/getting-started/installation/).
 To create a virtual environment, build and install stlrom, run:
 
@@ -34,33 +46,38 @@ It is also possible to install the Python interface by simply running the follow
 uv sync
 ```
 
-Note, however, that this does not activate the virtual environment. You can run Python files that use the created `stlrom` library by running:
-
-```bash
-uv run python filename.py
-```
-
-Or you can activate the virtual environment by running
+then you can activate the virtual environment by running
 ```bash
 source .venv/bin/activate
 ```
 and then using Python normally inside the virtual enviornment.
 
-### Testing the C++ Library
-
-After running `cmake` in the `build` folder and building the C++ library using `make`, you can run:
-```bash
-make test-cpp
-```
-to run C++ test files in the `test` folder.
-
-### Testing the python bindings
+#### Testing the python bindings
 
 In the build folder, execute
 ```bash
 make test-python
 ```
 This will run the unit tests python programs from the `test` folder. This assumes having run `cmake`, having built the Python library, and having activated the `uv` virtual environment.
+
+
+### Building the C++ library only
+
+STLRom is primarily a C++ library. It comes with a standard cmake configuration file. Assuming cmake and a C++ development environment are installed, a library called stlromlib can be built with
+
+```
+mkdir build; cd build
+cmake ..
+make
+```
+
+#### Testing the C++ Library
+
+After running `cmake` in the `build` folder and building the C++ library using `make`, you can run:
+```bash
+make test-cpp
+```
+to run C++ test files in the `test` folder.
 
 **Note**: you can also execute `make test` to run both C++ and Python test units.
 

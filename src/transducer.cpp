@@ -149,28 +149,20 @@ namespace STLRom {
     }
 
     double ev_transducer::compute_robustness() {
-#ifdef DEBUG__
+
+        #ifdef DEBUG__
         printf(">  ev_transducer::compute_robustness:         IN." );
         cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
         cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
-#endif
+        #endif
 
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
         child->compute_robustness();
-        //if (z.empty()) // first run 
-
+    
         z.compute_timed_eventually(child->z, a, b);
-
-        //else // is there new stuff ? 
-        //    {
-        //       new z.endTime+b,  is anything beyond that 
-        //       useless 
-        //       child->z.endTime
-        //    }
-        
 
         double et = min(z.endTime,end_time);
         (child->z).resize(et-b, (child->z).endTime, 0.);
@@ -285,10 +277,6 @@ namespace STLRom {
     }
 
     /* Utility functions */
-
-    Signal transducer::get_signal() const {
-        return z;
-    }
 
     bool transducer::get_param(const string & param, double & val) {
         

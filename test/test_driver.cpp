@@ -1,4 +1,4 @@
-    #include <stdio.h>
+#include <stdio.h>
 #include "stl_driver.h"
 #include <string>
 #include <vector>
