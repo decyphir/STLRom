@@ -1,7 +1,6 @@
 import sys
 sys.path.append('../build')
 import stlrom
-import matplotlib.pyplot as plt
 import numpy as np
 import time
 

@@ -84,6 +84,11 @@ PYBIND11_MODULE(_stlrom, m) {
 	//Class Signal
 	py::class_<STLRom::Signal>(m, "Signal")
 		.def(py::init<>())
+		.def("__str__", [](const Signal &sig) {
+            std::ostringstream oss;
+            oss << sig;
+            return oss.str();
+        })		
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
 		.def("compute_not",&STLRom::Signal::compute_not)	
@@ -112,11 +117,28 @@ PYBIND11_MODULE(_stlrom, m) {
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
 	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
+	
+	//Class transducer 
+	py::class_<STLRom::transducer>(m, "transducer")
+		.def(py::init<>())
+		.def("__str__", [](const transducer &transducer) {
+            std::ostringstream oss;
+            oss << transducer;
+            return oss.str();
+        })
+		.def("get_child",&STLRom::transducer::get_child)		
+		.def("get_childL",&STLRom::transducer::get_childL)		
+		.def("get_childR",&STLRom::transducer::get_childR)
+		.def("get_formula_string",&STLRom::transducer::get_formula_string)				
+		.def_readwrite("z",&STLRom::transducer::z)
+		.def_readwrite("z_low",&STLRom::transducer::z_low)
+		.def_readwrite("z_up",&STLRom::transducer::z_up)
+		;
 
 	//Class STLMonitor
 	py::class_<STLRom::STLMonitor>(m, "STLMonitor")
 		.def(py::init<>())
-		.def("__repr__", [](const STLMonitor &monitor) {
+		.def("__str__", [](const STLMonitor &monitor) {
             std::ostringstream oss;
             oss << monitor;
             return oss.str();
@@ -133,17 +155,17 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("eval_rob",(double (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
-		.def("get_param",&STLRom::STLMonitor::get_param)
-		.def("get_signal",&STLRom::STLMonitor::get_signal)
+		.def("get_param",&STLRom::STLMonitor::get_param)		
  		.def("display_formula",&STLRom::STLMonitor::display_formula) 		
 		.def("copy", [](const STLRom::STLMonitor &self) { return STLRom::STLMonitor(self); })
 		.def("__copy__", [](const STLRom::STLMonitor &self) { return STLRom::STLMonitor(self); })
 		.def("__deepcopy__", [](const STLRom::STLMonitor &self, py::dict) { return STLRom::STLMonitor(self); })
 		.def("__del__", [](STLRom::STLMonitor *instance) { delete instance; }) // Bind the destructor
-
+		.def("get_signals_names",&STLRom::STLMonitor::get_signals_names) 
 		.def_readwrite("rob",&STLRom::STLMonitor::rob)
 		.def_readwrite("lower_rob",&STLRom::STLMonitor::lower_rob)
 		.def_readwrite("upper_rob",&STLRom::STLMonitor::upper_rob)
+		.def_readwrite("up_to_date",&STLRom::STLMonitor::up_to_date)		
 		.def_readwrite("formula",&STLRom::STLMonitor::formula)
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
@@ -152,7 +174,12 @@ PYBIND11_MODULE(_stlrom, m) {
 
 	//Class STLDriver
 	py::class_<STLRom::STLDriver>(m, "STLDriver")
-		.def(py::init<>())
+		.def(py::init<>())				
+		.def("__str__", [](const STLDriver &dd) {
+            std::ostringstream oss;
+            oss << dd;
+            return oss.str();
+        })				
 		.def("parse_file", [](STLRom::STLDriver &self, const std::string &filename) {
         return self.parse_file(filename);
     	})
