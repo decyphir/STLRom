@@ -183,21 +183,21 @@ namespace STLRom {
     void Signal::resize(double s, double t, double v) {
         // Resize signal to begin at time s and end at time t 
 
-#ifdef DEBUG__
+    #ifdef DEBUG__
             printf(">>>Signal::resize:                            IN.\n");
         cout << "to start_time:" << s << " and end_time:" << t << endl;
         cout << "IN: " << *this << endl;
-#endif
+    #endif
 
         if ( t<s-1e-14 ) {
             clear();
             beginTime=0.;
             endTime=0.;
 
-#ifdef DEBUG__
+    #ifdef DEBUG__
             cout << "OUT(premature): " << *this << endl;
             printf("<<<Signal::resize:                            OUT.\n");
-#endif
+    #endif
             return;
         }
         else 

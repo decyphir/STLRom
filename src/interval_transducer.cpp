@@ -10,95 +10,97 @@ namespace STLRom {
     // default (static): interval robustness is the same as normal robustness, with TOPs and BOTTOMs at
     // the ends 
     double transducer::compute_lower_rob(){
-#ifdef DEBUG__
+    #ifdef DEBUG__
         printf(">  transducer:compute_lower_rob              IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
         cout << "last data time:" << get_last_data_time() << endl; 
-        #endif
+    #endif
         
         // if for some reason, z was not computed before
         if (z.empty()) // is it the best test ?
             compute_robustness();
 
-#ifdef DEBUG__
-        cout << "z:" << z << endl;
-#endif
+    #ifdef DEBUG__
+        cout << "z :" << z << endl;
+    #endif
 
         z_low = z;
-        double missing_time = end_time-get_last_data_time();
-        if (missing_time>0) 
+        double last_data_t =  get_last_data_time();
+        
+        if (end_time>last_data_t) 
         {   
-            z_low.endTime = get_last_data_time();         
-            z_low.appendSample(get_last_data_time()+min(Signal::Eps, missing_time), BOTTOM); 
+            z_low.resize(start_time, last_data_t, BOTTOM);
+            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0.);
             z_low.endTime = end_time;
         }
         
-#ifdef DEBUG__
+    #ifdef DEBUG__
         cout << "z_low:" << z_low << endl;
         printf( "<  transducer:compute_lower_rob              OUT.\n");
          
-#endif
+    #endif
         z_low.simplify();
         return z_low.front().value;
     };
 
     double transducer::compute_upper_rob(){
-#ifdef DEBUG__
+    
+    #ifdef DEBUG__
         printf( ">  transducer:compute_upper_rob              IN.\n");
-#endif
+    #endif
         //compute_robustness();
-#ifdef DEBUG__
+    #ifdef DEBUG__
         cout << "z:" << z << endl;
-#endif
+    #endif
         // if for some reason, z was not computed before
         if (z.empty()) // is it the best test ?
             compute_robustness();
-
         z_up = z;
-        double missing_time = end_time-get_last_data_time();
-        if (missing_time>0) 
-        {                        
-            z_up.endTime = get_last_data_time();
-            z_up.appendSample(get_last_data_time()+min(Signal::Eps, missing_time), TOP); 
-            z_up.endTime = end_time;            
-        }
+        double last_data_t =  get_last_data_time();
         
-#ifdef DEBUG__
+        if (end_time>last_data_t) 
+        {   
+            z_up.resize(start_time, last_data_t, TOP);
+            z_up.appendSample(last_data_t+Signal::Eps, TOP, 0.);
+            z_up.endTime = end_time;
+        }
+
+    #ifdef DEBUG__
         printf( "<  transducer:compute_upper_rob              OUT.\n");
-#endif
+    #endif
+        z_up.simplify();
         return z_up.front().value;
     };
-
     
     double and_transducer::compute_lower_rob(){
-#ifdef DEBUG__
+        #ifdef DEBUG__
         printf( ">  and_transducer:compute_lower_rob           IN.\n");
-#endif
+        #endif
         childL->compute_lower_rob();  
         childR->compute_lower_rob();
         z_low.compute_and(childL->z_low,childR->z_low);
         z_low.resize(start_time, min(childL->z_low.endTime,childR->z_low.endTime),BOTTOM);
         if (z_low.empty())
             z_low.appendSample(start_time, BOTTOM);
-#ifdef DEBUG__
+        #ifdef DEBUG__
         printf( "<  and_transducer:compute_lower_rob           OUT.\n");
-#endif
+        #endif
         return z_low.front().value;
     };
 
     double and_transducer::compute_upper_rob(){
-#ifdef DEBUG__
+        #ifdef DEBUG__
         printf( ">  and_transducer:compute_upper_rob           IN.\n");
-#endif
+        #endif
         childL->compute_upper_rob();
         childR->compute_upper_rob();
         z_up.compute_and(childL->z_up,childR->z_up);
         z_up.resize(start_time,z_up.endTime,TOP);
         if (z_up.empty())
             z_up.appendSample(start_time,TOP);
-#ifdef DEBUG__
+        #ifdef DEBUG__
         printf( "<  and_transducer:compute_upper_rob           OUT.\n");
-#endif
+        #endif
         return z_up.front().value;
     };
 
@@ -187,20 +189,17 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
-        child->compute_lower_rob();
+        child->compute_lower_rob(); // 
 
-// Maybe there was/is a good reason for, feels like I'll regret it        
+        // Maybe there was/is a good reason for, feels like I'll regret it        
 //      if (child->z_low.endTime < a) {
 //         z_low.appendSample(start_time, BOTTOM); 
 //          return BOTTOM;
 //      }
     
-        z_low.compute_timed_eventually(child->z_low, a, b);
-
+        z_low.compute_timed_eventually(child->z_low, a, b);        
         double et =min(z_low.endTime,end_time);
-        (child->z_low).resize(et-b, (child->z_low).endTime, 0.);
-
-        z_low.resize(start_time,max(start_time,et), 0.);
+        z_low.resize(start_time,max(start_time,et), BOTTOM);
 
         if (z_low.empty()) // why not, but can this really happen ?
             z_low.appendSample(start_time, BOTTOM); 

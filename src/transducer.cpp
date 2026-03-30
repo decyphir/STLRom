@@ -160,13 +160,9 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
-        child->compute_robustness();
-    
+        child->compute_robustness();        
         z.compute_timed_eventually(child->z, a, b);
-
         double et = min(z.endTime,end_time);
-        (child->z).resize(et-b, (child->z).endTime, 0.);
-
         z.resize(start_time,max(start_time,et), 0.);
 
 #ifdef DEBUG__
@@ -186,8 +182,8 @@ namespace STLRom {
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
+        
         child->compute_robustness();
-
         z.compute_timed_globally(child->z, a, b);
         double et =min(z.endTime,end_time);
         z.resize(start_time,max(start_time, et ),0.);
