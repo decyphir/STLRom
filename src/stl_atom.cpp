@@ -14,11 +14,10 @@
 
 namespace STLRom {
 
-    enum CrossType { PLUS_EPS, ZERO, MINUS_EPS };
     // struct used to track epsilon crossings
     struct Crossing {
         double t;
-        CrossType type;
+        bool isPlus; // true if crossing +epsilon, false if crossing -epsilon
         bool isAscending;
     };
 
@@ -156,7 +155,7 @@ namespace STLRom {
             if (!first_pass) {
 
                 // array to track +/- epsilon crossings
-                Crossing events[3];
+                Crossing events[2];
                 int crossing_count = 0;
           
                 // check for +epsilon crossing
@@ -166,7 +165,7 @@ namespace STLRom {
                 double t_plus_epsilon_cross;
                 if (plus_epsilon_cross) {
                     t_plus_epsilon_cross = t_prev + (Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is +eps
-                    events[crossing_count++] = {t_plus_epsilon_cross, CrossType::PLUS_EPS, plus_ascending_cross};
+                    events[crossing_count++] = {t_plus_epsilon_cross, true, plus_ascending_cross};
                 }
 
                 // check for -epsilon crossing
@@ -176,32 +175,20 @@ namespace STLRom {
                 double t_minus_epsilon_cross;
                 if (minus_epsilon_cross) {
                     t_minus_epsilon_cross = t_prev + (-Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is -eps
-                    events[crossing_count++] = {t_minus_epsilon_cross, CrossType::MINUS_EPS, minus_ascending_cross};
+                    events[crossing_count++] = {t_minus_epsilon_cross, false, minus_ascending_cross};
                 }
 
-                // check for zero crossing
-                bool zero_descending_cross = v_prev_neq > 0 && d_prev_neq < 0 && v_neq < 0;
-                bool zero_ascending_cross = v_prev_neq < 0 && d_prev_neq > 0 && v_neq > 0;
-                bool zero_epsilon_cross = zero_ascending_cross || zero_descending_cross;
-                double t_zero_epsilon_cross;
-                if (zero_epsilon_cross) {
-                    t_zero_epsilon_cross = t_prev + (-v_prev_neq) / d_prev_neq; // t at which v is 0
-                    events[crossing_count++] = {t_zero_epsilon_cross, CrossType::ZERO, zero_ascending_cross};
-                }
+                
 
                 // sort events by time
-                for (int i = 0; i < crossing_count - 1; ++i) {
-                    for (int j = i + 1; j < crossing_count; ++j) {
-                        if (events[i].t > events[j].t) {
-                            std::swap(events[i], events[j]);
-                        }
-                    }
+                if (crossing_count == 2 && events[0].t > events[1].t) {
+                    std::swap(events[0], events[1]);
                 }
 
                 for (int i = 0; i < crossing_count; i++) {
                     auto e = events[i];
 
-                    if (e.type == PLUS_EPS) {
+                    if (e.isPlus) {
                         if (comp == comparator::EQUAL) {
                             if (e.isAscending) {
                                 z.appendSample(e.t, -Signal::Eps, -fabs(d_prev));
@@ -215,7 +202,7 @@ namespace STLRom {
                                 z.appendSample(e.t, ZERO_NEG, d_prev);
                             }
                         }
-                    } else if (e.type == MINUS_EPS) {
+                    } else {
                         if (comp == comparator::EQUAL) { 
                             if (e.isAscending) {
                                 z.appendSample(e.t, ZERO_POS, fabs(d_prev));
@@ -229,12 +216,7 @@ namespace STLRom {
                                 z.appendSample(e.t, -Signal::Eps, d_prev);
                             }
                         }
-                    } else { // zero crossing
-                        if (comp == comparator::EQUAL) {
-                            cout << "appending zero equal ";
-                            z.appendSample(e.t, Signal::Eps, -fabs(d_prev));
-                        }
-                    }
+                    } 
                 }
     
             }
