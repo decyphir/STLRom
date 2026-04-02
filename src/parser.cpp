@@ -35,7 +35,7 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 69 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 69 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 
     #include <iostream>
     #include "scanner.h"
@@ -58,7 +58,7 @@
     
     using namespace STLRom;
 
-#line 62 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 62 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
 
 
 
@@ -156,9 +156,9 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 42 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 42 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 namespace  STLRom  {
-#line 162 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 162 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
 
   /// Build a parser object.
    Parser :: Parser  (STLRom::Scanner &scanner_yyarg, STLRom::STLDriver &driver_yyarg)
@@ -261,6 +261,7 @@ namespace  STLRom  {
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.YY_MOVE_OR_COPY< std::string > (YY_MOVE (that.value));
         break;
 
@@ -317,6 +318,7 @@ namespace  STLRom  {
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.move< std::string > (YY_MOVE (that.value));
         break;
 
@@ -373,6 +375,7 @@ namespace  STLRom  {
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.copy< std::string > (that.value);
         break;
 
@@ -428,6 +431,7 @@ namespace  STLRom  {
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.move< std::string > (that.value);
         break;
 
@@ -728,6 +732,7 @@ namespace  STLRom  {
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         yylhs.value.emplace< std::string > ();
         break;
 
@@ -756,45 +761,45 @@ namespace  STLRom  {
           switch (yyn)
             {
   case 2: // constant: "constant"
-#line 176 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 178 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < std::string > () = yystack_[0].value.as < std::string > ();
         }
-#line 764 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 769 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 3: // constant: "param_id"
-#line 181 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 183 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
            yylhs.value.as < std::string > () = yystack_[0].value.as < std::string > ();
         }
-#line 772 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 777 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 4: // constant_signal: "constant"
-#line 187 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 189 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = new constant_transducer(yystack_[0].value.as < std::string > ());
             yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
             yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
             yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
         }
-#line 783 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 788 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 5: // constant_signal: "param_id"
-#line 195 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 197 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
            yylhs.value.as < STLRom::transducer* > () = new constant_transducer(yystack_[0].value.as < std::string > ());
            yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
            yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
            yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
         }
-#line 794 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 799 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 6: // signal: "signal_id" "[" "time" "]"
-#line 203 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 205 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = new signal_transducer(yystack_[3].value.as < std::string > ());
 
@@ -816,199 +821,233 @@ namespace  STLRom  {
                 YYERROR;
             }
         }
-#line 820 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 825 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 7: // signal_atom: signal
-#line 227 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 229 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
         }
-#line 828 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 833 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 8: // signal_atom: constant_signal
-#line 232 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 234 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
         }
-#line 836 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 841 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 9: // signal_atom: "(" signal_expr ")"
-#line 237 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 239 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
 	       yylhs.value.as < STLRom::transducer* > () = yystack_[1].value.as < STLRom::transducer* > ();
 	    }
-#line 844 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 849 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 10: // signal_unaryexpr: signal_atom
-#line 242 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 244 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
 	      yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
 	    }
-#line 852 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 857 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 11: // signal_unaryexpr: "abs" "(" signal_expr ")"
-#line 246 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 248 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = new abs_transducer(yystack_[1].value.as < STLRom::transducer* > ());
             yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
             yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
             yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
         }
-#line 863 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 868 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 12: // signal_unaryexpr: "-" signal_unaryexpr
-#line 253 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 255 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = new unary_minus_transducer(yystack_[0].value.as < STLRom::transducer* > ());
             yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
             yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
             yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
         }
-#line 874 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 879 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 13: // signal_unaryexpr: "+" signal_unaryexpr
-#line 260 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 262 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
         }
-#line 882 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 887 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 14: // signal_multexpr: signal_unaryexpr
-#line 265 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 267 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
 	      yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
 	    }
-#line 890 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 895 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 15: // signal_multexpr: signal_multexpr "*" signal_unaryexpr
-#line 269 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 271 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
           {
 	      yylhs.value.as < STLRom::transducer* > () = new mult_transducer(yystack_[2].value.as < STLRom::transducer* > (), yystack_[0].value.as < STLRom::transducer* > ());
           yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
           yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
           yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
           }
-#line 901 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 906 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 16: // signal_addexpr: signal_multexpr
-#line 277 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 279 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
 	      yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
 	    }
-#line 909 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 914 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 17: // signal_addexpr: signal_addexpr "+" signal_multexpr
-#line 281 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 283 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
           {
 	      yylhs.value.as < STLRom::transducer* > () = new plus_transducer(yystack_[2].value.as < STLRom::transducer* > (), yystack_[0].value.as < STLRom::transducer* > ());
           yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
           yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
           yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
           }
-#line 920 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 925 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 18: // signal_addexpr: signal_addexpr "-" signal_multexpr
-#line 288 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 290 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
           {
 	        yylhs.value.as < STLRom::transducer* > () = new minus_transducer(yystack_[2].value.as < STLRom::transducer* > (), yystack_[0].value.as < STLRom::transducer* > ());
             yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
             yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
             yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
           }
-#line 931 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 936 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 19: // signal_expr: signal_addexpr
-#line 296 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 298 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
         {
             yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
         }
-#line 939 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 944 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 20: // stl_atom: signal_expr op signal_expr
-#line 302 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 304 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
           {
               yylhs.value.as < STLRom::transducer* > () = new stl_atom(yystack_[2].value.as < STLRom::transducer* > (), yystack_[1].value.as < std::string > (), yystack_[0].value.as < STLRom::transducer* > ());
               yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
               yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
               yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
           }
-#line 950 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 955 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 21: // op: "<"
-#line 310 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 312 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
                { yylhs.value.as < std::string > () = "<"; }
-#line 956 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 961 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
   case 22: // op: ">"
-#line 311 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 313 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
                { yylhs.value.as < std::string > () = ">"; }
-#line 962 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 967 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 23: // interval: "[" constant "," constant "]"
-#line 315 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 23: // op: "=" "="
+#line 314 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
+                              { yylhs.value.as < std::string > () = "="; }
+#line 973 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
+    break;
+
+  case 24: // op_eq: "<="
+#line 318 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
+               { yylhs.value.as < std::string > () = ">"; }
+#line 979 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
+    break;
+
+  case 25: // op_eq: ">="
+#line 319 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
+               { yylhs.value.as < std::string > () = "<"; }
+#line 985 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
+    break;
+
+  case 26: // interval: "[" constant "," constant "]"
+#line 323 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
          {
              yylhs.value.as < STLRom::interval* > () = new interval(yystack_[3].value.as < std::string > (), yystack_[1].value.as < std::string > ());
          }
-#line 970 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 993 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 24: // interval: "[" constant constant "]"
-#line 320 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 27: // interval: "[" constant constant "]"
+#line 328 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
          {
              yylhs.value.as < STLRom::interval* > () = new interval(yystack_[2].value.as < std::string > (), yystack_[1].value.as < std::string > ());
          }
-#line 978 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1001 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 25: // stl_formula: stl_atom
-#line 326 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 28: // stl_formula: signal_expr op_eq signal_expr
+#line 334 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
+             {
+                auto atom = new stl_atom(yystack_[2].value.as < STLRom::transducer* > (), yystack_[1].value.as < std::string > (), yystack_[0].value.as < STLRom::transducer* > ());
+                atom->trace_data_ptr = &driver.data;
+                atom->param_map = driver.param_map;
+                atom->signal_map = driver.signal_map;
+
+                yylhs.value.as < STLRom::transducer* > () = new not_transducer(atom);
+                yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
+                yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
+                yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
+             }
+#line 1017 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
+    break;
+
+  case 29: // stl_formula: stl_atom
+#line 346 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = yystack_[0].value.as < STLRom::transducer* > ();
              }
-#line 986 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1025 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 26: // stl_formula: "not" stl_formula
-#line 330 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 30: // stl_formula: "not" stl_formula
+#line 350 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = new not_transducer(yystack_[0].value.as < STLRom::transducer* > ());
                  yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
                  yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
                  yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
              }
-#line 997 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1036 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 27: // stl_formula: stl_formula "and" stl_formula
-#line 337 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 31: // stl_formula: stl_formula "and" stl_formula
+#line 357 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = new and_transducer(yystack_[2].value.as < STLRom::transducer* > (), yystack_[0].value.as < STLRom::transducer* > ());
                  yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
                  yylhs.value.as < STLRom::transducer* > ()->param_map = driver.param_map;
                  yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
              }
-#line 1008 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1047 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 28: // stl_formula: stl_formula "or" stl_formula
-#line 344 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 32: // stl_formula: stl_formula "or" stl_formula
+#line 364 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = new or_transducer(yystack_[2].value.as < STLRom::transducer* > (), yystack_[0].value.as < STLRom::transducer* > ());
                  yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
@@ -1016,11 +1055,11 @@ namespace  STLRom  {
                  yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
 
              }
-#line 1020 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1059 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 29: // stl_formula: stl_formula "=>" stl_formula
-#line 352 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 33: // stl_formula: stl_formula "=>" stl_formula
+#line 372 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = new implies_transducer(yystack_[2].value.as < STLRom::transducer* > (), yystack_[0].value.as < STLRom::transducer* > ());
                  yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
@@ -1028,11 +1067,11 @@ namespace  STLRom  {
                  yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
 
              }
-#line 1032 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1071 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 30: // stl_formula: "ev" interval stl_formula
-#line 360 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 34: // stl_formula: "ev" interval stl_formula
+#line 380 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                 yylhs.value.as < STLRom::transducer* > () = new ev_transducer(yystack_[1].value.as < STLRom::interval* > (), yystack_[0].value.as < STLRom::transducer* > ());
                 yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
@@ -1040,11 +1079,11 @@ namespace  STLRom  {
                  yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
 
              }
-#line 1044 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1083 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 31: // stl_formula: "alw" interval stl_formula
-#line 368 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 35: // stl_formula: "alw" interval stl_formula
+#line 388 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = new alw_transducer(yystack_[1].value.as < STLRom::interval* > (), yystack_[0].value.as < STLRom::transducer* > ());
                  yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
@@ -1052,11 +1091,11 @@ namespace  STLRom  {
                  yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
 
              }
-#line 1056 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1095 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 32: // stl_formula: stl_formula "until" interval stl_formula
-#line 376 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 36: // stl_formula: stl_formula "until" interval stl_formula
+#line 396 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                 yylhs.value.as < STLRom::transducer* > () = new until_transducer(yystack_[3].value.as < STLRom::transducer* > (), yystack_[1].value.as < STLRom::interval* > (), yystack_[0].value.as < STLRom::transducer* > ());
                 yylhs.value.as < STLRom::transducer* > ()->trace_data_ptr = &driver.data;
@@ -1064,19 +1103,19 @@ namespace  STLRom  {
                 yylhs.value.as < STLRom::transducer* > ()->signal_map = driver.signal_map;
 
              }
-#line 1068 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1107 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 33: // stl_formula: "(" stl_formula ")"
-#line 384 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 37: // stl_formula: "(" stl_formula ")"
+#line 404 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
                  yylhs.value.as < STLRom::transducer* > () = yystack_[1].value.as < STLRom::transducer* > ();
              }
-#line 1076 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1115 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 34: // stl_formula: "phi_id"
-#line 388 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 38: // stl_formula: "phi_id"
+#line 408 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
              {
 
                  transducer * ref = driver.formula_map[yystack_[0].value.as < std::string > ()];
@@ -1091,21 +1130,21 @@ namespace  STLRom  {
                      // TODO: copy variables (should be done in clone() no?)
                  }
              }
-#line 1095 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1134 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 35: // assignement: "new_id" ":=" stl_formula
-#line 406 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 39: // assignement: "new_id" ":=" stl_formula
+#line 426 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
             {
                 driver.formula_map[yystack_[2].value.as < std::string > ()] = yystack_[0].value.as < STLRom::transducer* > ();
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined formula " << yystack_[2].value.as < std::string > () << " = " << *yystack_[0].value.as < STLRom::transducer* > () << RESET << endl;
             }
-#line 1105 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1144 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 36: // param_assignement: "param_id" "=" "constant"
-#line 440 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 40: // param_assignement: "param_id" "=" "constant"
+#line 460 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
                  {
                     double val;
                     s_to_d( yystack_[0].value.as < std::string > (), val );
@@ -1113,11 +1152,11 @@ namespace  STLRom  {
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << yystack_[2].value.as < std::string > () << " re-assigned value " << val << RESET << endl;
                  }
-#line 1117 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1156 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 37: // param_assignement: "param_id" "=" "-" "constant"
-#line 448 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 41: // param_assignement: "param_id" "=" "-" "constant"
+#line 468 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
                  {
                     double val;
                     s_to_d( yystack_[0].value.as < std::string > (), val );
@@ -1126,11 +1165,11 @@ namespace  STLRom  {
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << yystack_[3].value.as < std::string > () << " re-assigned value " << val << RESET << endl;
                  }
-#line 1130 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1169 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 38: // param_assignement: "new_id" "=" "constant"
-#line 457 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 42: // param_assignement: "new_id" "=" "constant"
+#line 477 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
                  {
                     double val;
                     s_to_d( yystack_[0].value.as < std::string > (), val );
@@ -1138,11 +1177,11 @@ namespace  STLRom  {
                     if (driver.verbose_parser)
                         cout << CYAN << "New parameter " << yystack_[2].value.as < std::string > () << " assigned value " << val << RESET << endl;
                  }
-#line 1142 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1181 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 39: // param_assignement: "new_id" "=" "-" "constant"
-#line 465 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 43: // param_assignement: "new_id" "=" "-" "constant"
+#line 485 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
                  {
                     double val;
                     s_to_d( yystack_[0].value.as < std::string > (), val );
@@ -1151,29 +1190,29 @@ namespace  STLRom  {
                     if (driver.verbose_parser)
                         cout << CYAN << "New parameter " << yystack_[3].value.as < std::string > () << " assigned value " << val << RESET << endl;
                  }
-#line 1155 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1194 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 43: // signal_new: "new_id"
-#line 519 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 47: // signal_new: "new_id"
+#line 539 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
           {
                 short idx =  driver.signal_map.size()+1;
                 driver.signal_map[yystack_[0].value.as < std::string > ()] = idx;
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << yystack_[0].value.as < std::string > () << " with index " << idx << RESET << endl;
           }
-#line 1166 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1205 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
-  case 44: // signal_new: "signal_id"
-#line 526 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+  case 48: // signal_new: "signal_id"
+#line 546 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
           {
           }
-#line 1173 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1212 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
     break;
 
 
-#line 1177 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1216 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
 
             default:
               break;
@@ -1525,110 +1564,115 @@ namespace  STLRom  {
   }
 
 
-  const signed char  Parser ::yypact_ninf_ = -69;
+  const signed char  Parser ::yypact_ninf_ = -77;
 
   const signed char  Parser ::yytable_ninf_ = -1;
 
   const signed char
    Parser ::yypact_[] =
   {
-     -12,    -9,   -26,    -3,   -69,   -69,   -69,     2,    27,    37,
-     -69,    49,   -69,   -69,   -69,    61,    39,   -69,   -69,   -69,
-     -14,     3,    -9,   -26,    39,    39,    79,    79,    -2,    -2,
-      78,   -69,   -69,   -69,    81,   -69,   -69,   -69,   -69,    62,
-     -10,    71,   -69,    58,    54,   -69,    55,   -69,   -69,   -69,
-      42,    46,    43,     0,    39,    39,    -2,   -69,   -69,    -2,
-      72,    -2,    -2,    -2,   -69,   -69,    -2,    39,    39,    39,
-      79,   -69,   -69,   -69,   -69,   -69,   -69,   -17,   -69,   -69,
-      82,    84,    87,   -69,    62,    62,   -69,    65,    65,    65,
-      39,     0,    88,   -69,   -69,   -69,    89,   -69,   -69
+     -13,   -28,    -2,    18,   -77,   -77,   -77,     2,    -5,    30,
+     -77,    46,   -77,   -77,   -77,    69,    -4,   -77,   -77,   -77,
+      -8,    -1,   -28,    -2,    -4,    -4,    86,    86,    20,    20,
+      85,   -77,   -77,   -77,    88,   -77,   -77,   -77,   -77,    70,
+      31,    53,   -77,    64,    58,   -77,    60,   -77,   -77,   -77,
+      50,    61,    49,    34,    -4,    -4,    20,   -77,   -77,    20,
+      78,    20,    20,    20,   -77,   -77,    83,   -77,   -77,    20,
+      20,    -4,    -4,    -4,    86,   -77,   -77,   -77,   -77,   -77,
+     -77,   -12,   -77,   -77,    91,    92,    95,   -77,    70,    70,
+     -77,   -77,   -77,    72,    72,    72,    -4,    34,    96,   -77,
+     -77,   -77,    97,   -77,   -77
   };
 
   const signed char
    Parser ::yydefact_[] =
   {
-       0,     0,     0,     0,    48,    49,    50,     0,     0,     0,
-      40,    42,    43,    44,    45,    47,     0,    53,    51,    52,
+       0,     0,     0,     0,    52,    53,    54,     0,     0,     0,
+      44,    46,    47,    48,    49,    51,     0,    57,    55,    56,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     4,     5,    34,     0,     8,     7,    10,    14,    16,
-      19,     0,    25,    35,     0,    36,     0,    38,    41,    46,
-       0,     0,    26,     0,     0,     0,     0,    13,    12,     0,
-       0,     0,     0,     0,    21,    22,     0,     0,     0,     0,
-       0,    37,    39,     9,    33,     2,     3,     0,    31,    30,
-       0,     0,     0,    15,    17,    18,    20,    27,    28,    29,
-       0,     0,     0,    11,     6,    32,     0,    24,    23
+       0,     4,     5,    38,     0,     8,     7,    10,    14,    16,
+      19,     0,    29,    39,     0,    40,     0,    42,    45,    50,
+       0,     0,    30,     0,     0,     0,     0,    13,    12,     0,
+       0,     0,     0,     0,    21,    22,     0,    24,    25,     0,
+       0,     0,     0,     0,     0,    41,    43,     9,    37,     2,
+       3,     0,    35,    34,     0,     0,     0,    15,    17,    18,
+      23,    20,    28,    31,    32,    33,     0,     0,     0,    11,
+       6,    36,     0,    27,    26
   };
 
   const signed char
    Parser ::yypgoto_[] =
   {
-     -69,   -68,   -69,   -69,   -69,   -21,     5,   -69,   -18,   -69,
-     -69,   -23,   -24,    90,    74,   -69,    91,    76,   -69,   -69,
-     -69
+     -77,   -76,   -77,   -77,   -77,   -11,    25,   -77,   -17,   -77,
+     -77,   -77,   -23,   -24,    98,    82,   -77,    99,    84,   -77,
+     -77,   -77
   };
 
   const signed char
    Parser ::yydefgoto_[] =
   {
-       0,    77,    35,    36,    37,    38,    39,    40,    41,    42,
-      66,    54,    43,     4,    10,    11,     5,    14,    15,     6,
-       7
+       0,    81,    35,    36,    37,    38,    39,    40,    41,    42,
+      69,    70,    54,    43,     4,    10,    11,     5,    14,    15,
+       6,     7
   };
 
   const signed char
    Parser ::yytable_[] =
   {
-      51,    52,    17,    91,    55,    56,    50,    57,    58,    92,
-      44,    12,    13,    62,    63,     1,     2,    75,    76,    16,
-      45,    28,    29,    96,    30,     3,     8,    46,     9,     1,
-      78,    79,    31,    32,    75,    76,    34,    47,    80,     3,
-      83,    81,    20,    87,    88,    89,    24,    90,    86,    25,
-      73,    64,    21,    65,    74,    26,    27,    69,    67,    68,
-      69,    70,    28,    29,    70,    30,    95,    84,    85,    22,
-      67,    68,    69,    31,    32,    33,    70,    34,    68,    69,
-      64,    23,    65,    70,    53,    59,    60,    61,    71,    72,
-      73,    82,    93,    94,    97,    98,    48,    18,    19,    49
+      51,    52,    17,    24,    55,    98,    25,    50,    97,     8,
+      20,     9,    26,    27,     1,     2,    44,    57,    58,    28,
+      29,   102,    30,    46,    79,    80,     3,    56,    45,     1,
+      82,    83,    31,    32,    33,    47,    34,    12,    13,    84,
+      16,     3,    85,    28,    29,    21,    30,    93,    94,    95,
+      87,    96,    91,    92,    62,    63,    31,    32,    77,    64,
+      34,    65,    64,    73,    65,    66,    22,    74,    66,    78,
+      79,    80,   101,    71,    72,    73,    71,    72,    73,    74,
+      67,    68,    74,    67,    68,    72,    73,    88,    89,    23,
+      74,    53,    59,    60,    75,    61,    76,    86,    90,    77,
+      99,   100,   103,   104,    48,    18,    19,    49
   };
 
   const signed char
    Parser ::yycheck_[] =
   {
-      24,    25,     0,    20,    27,     7,    24,    28,    29,    77,
-      24,    37,    38,    23,    24,    27,    28,    34,    35,    22,
-      34,    23,    24,    91,    26,    37,    35,    24,    37,    27,
-      54,    55,    34,    35,    34,    35,    38,    34,    56,    37,
-      61,    59,    15,    67,    68,    69,     7,    70,    66,    10,
-       8,     9,    15,    11,     8,    16,    17,    14,    12,    13,
-      14,    18,    23,    24,    18,    26,    90,    62,    63,    20,
-      12,    13,    14,    34,    35,    36,    18,    38,    13,    14,
-       9,    20,    11,    18,     5,     7,     5,    25,    34,    34,
-       8,    19,     8,     6,     6,     6,    22,     7,     7,    23
+      24,    25,     0,     7,    27,    81,    10,    24,    20,    37,
+      15,    39,    16,    17,    27,    28,    24,    28,    29,    23,
+      24,    97,    26,    24,    36,    37,    39,     7,    36,    27,
+      54,    55,    36,    37,    38,    36,    40,    39,    40,    56,
+      22,    39,    59,    23,    24,    15,    26,    71,    72,    73,
+      61,    74,    69,    70,    23,    24,    36,    37,     8,     9,
+      40,    11,     9,    14,    11,    15,    20,    18,    15,     8,
+      36,    37,    96,    12,    13,    14,    12,    13,    14,    18,
+      30,    31,    18,    30,    31,    13,    14,    62,    63,    20,
+      18,     5,     7,     5,    36,    25,    36,    19,    15,     8,
+       8,     6,     6,     6,    22,     7,     7,    23
   };
 
   const signed char
    Parser ::yystos_[] =
   {
-       0,    27,    28,    37,    55,    58,    61,    62,    35,    37,
-      56,    57,    37,    38,    59,    60,    22,     0,    55,    58,
+       0,    27,    28,    39,    58,    61,    64,    65,    37,    39,
+      59,    60,    39,    40,    62,    63,    22,     0,    58,    61,
       15,    15,    20,    20,     7,    10,    16,    17,    23,    24,
-      26,    34,    35,    36,    38,    44,    45,    46,    47,    48,
-      49,    50,    51,    54,    24,    34,    24,    34,    56,    59,
-      50,    54,    54,     5,    53,    53,     7,    47,    47,     7,
-       5,    25,    23,    24,     9,    11,    52,    12,    13,    14,
-      18,    34,    34,     8,     8,    34,    35,    43,    54,    54,
-      50,    50,    19,    47,    48,    48,    50,    54,    54,    54,
-      53,    20,    43,     8,     6,    54,    43,     6,     6
+      26,    36,    37,    38,    40,    46,    47,    48,    49,    50,
+      51,    52,    53,    57,    24,    36,    24,    36,    59,    62,
+      52,    57,    57,     5,    56,    56,     7,    49,    49,     7,
+       5,    25,    23,    24,     9,    11,    15,    30,    31,    54,
+      55,    12,    13,    14,    18,    36,    36,     8,     8,    36,
+      37,    45,    57,    57,    52,    52,    19,    49,    50,    50,
+      15,    52,    52,    57,    57,    57,    56,    20,    45,     8,
+       6,    57,    45,     6,     6
   };
 
   const signed char
    Parser ::yyr1_[] =
   {
-       0,    42,    43,    43,    44,    44,    45,    46,    46,    46,
-      47,    47,    47,    47,    48,    48,    49,    49,    49,    50,
-      51,    52,    52,    53,    53,    54,    54,    54,    54,    54,
-      54,    54,    54,    54,    54,    55,    56,    56,    56,    56,
-      57,    57,    58,    59,    59,    60,    60,    61,    62,    62,
-      62,    62,    62,    62
+       0,    44,    45,    45,    46,    46,    47,    48,    48,    48,
+      49,    49,    49,    49,    50,    50,    51,    51,    51,    52,
+      53,    54,    54,    54,    55,    55,    56,    56,    57,    57,
+      57,    57,    57,    57,    57,    57,    57,    57,    57,    58,
+      59,    59,    59,    59,    60,    60,    61,    62,    62,    63,
+      63,    64,    65,    65,    65,    65,    65,    65
   };
 
   const signed char
@@ -1636,10 +1680,10 @@ namespace  STLRom  {
   {
        0,     2,     1,     1,     1,     1,     4,     1,     1,     3,
        1,     4,     2,     2,     1,     3,     1,     3,     3,     1,
-       3,     1,     1,     5,     4,     1,     2,     3,     3,     3,
-       3,     3,     4,     3,     1,     3,     3,     4,     3,     4,
-       1,     3,     2,     1,     1,     1,     3,     2,     1,     1,
-       1,     2,     2,     2
+       3,     1,     1,     2,     1,     1,     5,     4,     3,     1,
+       2,     3,     3,     3,     3,     3,     4,     3,     1,     3,
+       3,     4,     3,     4,     1,     3,     2,     1,     1,     1,
+       3,     2,     1,     1,     1,     2,     2,     2
   };
 
 
@@ -1654,14 +1698,15 @@ namespace  STLRom  {
   "\">\"", "\"and\"", "\"or\"", "\"=>\"", "\"=\"", "\"alw\"", "\"ev\"",
   "\"until\"", "\"time\"", "\",\"", "\"end of line\"", "\":=\"", "\"+\"",
   "\"-\"", "\"*\"", "\"abs\"", "\"param_decl\"", "\"signal_decl\"",
-  "\"test\"", "\"constant_identifier\"", "\"true\"", "\"false\"",
-  "\"double\"", "\"constant\"", "\"param_id\"", "\"phi_id\"", "\"new_id\"",
-  "\"signal_id\"", "\"stl_test_id\"", "\"string\"", "UNARY_OPERATOR",
-  "$accept", "constant", "constant_signal", "signal", "signal_atom",
-  "signal_unaryexpr", "signal_multexpr", "signal_addexpr", "signal_expr",
-  "stl_atom", "op", "interval", "stl_formula", "assignement",
-  "param_assignement", "param_assignement_list", "param_assignements",
-  "signal_new", "signal_new_list", "signal_decl", "start", YY_NULLPTR
+  "\"test\"", "\"<=\"", "\">=\"", "\"constant_identifier\"", "\"true\"",
+  "\"false\"", "\"double\"", "\"constant\"", "\"param_id\"", "\"phi_id\"",
+  "\"new_id\"", "\"signal_id\"", "\"stl_test_id\"", "\"string\"",
+  "UNARY_OPERATOR", "$accept", "constant", "constant_signal", "signal",
+  "signal_atom", "signal_unaryexpr", "signal_multexpr", "signal_addexpr",
+  "signal_expr", "stl_atom", "op", "op_eq", "interval", "stl_formula",
+  "assignement", "param_assignement", "param_assignement_list",
+  "param_assignements", "signal_new", "signal_new_list", "signal_decl",
+  "start", YY_NULLPTR
   };
 #endif
 
@@ -1670,12 +1715,12 @@ namespace  STLRom  {
   const short
    Parser ::yyrline_[] =
   {
-       0,   175,   175,   180,   186,   194,   202,   226,   231,   236,
-     241,   245,   252,   259,   264,   268,   276,   280,   287,   295,
-     301,   310,   311,   314,   319,   325,   329,   336,   343,   351,
-     359,   367,   375,   383,   387,   405,   439,   447,   456,   464,
-     474,   475,   477,   518,   525,   529,   530,   532,   536,   537,
-     538,   539,   540,   541
+       0,   177,   177,   182,   188,   196,   204,   228,   233,   238,
+     243,   247,   254,   261,   266,   270,   278,   282,   289,   297,
+     303,   312,   313,   314,   318,   319,   322,   327,   333,   345,
+     349,   356,   363,   371,   379,   387,   395,   403,   407,   425,
+     459,   467,   476,   484,   494,   495,   497,   538,   545,   549,
+     550,   552,   556,   557,   558,   559,   560,   561
   };
 
   void
@@ -1706,11 +1751,11 @@ namespace  STLRom  {
 #endif // YYDEBUG
 
 
-#line 42 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 42 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 } //  STLRom 
-#line 1712 "/local/home/donzeal/workspace/stlrom/src/parser.cpp"
+#line 1757 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.cpp"
 
-#line 544 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 564 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 
 
 // Bison expects us to provide implementation - otherwise linker complains

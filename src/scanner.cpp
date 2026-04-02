@@ -1,6 +1,6 @@
-#line 2 "/local/home/donzeal/workspace/stlrom/src/scanner.cpp"
+#line 2 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.cpp"
 
-#line 4 "/local/home/donzeal/workspace/stlrom/src/scanner.cpp"
+#line 4 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -570,7 +570,7 @@ static const flex_int16_t yy_rule_linenum[56] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 1 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 /*
  * The MIT License (MIT)
  * 
@@ -598,7 +598,7 @@ static const flex_int16_t yy_rule_linenum[56] =
  * OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-#line 30 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 30 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 	#include <iostream>
 	#include <cstdlib>
 	#include "scanner.h"
@@ -620,8 +620,8 @@ static const flex_int16_t yy_rule_linenum[56] =
         
 
 
-#line 624 "/local/home/donzeal/workspace/stlrom/src/scanner.cpp"
-#line 625 "/local/home/donzeal/workspace/stlrom/src/scanner.cpp"
+#line 624 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.cpp"
+#line 625 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.cpp"
 
 #define INITIAL 0
 
@@ -813,10 +813,10 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 61 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 61 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 
 
-#line 820 "/local/home/donzeal/workspace/stlrom/src/scanner.cpp"
+#line 820 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -897,232 +897,232 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 63 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 63 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_DIAMOND(yylloc); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 64 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 64 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_DIAMOND(yylloc); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 65 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 65 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOX(yylloc); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 66 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 66 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOX(yylloc); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 67 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 67 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_LINT(yylloc); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 68 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 68 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_RINT(yylloc); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 69 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 69 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_LPAREN(yylloc); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 70 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 70 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_RPAREN(yylloc); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 71 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 71 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_IMPLIES(yylloc); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 72 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 72 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_IMPLIES(yylloc); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 73 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 73 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_LT(yylloc); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 74 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 74 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_GT(yylloc); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 75 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
-{ return STLRom::Parser::make_LT(yylloc); }
+#line 75 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
+{ return STLRom::Parser::make_LE(yylloc); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 76 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
-{ return STLRom::Parser::make_GT(yylloc); }
+#line 76 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
+{ return STLRom::Parser::make_GE(yylloc); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 77 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 77 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_NOT(yylloc); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 78 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 78 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_COMMA(yylloc); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 79 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 79 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_AND(yylloc); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 80 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 80 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_OR(yylloc); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 81 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 81 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_ASSIGN(yylloc); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 82 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 82 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_PLUS(yylloc); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 83 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 83 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_MINUS(yylloc); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 84 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 84 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_MULT(yylloc); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 85 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 85 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_PARAM_EQ(yylloc); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 87 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 87 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_DIAMOND(yylloc); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 88 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 88 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_DIAMOND(yylloc); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 89 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 89 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_DIAMOND(yylloc); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 90 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 90 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_DIAMOND(yylloc); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 92 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 92 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOX(yylloc); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 93 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 93 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOX(yylloc); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 94 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 94 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOX(yylloc); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 95 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 95 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOX(yylloc); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 97 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 97 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_UNTIL(yylloc); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 98 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 98 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_UNTIL(yylloc); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 99 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 99 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_UNTIL(yylloc); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 100 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 100 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_UNTIL(yylloc); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 102 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 102 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_AND(yylloc); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 103 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 103 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_OR(yylloc); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 104 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 104 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_NOT(yylloc); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 106 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 106 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOOL_TRUE(true, yylloc); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 107 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 107 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_BOOL_FALSE(false, yylloc); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 109 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 109 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_TIME(yylloc); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 110 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 110 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_ABS(yylloc); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 111 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 111 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_PARAM_DECL(yylloc); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 112 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 112 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_TEST(yylloc); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 113 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 113 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_SIGNAL_DECL(yylloc); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 115 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 115 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { 
 
     if (m_driver.formula_map.find(yytext) != m_driver.formula_map.end()) {
@@ -1143,7 +1143,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 133 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 133 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { 
     //yylval->stringVal = new std::string(yytext, yyleng);
     //cout <<  *yylval->stringVal  << " is a CONSTANT "<< endl; 
@@ -1155,14 +1155,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 142 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 142 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 {
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 146 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 146 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { 
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
@@ -1170,7 +1170,7 @@ YY_RULE_SETUP
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-#line 150 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 150 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { // "
     // TODO: check if stringVal can be constructed differently
     std::string stringVal(yytext+1, yyleng-2);
@@ -1180,7 +1180,7 @@ YY_RULE_SETUP
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-#line 157 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 157 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 {
     yylloc.lines(yyleng);
     yylloc.step();
@@ -1188,39 +1188,39 @@ YY_RULE_SETUP
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 162 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 162 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return STLRom::Parser::make_SEMICOLON(yylloc); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 164 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 164 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { /* skip whitespace */ }
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-#line 166 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 166 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { 
     /* Comments; TODO check locations */
 }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 170 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 170 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { 
                 cout << "Scanner: unknown character [" << yytext << "]" << endl; 
             }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 174 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 174 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 { return yyterminate(); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 177 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 177 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1224 "/local/home/donzeal/workspace/stlrom/src/scanner.cpp"
+#line 1224 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2336,6 +2336,6 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 177 "/local/home/donzeal/workspace/stlrom/src/scanner.l"
+#line 177 "/home/dayekhh/Documents/git-repos/stlrom2/src/scanner.l"
 
 

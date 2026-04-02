@@ -31,12 +31,12 @@
 // version 2.2 of Bison.
 
 /**
- ** \file /local/home/donzeal/workspace/stlrom/src/location.hh
+ ** \file /home/dayekhh/Documents/git-repos/stlrom2/src/location.hh
  ** Define the  STLRom ::location class.
  */
 
-#ifndef YY_YY_LOCAL_HOME_DONZEAL_WORKSPACE_STLROM_SRC_LOCATION_HH_INCLUDED
-# define YY_YY_LOCAL_HOME_DONZEAL_WORKSPACE_STLROM_SRC_LOCATION_HH_INCLUDED
+#ifndef YY_YY_HOME_DAYEKHH_DOCUMENTS_GIT_REPOS_STLROM2_SRC_LOCATION_HH_INCLUDED
+# define YY_YY_HOME_DAYEKHH_DOCUMENTS_GIT_REPOS_STLROM2_SRC_LOCATION_HH_INCLUDED
 
 # include <iostream>
 # include <string>
@@ -53,9 +53,9 @@
 #  endif
 # endif
 
-#line 42 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 42 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 namespace  STLRom  {
-#line 59 "/local/home/donzeal/workspace/stlrom/src/location.hh"
+#line 59 "/home/dayekhh/Documents/git-repos/stlrom2/src/location.hh"
 
   /// A point in a source file.
   class position
@@ -299,8 +299,8 @@ namespace  STLRom  {
     return ostr;
   }
 
-#line 42 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 42 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 } //  STLRom 
-#line 305 "/local/home/donzeal/workspace/stlrom/src/location.hh"
+#line 305 "/home/dayekhh/Documents/git-repos/stlrom2/src/location.hh"
 
-#endif // !YY_YY_LOCAL_HOME_DONZEAL_WORKSPACE_STLROM_SRC_LOCATION_HH_INCLUDED
+#endif // !YY_YY_HOME_DAYEKHH_DOCUMENTS_GIT_REPOS_STLROM2_SRC_LOCATION_HH_INCLUDED

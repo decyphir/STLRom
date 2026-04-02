@@ -32,7 +32,7 @@
 
 
 /**
- ** \file /local/home/donzeal/workspace/stlrom/include/parser.hpp
+ ** \file /home/dayekhh/Documents/git-repos/stlrom2/include/parser.hpp
  ** Define the  STLRom ::parser class.
  */
 
@@ -42,10 +42,10 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_LOCAL_HOME_DONZEAL_WORKSPACE_STLROM_INCLUDE_PARSER_HPP_INCLUDED
-# define YY_YY_LOCAL_HOME_DONZEAL_WORKSPACE_STLROM_INCLUDE_PARSER_HPP_INCLUDED
+#ifndef YY_YY_HOME_DAYEKHH_DOCUMENTS_GIT_REPOS_STLROM2_INCLUDE_PARSER_HPP_INCLUDED
+# define YY_YY_HOME_DAYEKHH_DOCUMENTS_GIT_REPOS_STLROM2_INCLUDE_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 44 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 44 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 
     #include <iostream>
     #include <string>
@@ -64,7 +64,7 @@
         class STLDriver;
     }
 
-#line 68 "/local/home/donzeal/workspace/stlrom/include/parser.hpp"
+#line 68 "/home/dayekhh/Documents/git-repos/stlrom2/include/parser.hpp"
 
 # include <cassert>
 # include <cstdlib> // std::abort
@@ -203,9 +203,9 @@
 # define YYDEBUG 1
 #endif
 
-#line 42 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 42 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 namespace  STLRom  {
-#line 209 "/local/home/donzeal/workspace/stlrom/include/parser.hpp"
+#line 209 "/home/dayekhh/Documents/git-repos/stlrom2/include/parser.hpp"
 
 
 
@@ -454,6 +454,7 @@ namespace  STLRom  {
       // "string"
       // constant
       // op
+      // op_eq
       char dummy5[sizeof (std::string)];
 
       // "number"
@@ -537,18 +538,20 @@ namespace  STLRom  {
     TOKEN_PARAM_DECL = 282,        // "param_decl"
     TOKEN_SIGNAL_DECL = 283,       // "signal_decl"
     TOKEN_TEST = 284,              // "test"
-    TOKEN_CONSTANT_IDENTIFIER = 285, // "constant_identifier"
-    TOKEN_BOOL_TRUE = 286,         // "true"
-    TOKEN_BOOL_FALSE = 287,        // "false"
-    TOKEN_DOUBLE = 288,            // "double"
-    TOKEN_CONSTANT = 289,          // "constant"
-    TOKEN_PARAM_ID = 290,          // "param_id"
-    TOKEN_PHI_ID = 291,            // "phi_id"
-    TOKEN_NEW_ID = 292,            // "new_id"
-    TOKEN_SIGNAL_ID = 293,         // "signal_id"
-    TOKEN_STL_TEST_ID = 294,       // "stl_test_id"
-    TOKEN_STRING = 295,            // "string"
-    TOKEN_UNARY_OPERATOR = 296     // UNARY_OPERATOR
+    TOKEN_LE = 285,                // "<="
+    TOKEN_GE = 286,                // ">="
+    TOKEN_CONSTANT_IDENTIFIER = 287, // "constant_identifier"
+    TOKEN_BOOL_TRUE = 288,         // "true"
+    TOKEN_BOOL_FALSE = 289,        // "false"
+    TOKEN_DOUBLE = 290,            // "double"
+    TOKEN_CONSTANT = 291,          // "constant"
+    TOKEN_PARAM_ID = 292,          // "param_id"
+    TOKEN_PHI_ID = 293,            // "phi_id"
+    TOKEN_NEW_ID = 294,            // "new_id"
+    TOKEN_SIGNAL_ID = 295,         // "signal_id"
+    TOKEN_STL_TEST_ID = 296,       // "stl_test_id"
+    TOKEN_STRING = 297,            // "string"
+    TOKEN_UNARY_OPERATOR = 298     // UNARY_OPERATOR
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -565,7 +568,7 @@ namespace  STLRom  {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 42, ///< Number of tokens.
+        YYNTOKENS = 44, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -597,39 +600,42 @@ namespace  STLRom  {
         S_PARAM_DECL = 27,                       // "param_decl"
         S_SIGNAL_DECL = 28,                      // "signal_decl"
         S_TEST = 29,                             // "test"
-        S_CONSTANT_IDENTIFIER = 30,              // "constant_identifier"
-        S_BOOL_TRUE = 31,                        // "true"
-        S_BOOL_FALSE = 32,                       // "false"
-        S_DOUBLE = 33,                           // "double"
-        S_CONSTANT = 34,                         // "constant"
-        S_PARAM_ID = 35,                         // "param_id"
-        S_PHI_ID = 36,                           // "phi_id"
-        S_NEW_ID = 37,                           // "new_id"
-        S_SIGNAL_ID = 38,                        // "signal_id"
-        S_STL_TEST_ID = 39,                      // "stl_test_id"
-        S_STRING = 40,                           // "string"
-        S_UNARY_OPERATOR = 41,                   // UNARY_OPERATOR
-        S_YYACCEPT = 42,                         // $accept
-        S_constant = 43,                         // constant
-        S_constant_signal = 44,                  // constant_signal
-        S_signal = 45,                           // signal
-        S_signal_atom = 46,                      // signal_atom
-        S_signal_unaryexpr = 47,                 // signal_unaryexpr
-        S_signal_multexpr = 48,                  // signal_multexpr
-        S_signal_addexpr = 49,                   // signal_addexpr
-        S_signal_expr = 50,                      // signal_expr
-        S_stl_atom = 51,                         // stl_atom
-        S_op = 52,                               // op
-        S_interval = 53,                         // interval
-        S_stl_formula = 54,                      // stl_formula
-        S_assignement = 55,                      // assignement
-        S_param_assignement = 56,                // param_assignement
-        S_param_assignement_list = 57,           // param_assignement_list
-        S_param_assignements = 58,               // param_assignements
-        S_signal_new = 59,                       // signal_new
-        S_signal_new_list = 60,                  // signal_new_list
-        S_signal_decl = 61,                      // signal_decl
-        S_start = 62                             // start
+        S_LE = 30,                               // "<="
+        S_GE = 31,                               // ">="
+        S_CONSTANT_IDENTIFIER = 32,              // "constant_identifier"
+        S_BOOL_TRUE = 33,                        // "true"
+        S_BOOL_FALSE = 34,                       // "false"
+        S_DOUBLE = 35,                           // "double"
+        S_CONSTANT = 36,                         // "constant"
+        S_PARAM_ID = 37,                         // "param_id"
+        S_PHI_ID = 38,                           // "phi_id"
+        S_NEW_ID = 39,                           // "new_id"
+        S_SIGNAL_ID = 40,                        // "signal_id"
+        S_STL_TEST_ID = 41,                      // "stl_test_id"
+        S_STRING = 42,                           // "string"
+        S_UNARY_OPERATOR = 43,                   // UNARY_OPERATOR
+        S_YYACCEPT = 44,                         // $accept
+        S_constant = 45,                         // constant
+        S_constant_signal = 46,                  // constant_signal
+        S_signal = 47,                           // signal
+        S_signal_atom = 48,                      // signal_atom
+        S_signal_unaryexpr = 49,                 // signal_unaryexpr
+        S_signal_multexpr = 50,                  // signal_multexpr
+        S_signal_addexpr = 51,                   // signal_addexpr
+        S_signal_expr = 52,                      // signal_expr
+        S_stl_atom = 53,                         // stl_atom
+        S_op = 54,                               // op
+        S_op_eq = 55,                            // op_eq
+        S_interval = 56,                         // interval
+        S_stl_formula = 57,                      // stl_formula
+        S_assignement = 58,                      // assignement
+        S_param_assignement = 59,                // param_assignement
+        S_param_assignement_list = 60,           // param_assignement_list
+        S_param_assignements = 61,               // param_assignements
+        S_signal_new = 62,                       // signal_new
+        S_signal_new_list = 63,                  // signal_new_list
+        S_signal_decl = 64,                      // signal_decl
+        S_start = 65                             // start
       };
     };
 
@@ -700,6 +706,7 @@ namespace  STLRom  {
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -872,6 +879,7 @@ switch (yykind)
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.template destroy< std::string > ();
         break;
 
@@ -1531,6 +1539,36 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_LE (location_type l)
+      {
+        return symbol_type (token::TOKEN_LE, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_LE (const location_type& l)
+      {
+        return symbol_type (token::TOKEN_LE, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_GE (location_type l)
+      {
+        return symbol_type (token::TOKEN_GE, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_GE (const location_type& l)
+      {
+        return symbol_type (token::TOKEN_GE, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_CONSTANT_IDENTIFIER (location_type l)
       {
         return symbol_type (token::TOKEN_CONSTANT_IDENTIFIER, std::move (l));
@@ -2038,8 +2076,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 99,     ///< Last index in yytable_.
-      yynnts_ = 21,  ///< Number of nonterminal symbols.
+      yylast_ = 107,     ///< Last index in yytable_.
+      yynnts_ = 22,  ///< Number of nonterminal symbols.
       yyfinal_ = 17 ///< Termination state number.
     };
 
@@ -2089,10 +2127,10 @@ switch (yykind)
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41
+      35,    36,    37,    38,    39,    40,    41,    42,    43
     };
     // Last valid token kind.
-    const int code_max = 296;
+    const int code_max = 298;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -2145,6 +2183,7 @@ switch (yykind)
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.copy< std::string > (YY_MOVE (that.value));
         break;
 
@@ -2217,6 +2256,7 @@ switch (yykind)
       case symbol_kind::S_STRING: // "string"
       case symbol_kind::S_constant: // constant
       case symbol_kind::S_op: // op
+      case symbol_kind::S_op_eq: // op_eq
         value.move< std::string > (YY_MOVE (s.value));
         break;
 
@@ -2289,11 +2329,11 @@ switch (yykind)
   }
 
 
-#line 42 "/local/home/donzeal/workspace/stlrom/src/parser.y"
+#line 42 "/home/dayekhh/Documents/git-repos/stlrom2/src/parser.y"
 } //  STLRom 
-#line 2295 "/local/home/donzeal/workspace/stlrom/include/parser.hpp"
+#line 2335 "/home/dayekhh/Documents/git-repos/stlrom2/include/parser.hpp"
 
 
 
 
-#endif // !YY_YY_LOCAL_HOME_DONZEAL_WORKSPACE_STLROM_INCLUDE_PARSER_HPP_INCLUDED
+#endif // !YY_YY_HOME_DAYEKHH_DOCUMENTS_GIT_REPOS_STLROM2_INCLUDE_PARSER_HPP_INCLUDED
