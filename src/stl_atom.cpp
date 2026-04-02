@@ -99,56 +99,53 @@ namespace STLRom {
 
 
             
-
+            v_neq = vL - vR;
+            d_neq = dL - dR;
             // fill z at time t
             switch (comp)
             {
             case comparator::LESSTHAN:
-                vt = vR - vL;
-                dt = dR - dL;
-
-                v_neq = vt;
-                d_neq = dt;
+                vt = -v_neq;
+                dt = -d_neq;
 
                 if (fabs(vt) < Signal::Eps || (vt == Signal::Eps && dt < 0) || (vt == -Signal::Eps && dt > 0)) {
-                    vt -= Signal::Eps;
+                    vt = -Signal::Eps;
+                    dt = 0;
                 }
-                // if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
-                //     vt -= Signal::Eps;
-                // }
                 break;
             case comparator::GREATERTHAN:
-                vt = vL - vR;
-                dt = dL - dR;
+                vt = v_neq;
+                dt = d_neq;
 
-                v_neq = vt;
-                d_neq = dt;
 
                 if (fabs(vt) < Signal::Eps || (vt == Signal::Eps && dt < 0) || (vt == -Signal::Eps && dt > 0)) {
-                    vt -= Signal::Eps;
+                    vt = -Signal::Eps;
+                    dt = 0;
                 }
 
-                // if (vt < Signal::Eps || (vt == Signal::Eps && dt < 0)) {
-                //     vt -= Signal::Eps;
-                // }
                 break;
             case comparator::EQUAL:
-                v_neq = vL - vR;
-                d_neq = dL - dR;
-                vt = -fabs(vL-vR);
-                // dt = (vL > vR) ? dR - dL : dL - dR;
+                
+                vt = -fabs(v_neq);
+
                 if (vL > vR || (vL == vR && dL > dR)) {
                     dt = dR - dL;
                 } else {
                     dt = dL - dR;
                 }
+                
                 equals = false;
+
                 if ((v_neq < Signal::Eps && v_neq > -Signal::Eps) || (v_neq == Signal::Eps && d_neq < 0) || (v_neq == -Signal::Eps && d_neq > 0)) {
-                    vt += Signal::Eps;   
+                    vt = Signal::Eps;
+                    dt = 0;   
                     equals = true;
                 }
+
                 if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)                
+                
                 previous_was_equal = equals;
+                
                 break;
             }
 
@@ -188,32 +185,44 @@ namespace STLRom {
                 for (int i = 0; i < crossing_count; i++) {
                     auto e = events[i];
 
-                    if (e.isPlus) {
+                    if (e.isPlus) { // +epsilon crossing
                         if (comp == comparator::EQUAL) {
-                            if (e.isAscending) {
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev));
-                            } else {
-                                z.appendSample(e.t, ZERO_POS, fabs(d_prev));
+                            if (e.isAscending) { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                            } else { // entering epsilon region
+                                z.appendSample(e.t, Signal::Eps, 0.);
                             }
-                        } else { // comp is LESSTHAN or GREATERTHAN
-                            if (e.isAscending) {
-                                z.appendSample(e.t, Signal::Eps, d_prev);
-                            } else {
-                                z.appendSample(e.t, ZERO_NEG, d_prev);
+                        } else if (comp == comparator::GREATERTHAN) { 
+                            if (e.isAscending) { // leaving epsilon region
+                                z.appendSample(e.t, Signal::Eps, d_prev_neq);
+                            } else { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            }
+                        } else if (comp == comparator::LESSTHAN) { 
+                            if (e.isAscending) { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, -d_prev_neq);
+                            } else { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
                             }
                         }
-                    } else {
+                    } else { // -epsilon crossing
                         if (comp == comparator::EQUAL) { 
-                            if (e.isAscending) {
-                                z.appendSample(e.t, ZERO_POS, fabs(d_prev));
-                            } else {
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev));
+                            if (e.isAscending) { // entering epsilon region
+                                z.appendSample(e.t, Signal::Eps, 0.);
+                            } else { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
                             }
-                        } else { // comp is LESSTHAN or GREATERTHAN
-                            if (e.isAscending) {
-                                z.appendSample(e.t, -2*Signal::Eps, d_prev);
-                            } else {
-                                z.appendSample(e.t, -Signal::Eps, d_prev);
+                        } else if (comp == comparator::GREATERTHAN) { 
+                            if (e.isAscending) { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            } else { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, d_prev_neq);
+                            }
+                        } else if (comp == comparator::LESSTHAN) { 
+                            if (e.isAscending) { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            } else { // leaving epsilon region
+                                z.appendSample(e.t, Signal::Eps, -d_prev_neq);
                             }
                         }
                     } 
