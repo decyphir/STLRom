@@ -150,9 +150,12 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_semantics",&STLRom::STLMonitor::get_semantics)
 		.def("set_interpol",&STLRom::STLMonitor::set_interpol)
 		.def("get_interpol",&STLRom::STLMonitor::get_interpol)	
-		.def("eval_rob",(double (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_rob)		
-		.def("eval_rob",(double (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_rob)		
-		.def("eval_rob",(double (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
+		.def("eval_rob",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_rob)		
+		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_rob)		
+		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
+		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_online_rob)		
+		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_online_rob)		
+		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)		
 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
 		.def("get_param",&STLRom::STLMonitor::get_param)		
@@ -195,7 +198,12 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_semantics",&STLRom::STLDriver::get_semantics)
 		.def("set_interpol",&STLRom::STLDriver::set_interpol)
 		.def("get_interpol",&STLRom::STLDriver::get_interpol)
-		
+		.def("get_rob",
+		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
+             return self.get_rob(phi_in, t0); 
+         },
+	     py::arg("phi_in") = "phi",
+         py::arg("t0") = 0.)
 		.def("get_online_rob",
 		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
              return self.get_online_rob(phi_in, t0); 

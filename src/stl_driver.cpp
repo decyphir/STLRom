@@ -308,10 +308,38 @@ void STLDriver::set_param(const string &param, double n)
     }
 }
 
+double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
+{
+        
+    if (data.empty())
+    {
+        cout << "Empty data" << endl;
+        return 0.;
+    }
+
+    if (formula_map.find(phi_in) == formula_map.end())
+    {
+        cout << "Formula " << phi_in << " not found in formula_map." << endl;
+        return 0.;
+    }
+    transducer *phi = formula_map[phi_in];
+    phi->set_trace_data_ptr(data);
+    phi->set_param_map_ptr(param_map);
+    Signal::semantics = semantics;
+    Signal::interpol = interpol;
+    phi->reset();
+    phi->set_horizon(t0, t0);
+    return phi->compute_robustness();        
+}
+
+double STLDriver::get_rob(const string &phi_in)
+{
+    return get_rob(phi_in, 0.);
+}
+
 
 vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
 {
-    // static vector<double> out_rob;
     vector<double> out_rob;
     if (data.empty())
     {

@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
  //   double rho_mu = mu.eval_rob();
  //   cout << "rho(mu): " << rho_mu << endl;
     
-    double rho_phi = phi.eval_rob();
+    Signal rho_phi = phi.eval_rob();
     cout << "rho(phi): " << rho_phi << endl;
     
 

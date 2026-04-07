@@ -256,9 +256,15 @@ namespace STLRom
             up_to_date = false;
         }
 
-        double eval_rob();
-        double eval_rob(double);
-        double eval_rob(double, double);
+        Signal eval_rob();
+        Signal eval_rob(double);
+        Signal eval_rob(double, double);
+
+        vector<Signal> eval_online_rob();
+        vector<Signal> eval_online_rob(double);
+        vector<Signal> eval_online_rob(double, double);
+
+
 
         string get_signal_names() const;
     

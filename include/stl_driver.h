@@ -260,6 +260,9 @@ public:
     void set_param(const string &param, double n);
 
     /** monitor a single formula requires data is not empty */
+    double get_rob(const string &phi_in);
+    double get_rob(const string &phi_in, double);
+
     vector<double> get_online_rob(const string &phi_in);
     vector<double> get_online_rob(const string &phi_in, double);
 

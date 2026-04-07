@@ -34,3 +34,7 @@ build/*
 *.out*
 src/stlrom/__pycache__/*
 uv.lock
+include/parser.hpp
+src/location.hh
+src/parser.cpp
+src/scanner.cpp
