@@ -31,21 +31,6 @@ int read_point(){
 
 void print_monitor(STLDriver& d) {
 	stringstream os; 
-	
-	/*
-	auto it = d.formula_map.find("phi");
-	transducer *phi;
-	if (it != d.formula_map.end())
-	{
-		//phi = (it->second)->clone();
-		phi = (it->second);
-		py::print(" found, yeah.");
-	}
-	else
-	{
-		py::print(" undefined.");
-	}
-	*/
 	STLMonitor m = d.get_monitor("phi");
 	transducer* phi = m.formula;
 	os << "Monitor lower rob:" << m.lower_rob <<endl;
