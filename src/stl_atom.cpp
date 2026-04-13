@@ -58,6 +58,9 @@ namespace STLRom {
 
         double tL = -1, tR = -1;
 
+        auto last_itL = itL;
+        auto last_itR = itR;
+
         while(tL < endTime || tR < endTime) {
             tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
             tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
@@ -76,27 +79,30 @@ namespace STLRom {
             bool equals = false;
             bool first_eq_ineq = false; // first point in a subseries of equality points or inequality points (for comp::equal)
 
+            auto& sL = (itL != childL->z.end()) ? *itL : *(last_itL);
+            auto& sR = (itR != childR->z.end()) ? *itR : *(last_itR);
+
             if(tL < tR) {
                 t = tL;
                 advance_L = true;
 
-                vL = (*itL).value;
-                vR = (*itR).valueAt(t);
+                vL = (sL).value;
+                vR = (sR).valueAt(t);
             } else if (tL > tR) {
                 t = tR;
                 advance_R = true;
 
-                vL = (*itL).valueAt(t);
-                vR = (*itR).value;
+                vL = (sL).valueAt(t);
+                vR = (sR).value;
             } else { // equality (might cause issues)
                 t = tL;
                 advance_L = true;
                 advance_R = true;
 
-                vL = (*itL).value;
-                vR = (*itR).value;
+                vL = (sL).value;
+                vR = (sR).value;
             }
-            
+
 
 
             
@@ -250,8 +256,8 @@ namespace STLRom {
             d_prev_neq = d_neq;
             v_prev_neq = v_neq;
 
-            if (advance_L) itL++;
-            if (advance_R) itR++;
+            if (advance_L && itL != childL->z.end()) {last_itL = itL; itL++;}
+            if (advance_R && itR != childR->z.end()) {last_itR = itR; itR++;}
 
             first_pass = false;
         }
