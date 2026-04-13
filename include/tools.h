@@ -19,7 +19,7 @@
 
 using namespace std;
 using namespace STLRom;
-typedef vector<vector<double> > trace_data;
+typedef vector<Signal> trace_data; // small TODO: this is defined in transducer.h too, should not be probably
 
 /**  string to double conversion */
 inline bool s_to_d(std::string const& s,
@@ -44,14 +44,14 @@ inline string d_to_s(
 	return o.str();
 }
 
-/** Returns a m x n random trace */
-trace_data rand_trace_data( int m, int n);
+/** Returns a m x n random trace */ 
+// TODO reimplement that 
+// trace_data rand_trace_data( int m, int n);
 
 const std::string current_date_time();
 
-void print(const trace_data&);
-void print(const trace_data&, int max_iter);
-bool read_trace(const string &trace_file_name, trace_data &data);
+void print(const trace_data&); // TODO that too, maybe
+//bool read_trace(const string &trace_file_name, trace_data &data); // Yeah, we'll need a csv importer I guess
 
 template <typename BinaryOp>
 void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op)

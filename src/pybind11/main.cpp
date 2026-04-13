@@ -38,7 +38,6 @@ void print_monitor(STLDriver& d) {
 	py::print(os.str());
 }
 
-
 PYBIND11_MODULE(_stlrom, m) {
 	//Class Point
 	py::class_<STLRom::Point>(m, "Point")
@@ -101,7 +100,7 @@ PYBIND11_MODULE(_stlrom, m) {
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
-	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
+//	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
 	
 	//Class transducer 
 	py::class_<STLRom::transducer>(m, "transducer")

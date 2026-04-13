@@ -292,14 +292,15 @@ namespace STLRom {
         return os;
     }
 
-    void transducer::print_trace() {
-        for (auto ii = trace_data_ptr->begin(); ii != trace_data_ptr->end(); ii++){
-            for (auto jj = (*ii).begin(); jj != (*ii).end(); jj++) {
-                cout << *jj << " ";
-            }
-            cout << endl;
-        }
-    }
+    // I don't think we need that here
+    //void transducer::print_trace() {
+    //    for (auto ii = trace_data_ptr->begin(); ii != trace_data_ptr->end(); ii++){
+    //        for (auto jj = (*ii).begin(); jj != (*ii).end(); jj++) {
+    //            cout << *jj << " ";
+    //        }
+    //        cout << endl;
+    //    }
+    //}
     
 }
 

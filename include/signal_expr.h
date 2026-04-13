@@ -8,12 +8,13 @@
 #ifndef SIGNAL_EXPR_H_
 #define SIGNAL_EXPR_H_
 
+#include "signal.h"
 #include "transducer.h"
 
 namespace STLRom
 {
 
-    typedef vector<vector<double>>::const_iterator trace_data_iterator;
+    typedef vector<Signal>::const_iterator trace_data_iterator;
 
     /* signal_transducer: read data without transformation - has a variable name which must be
      * defined in the signal map   */

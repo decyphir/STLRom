@@ -212,14 +212,17 @@ signal: SIGNAL_ID LINT TIME RINT
             // this will never be called because if signal is not defined,
             // scanner will not return SIGNAL_ID token but rather a NEW_ID token
             // need to fix this properly later
-            int i = driver.signal_map[$1];
+            // Alex: I'm commenting, because with the new change, this will *always* be called
+            // for the first signal. We don't want to delete always the first signal, do we?
+            //
+            //int i = driver.signal_map[$1];
 
-            if (i==0) {
-                cout << "Parsing error: unknown signal " << $1 << endl;
-                delete $$;
-                $$ = nullptr;
-                YYERROR;
-            }
+            //if (i==0) {
+            //    cout << "Parsing error: unknown signal " << $1 << endl;
+            //    delete $$;
+            //    $$ = nullptr;
+            //    YYERROR;
+            //}
         }
         ;
 
@@ -518,7 +521,7 @@ param_assignements: PARAM_DECL param_assignement_list
 
 signal_new: NEW_ID
           {
-                short idx =  driver.signal_map.size()+1;
+                short idx =  driver.signal_map.size();
                 driver.signal_map[$1] = idx;
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;

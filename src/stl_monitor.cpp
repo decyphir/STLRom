@@ -13,17 +13,24 @@ namespace STLRom
 
 	void STLMonitor::add_sample(vector<double> s)
 	{
-		if (s.size() != signal_map.size() + 1)
-		{
-			throw std::invalid_argument("Sample size does not match the number of signals.");
-		}
-		if (!data.empty() && s[0] <= data.back()[0])
-		{
-			throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
-		}
-		data.push_back(s);
+		if (s.size() != signal_map.size() + 1) 
+	    {
+        	throw std::invalid_argument("Sample size does not match the number of signals.");
+    	}
+    
+    // We don't need to check, that will be done at the Signal level
+    //if (!data.empty() && s[0] <= data.back()[0])
+    //{
+    //    throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
+    //}
+		
+    	double t = s[0];
+    	for(int i=1; i<s.size();i++)
+	        data[i-1].appendSample(s[0],s[i]);
+		
 		up_to_date = false;
 	}
+
 
 	Signal STLMonitor::eval_rob() {
         return eval_rob(start_time, end_time);

@@ -7,6 +7,7 @@
 #include <string>
 #include "robustness.h"
 #include "interval.h"
+#include "signal.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ using namespace std;
 
 namespace STLRom {
 
-    typedef vector<vector<double> > trace_data;
+    typedef vector<Signal> trace_data;
 
     /* Virtual classes */
 
@@ -23,7 +24,7 @@ namespace STLRom {
 
     public:
 
-        const trace_data *trace_data_ptr; // signal data to monitor vector of vector of double
+        const trace_data *trace_data_ptr; // signal data to monitor: vector of Signal
         const map<string, double> *param_map_ptr;   //  parameter values    
         
         map<string, double> param_map;   //  parameter values
@@ -73,7 +74,7 @@ namespace STLRom {
             if (trace_data_ptr->empty())
                 return 0.; // reasonable default ? 
             else
-                return (trace_data_ptr->back()).front(); // time of last data sample
+                return (trace_data_ptr->back()).back().time; // TODO: last time of last signal only, really ?
         }
         // compute quantitative semantics for current data
         virtual double compute_robustness(){    
@@ -102,7 +103,7 @@ namespace STLRom {
             return  os.str();
         };  
             
-        void print_trace(); 
+        //void print_trace(); 
 
         // looks into param_map for a parameter value - returns success
         bool get_param(const string&, double &);

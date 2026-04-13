@@ -292,32 +292,13 @@ namespace STLRom {
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
         short i = signal_map[variable];
-        double t=0., v=0.;  
-        double res= 0.;
-            
-        if (i) {
-            while ( (td_idx <= trace_data_ptr->size()-1)  && t<=end_time)   {
-                t = (trace_data_ptr->at(td_idx))[0];
-                v = (trace_data_ptr->at(td_idx))[i];
-                // cout << "t: " << t << " v: " << v << endl;
-                z.appendSample(t, v);
-                td_idx++;
-			}
-		}
+        z = trace_data_ptr->at(i); // that a deep copy right ?
+        z.resize(start_time,end_time,0.); // TODO we should note here what the data horizon available is                  
 
-        //if (t>end_time)  
-        z.endTime = end_time;
-        
-        if (z.endTime>start_time)
-            z.resize(start_time, max(start_time,z.endTime),v);  // if we reached start_time trim everything before
-        else
-            z.resize(z.endTime, z.endTime, v);   // otherwise, only keep the last value seen before start_time
-
-        res= z.front().value;    
-#ifdef DEBUG__
+        #ifdef DEBUG__
         printf("<< signal_transducer::compute_robustness      OUT.\n");
 #endif
-        return res;
+        return z.front().value;
     }
 
     double constant_transducer::compute_robustness() {
@@ -334,23 +315,10 @@ namespace STLRom {
                 cout << "Parameter " << param << " not found (?)." << endl;                
         }
 
-        double t=0.;  
-            
-        while ((td_idx <= trace_data_ptr->size()-1) && t<=end_time)   {
-            t = (trace_data_ptr->at(td_idx))[0];
-            z.appendSample(t, value);
-            td_idx++;
-        }
-		
-        if (t>end_time)  
-            z.endTime = end_time;
+        z.clear();
+        z.appendSample(start_time,value);        
+        z.endTime = end_time;
         
-        if (z.endTime>start_time) {
-            z.resize(start_time, max(start_time,z.endTime),value);  // if we reached start_time trim everything before
-        }
-        else {
-            z.resize(z.endTime, z.endTime, value);   // otherwise, only keep the last value seen before start_time
-        }
 #ifdef DEBUG__
         printf("<< constant_transducer::compute_robustness OUT.\n");
 #endif

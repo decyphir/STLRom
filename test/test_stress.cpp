@@ -9,7 +9,7 @@ using namespace STLRom;
 
 int main(int argc, char **argv)
 {
-
+    /* TODO make new stress tests... */
     /*  Read formula(s).
 
         Formulas can be defined in a file or a string. At minima there needs to be:
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
         phi := alw_[0, 5.] (x[t]>0 and y[t]<2)
 
     */
-
+/*
     int num_samples = 10; // default value
     int num_traces = 10;
     int num_repeat = 10;
@@ -65,6 +65,6 @@ int main(int argc, char **argv)
         }
         cout << endl;
     }
-
+*/
     return 0;
 }

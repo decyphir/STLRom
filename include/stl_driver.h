@@ -293,11 +293,11 @@ public:
         return os;
     }
     /** Read a trace file */
-    inline bool read_trace_file(string trace_file_name)
-    {
-        data.clear();
-        return read_trace(trace_file_name, data);
-    }
+    //inline bool read_trace_file(string trace_file_name)
+    //{
+    //    data.clear();
+    //    return read_trace(trace_file_name, data);
+    //}
 
 
     /** dump all assigned formulas satisfaction function to a file */
