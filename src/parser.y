@@ -523,6 +523,8 @@ signal_new: NEW_ID
           {
                 short idx =  driver.signal_map.size();
                 driver.signal_map[$1] = idx;
+                Signal s;
+                driver.data.push_back(s);
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }
