@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <cmath>
 //#include <math.h>
-//#include <algorithm>
+#include <algorithm>
 // TODO maybe make TOP and BOTTOM static signal attribute ...
 #define BOTTOM (-Signal::BigM) //-std::numeric_limits<double>::infinity()
 #define TOP (Signal::BigM) //std::numeric_limits<double>::infinity()
@@ -166,7 +166,31 @@ public:
 	void appendSample(double, double);
 	void appendSample(double, double, double);
     void appendSignal(Signal);
-    void simplify(); //remove sampling points where (y,dy) is continuous.
+  	
+	inline double valueAt(double t) const {
+		if (!empty()) {
+			auto it = std::lower_bound(
+        		begin(), 
+        		end(), 
+        		t, 
+        		[](const Sample& s, double val) { 
+	    	        return s.time < val;     
+				}
+			);
+			if (it != begin()) {
+	        	auto last_valid = std::prev(it); 	    	
+				return last_valid->valueAt(t);  
+			} else  {
+				return it->valueAt(t);
+			}	               					    
+		} else {
+			std::cout << "EMPTY Signal, returning 0." << std::endl;
+		 	return 0.;
+		}
+	}		
+	
+	void simplify(); //remove sampling points where (y,dy) is continuous.
+	void resize(double, double); //restricts/extends the signal to [s,t) with interpolation where not defined
 	void resize(double, double, double); //restricts/extends the signal to [s,t) with default value v where not defined
 	void shift(double); //shifts the signal of delta_t time units
     void addLastSample(); // add a sample at endTime. 
@@ -242,7 +266,6 @@ public:
     /// computes max lemire window of size a of argument signal 
     void compute_plateau_max(const Signal &, double);
     void compute_plateau_min(const Signal &, double);
-
 
 	friend std::ostream & operator<<(std::ostream &, const Signal &);
 };

@@ -180,16 +180,58 @@ namespace STLRom {
 #endif
     }
 
-    void Signal::resize(double s, double t, double v) {
-        // Resize signal to begin at time s and end at time t 
+    void Signal::resize(double t_start, double t_end) {
 
+        // Sanitize inputs
+        if (empty())
+            return;
+        
+        if ( t_end<t_start-1e-14 ) {
+            clear();
+            beginTime=0.;
+            endTime=0.;
+            return;
+        }
+        else if (t_end < t_start)
+            t_end = t_start;  
+                 
+        // if t_start after endTime
+        if (t_start>=endTime) {
+            double v = back().valueAt(t_start);
+            double d = back().derivative;
+            clear();
+            push_front(Sample(t_start, v, d));            
+        } 
+        // if t_end before beginTime
+        else if (t_end<beginTime) {
+            double v = front().valueAt(t_start);
+            double d = front().derivative;
+            clear();
+            push_front(Sample(t_start, v, d));          
+        }
+        else {
+            //trim or extend front of signal
+            while(front().time < t_start) pop_front();        
+            push_front(Sample(t_start, front().valueAt(t_start), front().derivative));
+        
+            //trim or extend end of signal
+            while(t_end<back().time) pop_back();
+        }
+        beginTime = t_start;
+        endTime = t_end;
+        
+    }
+    
+    void Signal::resize(double t_start, double t_end, double v) {
+        // Resize signal to begin at time t_start and end at time t_end 
+        // Consider obsoleting this implementation and using the one above instead
     #ifdef DEBUG__
             printf(">>>Signal::resize:                            IN.\n");
-        cout << "to start_time:" << s << " and end_time:" << t << endl;
+        cout << "to start_time:" << t_start << " and end_time:" << t_end << endl;
         cout << "IN: " << *this << endl;
     #endif
 
-        if ( t<s-1e-14 ) {
+        if ( t_end<t_start-1e-14 ) {
             clear();
             beginTime=0.;
             endTime=0.;
@@ -201,50 +243,50 @@ namespace STLRom {
             return;
         }
         else 
-            if (t < s)
-                t = s;  // hope I don't regret this.
+            if (t_end < t_start)
+                t_end = t_start;  // hope I don't_end regret this.
         Sample first;
 
         //trim or extend front of signal
-        if(beginTime > s) {
-            //double der = (front().value-v)/(front().time-s);
-            push_front(Sample(s, front().value, 0));
+        if(beginTime > t_start) {
+            //double der = (front().value-v)/(front().time-t_start);
+            push_front(Sample(t_start, front().value, 0));
         }
         else {
-            while((!empty())&&(front().time < s)) {
+            while((!empty())&&(front().time < t_start)) {
                 first=front();
                 pop_front();
             }
             if (empty()) {
                 //			cout << "push empty " << first << endl;
-                push_front(Sample(s, first.valueAt(s), 0));
-                if (endTime < s)
-                    endTime = s;
+                push_front(Sample(t_start, first.valueAt(t_start), 0));
+                if (endTime < t_start)
+                    endTime = t_start;
             }
             else {
-                if (front().time > s)  {
-                    double val = first.valueAt(s);				
-                    push_front(Sample(s,val,first.derivative));
+                if (front().time > t_start)  {
+                    double val = first.valueAt(t_start);				
+                    push_front(Sample(t_start,val,first.derivative));
                 }
             }
         }
         //trim or extend back of signal
-        if(endTime < t) {
+        if(endTime < t_end) {
             //		cout << "push_back here" << endl;
             if (back().value != v || back().derivative != 0.)
                 push_back(Sample(endTime, v, 0));
         }
         else {
-            while(!empty()&&back().time >t) {
+            while(!empty()&&back().time >t_end) {
                 pop_back();
             }
         }
         if (empty()) {
             //		cout << "push_back empty" << endl;
-            push_back(Sample(s, v, 0));
+            push_back(Sample(t_start, v, 0));
         }
-        beginTime=s;
-        endTime=t;
+        beginTime=t_start;
+        endTime=t_end;
 #ifdef DEBUG__
         cout << "OUT: " << *this << endl;
         printf("<<<Signal::resize:                            OUT.\n");

@@ -75,6 +75,8 @@ PYBIND11_MODULE(_stlrom, m) {
         })		
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
+		.def("value_at", &STLRom::Signal::valueAt)
+		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("compute_not",&STLRom::Signal::compute_not)	
 		.def("compute_and", &STLRom::Signal::compute_and)
 		.def("compute_or", &STLRom::Signal::compute_or)
@@ -157,6 +159,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
 		.def_readwrite("end_time",&STLRom::STLMonitor::end_time)
+		.def_readwrite("signal_map",&STLRom::STLMonitor::signal_map)
+		.def_readwrite("param_map",&STLRom::STLMonitor::param_map)
 		;
 
 	//Class STLDriver
@@ -197,6 +201,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
+		.def_readwrite("signal_map",&STLRom::STLDriver::signal_map)
+		.def_readwrite("param_map",&STLRom::STLDriver::param_map)
 		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__deepcopy__", [](const STLRom::STLDriver &self, py::dict) { return STLRom::STLDriver(self); })
