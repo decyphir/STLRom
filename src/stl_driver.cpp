@@ -429,6 +429,15 @@ void STLDriver::add_sample(vector<double> s)
         data[i-1].appendSample(s[0],s[i]);
 }
 
+void STLDriver::set_signals(const std::vector<Signal>& signals)
+{
+    if (signals.size() != signal_map.size()) {
+        throw std::invalid_argument("Number of signals does not match the number of declared signals.");
+    }
+
+    data = signals; // copy
+}
+
 string STLDriver::get_signals_names() const
 {
     return signal_map_to_string(signal_map);

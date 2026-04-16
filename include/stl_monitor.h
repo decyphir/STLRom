@@ -249,6 +249,11 @@ namespace STLRom
 
         // append new sample to data
         void add_sample(vector<double> s);
+
+        // set signals data 
+        void set_signals(const std::vector<Signal>& signals);
+
+
         inline void set_eval_time(double t_start, double t_end)
         {
             start_time = t_start;

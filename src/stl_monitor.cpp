@@ -31,6 +31,15 @@ namespace STLRom
 		up_to_date = false;
 	}
 
+	void STLMonitor::set_signals(const std::vector<Signal>& signals)
+{
+    if (signals.size() != signal_map.size()) {
+        throw std::invalid_argument("Number of signals does not match the number of declared signals.");
+    }
+
+    data = signals; // copy
+}
+
 
 	Signal STLMonitor::eval_rob() {
         return eval_rob(start_time, end_time);

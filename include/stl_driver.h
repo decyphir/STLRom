@@ -95,6 +95,9 @@ public:
 
     /** append new sample to data */
     void add_sample(vector <double> sample);
+
+    /** set signals data */
+    void set_signals(const std::vector<Signal>& signals);
     
     string get_signals_names() const;
 

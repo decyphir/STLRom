@@ -130,6 +130,7 @@ PYBIND11_MODULE(_stlrom, m) {
             return oss.str();
         })
 		.def("add_sample",&STLRom::STLMonitor::add_sample)
+		.def("set_signals",&STLRom::STLMonitor::set_signals)
 		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
 		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
 		.def("set_semantics",&STLRom::STLMonitor::set_semantics)
@@ -180,6 +181,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("parse_string",&STLRom::STLDriver::parse_string)
 		.def("disp",&STLRom::STLDriver::disp)		
 		.def("add_sample",&STLRom::STLDriver::add_sample)
+		.def("set_signals",&STLRom::STLDriver::set_signals)
 		.def("get_monitor",&STLRom::STLDriver::get_monitor)
 		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
 		.def("set_semantics",&STLRom::STLDriver::set_semantics)
