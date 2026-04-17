@@ -253,6 +253,12 @@ namespace STLRom
         // set signals data 
         void set_signals(const std::vector<Signal>& signals);
 
+        // load signals from csv file
+        bool load_csv(const std::string& file);
+
+        // write signals to csv file
+        bool write_csv(const std::string& file) const;
+
 
         inline void set_eval_time(double t_start, double t_end)
         {

@@ -13,6 +13,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <set>
 #include "tools.h"
 
 using namespace std;
@@ -79,28 +81,101 @@ void print(const trace_data & data) {
 	}
 }
 
-//bool read_trace(const string &trace_file_name, vector< vector<double> > &data)
-//{
-//
-//	std::ifstream file;
-//	file.open(trace_file_name.c_str());
-//
-//	if (!file.is_open()) {
-//		cout << "trace file " << trace_file_name << " not found" << endl;
-//		return false;
-//	}
-//
-//	string line;
-//	while (!std::getline(file, line, '\n').eof()) {
-//		istringstream reader(line);
-//		vector<double> lineData;
-//		while (!reader.eof()) {
-//			double val;
-//			reader >> val;
-//			lineData.push_back(val);
-//		}
-//		data.push_back(lineData);
-//	}
-//	file.close();
-//	return true;
-//}
+// tool function to read csv file into an array of double
+bool read_trace(const string& filename,
+                trace_data& signals)
+{
+    std::ifstream file(filename);
+    if (!file.is_open()) return false;
+
+    std::string line;
+    bool init = true;
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+
+        std::stringstream ss(line);
+		string token;
+        vector<double> row;
+        double x;
+
+        while (std::getline(ss, token, ',')) row.push_back(std::stod(token));
+
+        double t = row[0];
+
+        if (init) {
+            if (signals.empty()) {
+				throw std::runtime_error("Signals vector is empty."); // should never be thrown
+			}
+
+			if (signals.size() != row.size() - 1) {
+				throw std::runtime_error("CSV format mismatch: expected " + std::to_string(signals.size()) + " signals, but found " + std::to_string(row.size() - 1));
+			}
+
+			for (auto &s : signals) s.clear(); // clear existing signals if any, this means the function replaces signal data
+			
+			init = false;
+        }
+
+        for (size_t i = 1; i < row.size(); ++i) {
+            signals[i - 1].appendSample(t, row[i]); // TODO : is this expensive ?
+        }
+    }
+
+    return true;
+}
+
+bool write_trace(const std::string& filename, const trace_data& signals)
+{
+    std::ofstream file(filename);
+    if (!file.is_open()) return false;
+
+    std::set<double> times;
+
+    // collect all timestamps
+    for (const auto& s : signals) {
+        for (const auto& sample : s) {
+            times.insert(sample.time);
+        }
+    }
+
+    // write rows
+    for (double t : times) {
+        file << t;
+
+        for (const auto& s : signals) {
+            file << "," << s.valueAt(t); // TODO: expensive call
+        }
+
+        file << "\n";
+    }
+
+    return true;
+}
+
+
+// bool read_trace(const string &trace_file_name, vector< vector<double> > &data)
+// {
+
+// 	std::ifstream file;
+// 	file.open(trace_file_name.c_str());
+
+// 	if (!file.is_open()) {
+// 		cout << "trace file " << trace_file_name << " not found" << endl;
+// 		return false;
+// 	}
+
+// 	string line;
+// 	while (!std::getline(file, line, '\n').eof()) {
+// 		istringstream reader(line);
+// 		vector<double> lineData;
+// 		while (!reader.eof()) {
+// 			double val;
+// 			reader >> val;
+// 			lineData.push_back(val);
+// 		}
+// 		data.push_back(lineData);
+// 	}
+// 	file.close();
+// 	return true;
+// }

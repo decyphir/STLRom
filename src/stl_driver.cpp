@@ -438,6 +438,16 @@ void STLDriver::set_signals(const std::vector<Signal>& signals)
     data = signals; // copy
 }
 
+bool STLDriver::load_csv(const std::string& file)
+{
+    return read_trace(file, data);
+}
+
+bool STLDriver::write_csv(const std::string& file) const
+{
+    return write_trace(file, data);
+}
+
 string STLDriver::get_signals_names() const
 {
     return signal_map_to_string(signal_map);

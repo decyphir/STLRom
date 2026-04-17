@@ -40,6 +40,16 @@ namespace STLRom
     data = signals; // copy
 }
 
+	bool STLMonitor::load_csv(const std::string& file)
+{
+    return read_trace(file, data);
+}
+
+	bool STLMonitor::write_csv(const std::string& file) const
+{	
+	return write_trace(file, data);
+}
+
 
 	Signal STLMonitor::eval_rob() {
         return eval_rob(start_time, end_time);

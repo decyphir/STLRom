@@ -51,7 +51,8 @@ inline string d_to_s(
 const std::string current_date_time();
 
 void print(const trace_data&); // TODO that too, maybe
-//bool read_trace(const string &trace_file_name, trace_data &data); // Yeah, we'll need a csv importer I guess
+bool read_trace(const string &trace_file_name, trace_data &data); // Yeah, we'll need a csv importer I guess
+bool write_trace(const std::string& filename, const trace_data& signals);
 
 template <typename BinaryOp>
 void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op)
