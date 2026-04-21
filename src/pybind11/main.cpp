@@ -204,6 +204,30 @@ PYBIND11_MODULE(_stlrom, m) {
          },
 	     py::arg("phi_in") = "phi",
          py::arg("t0") = 0.)
+		.def("eval_rob",
+			(Signal (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::eval_rob,
+			py::arg("phi_in"))
+		.def("eval_rob",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::eval_rob,
+			py::arg("phi_in"),
+			py::arg("t"))
+		.def("eval_rob",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::eval_rob,
+			py::arg("phi_in"),
+			py::arg("t_start"),
+			py::arg("t_end"))
+		.def("eval_online_rob",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::eval_online_rob,
+			py::arg("phi_in"))
+		.def("eval_online_rob",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::eval_online_rob,
+			py::arg("phi_in"),
+			py::arg("t"))
+		.def("eval_online_rob",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::eval_online_rob,
+			py::arg("phi_in"),
+			py::arg("t_start"),
+			py::arg("t_end"))
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
