@@ -121,6 +121,34 @@ namespace STLRom
     }
 	
 
+	robustness_map STLMonitor::get_robustness_map() {
+		if (formula)
+		{
+			formula->get_robustness_map();
+			return formula->z_map;
+		}
+		else
+		{
+			cout << "No formula defined, returning empty robustness map." << endl; // TODO: does this happen?
+			robustness_map empty_map;
+			return empty_map;
+		}
+	}
+
+	vector<robustness_map> STLMonitor::get_online_robustness_map() {
+		if (formula)
+		{
+			formula->get_online_robustness_map();
+			return {formula->z_map, formula->z_low_map, formula->z_up_map};
+		}
+		else
+		{
+			cout << "No formula defined, returning empty robustness maps." << endl; // TODO: does this happen?
+			vector<robustness_map> empty_maps;
+			return empty_maps;
+		}
+	}
+
 
 	string STLMonitor::get_signals_names() const
 	{

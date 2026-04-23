@@ -52,7 +52,7 @@ namespace STLRom
 
         void get_robustness_map();
 
-        // void get_online_robustness_map();
+        void get_online_robustness_map();
 
         virtual void set_trace_data_ptr(const trace_data &trace)
         {
