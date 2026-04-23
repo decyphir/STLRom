@@ -329,5 +329,19 @@ namespace STLRom {
 #endif
         return value;
     }
+
+
+    void stl_atom::get_robustness_map() {
+        childL->get_robustness_map();
+        childR->get_robustness_map();
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_map[this->get_formula_string()] = z;
+    }
+
+    void signal_transducer::get_robustness_map() {
+        z_map[this->variable] = z;
+    }
+
 }
 

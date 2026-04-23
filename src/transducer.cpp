@@ -148,6 +148,12 @@ namespace STLRom {
         return z.front().value;
     }
 
+    void not_transducer::get_robustness_map() {
+        child->get_robustness_map();
+        z_map.insert(child->z_map.begin(), child->z_map.end());
+        z_map[this->get_formula_string()] = z;
+    }
+
     double ev_transducer::compute_robustness() {
 
         #ifdef DEBUG__
@@ -172,6 +178,12 @@ namespace STLRom {
         return z.front().value;
     }
 
+    void ev_transducer::get_robustness_map() {
+        child->get_robustness_map();
+        z_map.insert(child->z_map.begin(), child->z_map.end());
+        z_map[this->get_formula_string()] = z;
+    }
+
     double alw_transducer::compute_robustness() {
 #ifdef DEBUG__
         printf(">  alw_transducer::compute_robustness:        IN." );
@@ -193,6 +205,12 @@ namespace STLRom {
         printf("<  alw_transducer::compute_robustness:        OUT." );
 #endif
         return z.front().value;
+    }
+
+    void alw_transducer::get_robustness_map() {
+        child->get_robustness_map();
+        z_map.insert(child->z_map.begin(), child->z_map.end());
+        z_map[this->get_formula_string()] = z;
     }
 
     double and_transducer::compute_robustness() {
@@ -219,6 +237,14 @@ namespace STLRom {
         return z.front().value;
     }
 
+    void and_transducer::get_robustness_map() {
+        childL->get_robustness_map();
+        childR->get_robustness_map();
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_map[this->get_formula_string()] = z;
+    }
+
     double or_transducer::compute_robustness() {
 #ifdef DEBUG__
         printf( ">  or_transducer::compute_robustness:         IN." );
@@ -243,6 +269,14 @@ namespace STLRom {
         return z.front().value;
     }
 
+    void or_transducer::get_robustness_map() {
+        childL->get_robustness_map();
+        childR->get_robustness_map();
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_map[this->get_formula_string()] = z;
+    }
+
     double implies_transducer::compute_robustness() {
 
         childL->compute_robustness();
@@ -255,6 +289,14 @@ namespace STLRom {
         z.compute_implies(z1,z2);
 
         return z.front().value;
+    }
+
+    void implies_transducer::get_robustness_map() {
+        childL->get_robustness_map();
+        childR->get_robustness_map();
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_map[this->get_formula_string()] = z;
     }
 
     double until_transducer::compute_robustness() {
@@ -270,6 +312,14 @@ namespace STLRom {
         z.compute_timed_until(childL->z, childR->z, a, b);
         z.resize(0.,z.endTime,0.);
         return z.front().value;
+    }
+
+    void until_transducer::get_robustness_map() {
+        childL->get_robustness_map();
+        childR->get_robustness_map();
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_map[this->get_formula_string()] = z;
     }
 
     /* Utility functions */

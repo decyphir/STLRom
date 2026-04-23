@@ -17,6 +17,8 @@ namespace STLRom {
 
     typedef vector<Signal> trace_data;
 
+    typedef map<string, Signal> robustness_map;
+
     /* Virtual classes */
 
     /** transducer virtual class. Provides a compute_robustness method. */
@@ -36,6 +38,8 @@ namespace STLRom {
 
         // z is estimated robustness signal, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
+
+        robustness_map z_map, z_up_map, z_low_map; // robustness maps for subformulas
 
         transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
         
@@ -81,6 +85,15 @@ namespace STLRom {
             return 0;};
         virtual double compute_lower_rob();
         virtual double compute_upper_rob();
+
+        // get robustness map(s)
+        virtual void get_robustness_map() {
+
+        };
+
+        virtual void get_online_robustness_map() {
+
+        };
 
         // update quantitative semantics based on new data
         virtual double update_robustness();
@@ -288,6 +301,10 @@ namespace STLRom {
 
         double compute_upper_rob();
 
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
+
         void print() const{
             print(cout);
         };
@@ -322,6 +339,10 @@ namespace STLRom {
         double compute_lower_rob();
 
         double compute_upper_rob();
+
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
 
 
         void print() const{
@@ -361,6 +382,10 @@ namespace STLRom {
 
         double compute_upper_rob();
 
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
+
         void print() const{
             print(cout);
         };
@@ -398,6 +423,10 @@ namespace STLRom {
 
         double compute_upper_rob();
 
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
+
         void print() const{
             print(cout);
         };
@@ -432,6 +461,10 @@ namespace STLRom {
         double compute_robustness();
         double compute_lower_rob();
         double compute_upper_rob();
+
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
 
 
         void print() const{
@@ -469,6 +502,10 @@ namespace STLRom {
         double compute_lower_rob();
         double compute_upper_rob();
 
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
+
         void print() const{
             print(cout);
         };
@@ -503,6 +540,10 @@ namespace STLRom {
         double compute_robustness();
         double compute_lower_rob();
         double compute_upper_rob();
+
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
 
         void print() const{
             print(cout);
@@ -561,6 +602,10 @@ namespace STLRom {
         };
 
         double compute_robustness();
+
+        void get_robustness_map();
+
+        // void get_online_robustness_map();
 
         virtual void print(ostream &os) const {
             childL->print(os);
