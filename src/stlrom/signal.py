@@ -40,7 +40,7 @@ def plot(self, label=None, ax=None, title='Signal Plot'):
         sn = samples_list[0]
         col = None
     else:
-        print("No samples to plot.")
+        print(f"{label}: No samples to plot.")
         return ax
     
     col, l = plot_sample(sn, self.end_time-sn.time, col)
