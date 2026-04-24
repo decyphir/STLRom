@@ -332,17 +332,17 @@ namespace STLRom {
     }
 
 
-    void stl_atom::get_robustness_map() {
-        childL->get_robustness_map();
-        childR->get_robustness_map();
+    void stl_atom::fill_robustness_map() {
+        childL->fill_robustness_map();
+        childR->fill_robustness_map();
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void stl_atom::get_online_robustness_map() {
-        childL->get_online_robustness_map();
-        childR->get_online_robustness_map();
+    void stl_atom::fill_online_robustness_map() {
+        childL->fill_online_robustness_map();
+        childR->fill_online_robustness_map();
         
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
@@ -356,11 +356,11 @@ namespace STLRom {
         z_up_map[this->get_formula_string()] = z_up;
     }
 
-    void signal_transducer::get_robustness_map() {
+    void signal_transducer::fill_robustness_map() {
         z_map[this->variable] = z;
     }
 
-    void signal_transducer::get_online_robustness_map() {
+    void signal_transducer::fill_online_robustness_map() {
         z_map[this->variable] = z;
         z_low_map[this->variable] = z_low;
         z_up_map[this->variable] = z_up;

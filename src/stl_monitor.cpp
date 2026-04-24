@@ -124,7 +124,7 @@ namespace STLRom
 	robustness_map STLMonitor::get_robustness_map() {
 		if (formula)
 		{
-			formula->get_robustness_map();
+			formula->fill_robustness_map();
 			return formula->z_map;
 		}
 		else
@@ -138,7 +138,7 @@ namespace STLRom
 	vector<robustness_map> STLMonitor::get_online_robustness_map() {
 		if (formula)
 		{
-			formula->get_online_robustness_map();
+			formula->fill_online_robustness_map();
 			return {formula->z_map, formula->z_low_map, formula->z_up_map};
 		}
 		else

@@ -87,11 +87,11 @@ namespace STLRom {
         virtual double compute_upper_rob();
 
         // get robustness map(s)
-        virtual void get_robustness_map() {
+        virtual void fill_robustness_map() {
 
         };
 
-        virtual void get_online_robustness_map() {
+        virtual void fill_online_robustness_map() {
 
         };
 
@@ -301,9 +301,9 @@ namespace STLRom {
 
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
         void print() const{
             print(cout);
@@ -340,9 +340,9 @@ namespace STLRom {
 
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
 
         void print() const{
@@ -382,9 +382,9 @@ namespace STLRom {
 
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
         void print() const{
             print(cout);
@@ -423,9 +423,9 @@ namespace STLRom {
 
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
         void print() const{
             print(cout);
@@ -462,9 +462,9 @@ namespace STLRom {
         double compute_lower_rob();
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
 
         void print() const{
@@ -502,9 +502,9 @@ namespace STLRom {
         double compute_lower_rob();
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
         void print() const{
             print(cout);
@@ -541,9 +541,9 @@ namespace STLRom {
         double compute_lower_rob();
         double compute_upper_rob();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
         void print() const{
             print(cout);
@@ -603,9 +603,9 @@ namespace STLRom {
 
         double compute_robustness();
 
-        void get_robustness_map();
+        void fill_robustness_map();
 
-        void get_online_robustness_map();
+        void fill_online_robustness_map();
 
         virtual void print(ostream &os) const {
             childL->print(os);
