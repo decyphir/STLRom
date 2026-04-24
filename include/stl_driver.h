@@ -100,10 +100,10 @@ public:
     void set_signals(const std::vector<Signal>& signals);
 
     /** load signals from csv file */
-    bool load_csv(const std::string& file);
+    void load_csv(const vector<string>& files);
 
     /** write signals to csv file */
-    bool write_csv(const std::string& file) const;
+    void write_csv(const std::string& directory) const;
 
     string get_signals_names() const;
 

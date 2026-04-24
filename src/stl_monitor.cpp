@@ -40,15 +40,30 @@ namespace STLRom
     data = signals; // copy
 }
 
-	bool STLMonitor::load_csv(const std::string& file)
-{
-    return read_trace(file, data);
-}
+	void STLMonitor::load_csv(const vector<string>& files)
+	{
+		if (files.size() != signal_map.size()) {
+			throw std::invalid_argument("Number of files does not match the number of declared signals.");
+		}
 
-	bool STLMonitor::write_csv(const std::string& file) const
-{	
-	return write_trace(file, data);
-}
+		for (int i = 0; i < files.size(); i++) {
+			data[i].read_from_file(files[i]);
+		}
+	}
+
+	void STLMonitor::write_csv(const std::string& directory) const
+	{
+		string dir = directory;
+		
+		if (dir.back() != '/') dir += '/';
+
+		for (const auto &signal : signal_map)
+		{
+		    string filename = dir + signal.first + ".csv";
+
+			data[signal.second].write_to_file(filename);
+		}
+	}
 
 
 	Signal STLMonitor::eval_rob() {

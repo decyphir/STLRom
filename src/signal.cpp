@@ -1,5 +1,8 @@
 #include "signal.h"
 #include "iomanip"
+#include <vector>
+#include <sstream>
+
 
 namespace STLRom {
 
@@ -312,6 +315,52 @@ namespace STLRom {
                back().value==BOTTOM ||
                back().derivative == BOTTOM)) {
             pop_back();
+        }
+    }
+
+    void Signal::read_from_file(const string& filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            throw std::invalid_argument("signal file " + filename + " not found");
+        }
+        
+        clear();
+
+        std::string line;
+        while(std::getline(file, line)) {
+            if (line.empty()) continue;
+
+            std::stringstream ss(line);
+            string token;
+            vector<double> row;
+
+            while (std::getline(ss, token, ',')) row.push_back(std::stod(token));
+
+            int row_size = row.size();
+
+            if (row_size != 2 && row_size != 3) {
+                throw std::invalid_argument("Invalid signal format in file " + filename);
+            }
+
+            if (row_size == 2) {
+                appendSample(row[0], row[1]);
+            } else {
+                appendSample(row[0], row[1], row[2]);
+            }
+
+        }
+    }
+
+    void Signal::write_to_file(const string& filename) const
+    {
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            throw std::invalid_argument("Could not open file " + filename + " for writing");
+        }
+
+        for (const auto& sample : *this) {
+            file << sample.time << "," << sample.value << "," << sample.derivative << "\n";
         }
     }
 

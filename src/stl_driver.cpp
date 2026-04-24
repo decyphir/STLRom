@@ -569,14 +569,29 @@ void STLDriver::set_signals(const std::vector<Signal>& signals)
     data = signals; // copy
 }
 
-bool STLDriver::load_csv(const std::string& file)
+void STLDriver::load_csv(const vector<string>& files)
 {
-    return read_trace(file, data);
+    if (files.size() != signal_map.size()) {
+        throw std::invalid_argument("Number of files does not match the number of declared signals.");
+    }
+
+    for (int i = 0; i < files.size(); i++) {
+        data[i].read_from_file(files[i]);
+    }
 }
 
-bool STLDriver::write_csv(const std::string& file) const
+void STLDriver::write_csv(const std::string& directory) const
 {
-    return write_trace(file, data);
+    string dir = directory;
+    
+    if (dir.back() != '/') dir += '/';
+
+    for (const auto &signal : signal_map)
+    {
+        string filename = dir + signal.first + ".csv";
+
+        data[signal.second].write_to_file(filename);
+    }
 }
 
 string STLDriver::get_signals_names() const
