@@ -237,7 +237,6 @@ namespace STLRom {
                         }
                     } else { // zero crossing
                         if (comp == comparator::EQUAL) {
-                            cout << "appending zero equal ";
                             z.appendSample(e.t, Signal::Eps, -fabs(d_prev));
                         }
                     }
