@@ -469,7 +469,7 @@ robustness_map STLRom::STLDriver::get_robustness_map(const string &phi_in)
     }
     transducer *phi = formula_map[phi_in];
 
-    phi->get_robustness_map();
+    phi->fill_robustness_map();
     return phi->z_map;
 }
 
@@ -484,7 +484,7 @@ vector<robustness_map> STLRom::STLDriver::get_online_robustness_map(const string
     }
     transducer *phi = formula_map[phi_in];
 
-    phi->get_online_robustness_map();
+    phi->fill_online_robustness_map();
     return {phi->z_map, phi->z_low_map, phi->z_up_map};
 }
 

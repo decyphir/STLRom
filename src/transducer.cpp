@@ -148,14 +148,14 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void not_transducer::get_robustness_map() {
-        child->get_robustness_map();
+    void not_transducer::fill_robustness_map() {
+        child->fill_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void not_transducer::get_online_robustness_map() {
-        child->get_online_robustness_map();
+    void not_transducer::fill_online_robustness_map() {
+        child->fill_online_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
         z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
@@ -188,14 +188,14 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void ev_transducer::get_robustness_map() {
-        child->get_robustness_map();
+    void ev_transducer::fill_robustness_map() {
+        child->fill_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void ev_transducer::get_online_robustness_map() {
-        child->get_online_robustness_map();
+    void ev_transducer::fill_online_robustness_map() {
+        child->fill_online_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
         z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
@@ -227,14 +227,14 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void alw_transducer::get_robustness_map() {
-        child->get_robustness_map();
+    void alw_transducer::fill_robustness_map() {
+        child->fill_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void alw_transducer::get_online_robustness_map() {
-        child->get_online_robustness_map();
+    void alw_transducer::fill_online_robustness_map() {
+        child->fill_online_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
         z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
@@ -267,17 +267,17 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void and_transducer::get_robustness_map() {
-        childL->get_robustness_map();
-        childR->get_robustness_map();
+    void and_transducer::fill_robustness_map() {
+        childL->fill_robustness_map();
+        childR->fill_robustness_map();
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void and_transducer::get_online_robustness_map() {
-        childL->get_online_robustness_map();
-        childR->get_online_robustness_map();
+    void and_transducer::fill_online_robustness_map() {
+        childL->fill_online_robustness_map();
+        childR->fill_online_robustness_map();
 
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
@@ -315,17 +315,17 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void or_transducer::get_robustness_map() {
-        childL->get_robustness_map();
-        childR->get_robustness_map();
+    void or_transducer::fill_robustness_map() {
+        childL->fill_robustness_map();
+        childR->fill_robustness_map();
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void or_transducer::get_online_robustness_map() {
-        childL->get_online_robustness_map();
-        childR->get_online_robustness_map();
+    void or_transducer::fill_online_robustness_map() {
+        childL->fill_online_robustness_map();
+        childR->fill_online_robustness_map();
 
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
@@ -353,17 +353,17 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void implies_transducer::get_robustness_map() {
-        childL->get_robustness_map();
-        childR->get_robustness_map();
+    void implies_transducer::fill_robustness_map() {
+        childL->fill_robustness_map();
+        childR->fill_robustness_map();
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void implies_transducer::get_online_robustness_map() {
-        childL->get_online_robustness_map();
-        childR->get_online_robustness_map();
+    void implies_transducer::fill_online_robustness_map() {
+        childL->fill_online_robustness_map();
+        childR->fill_online_robustness_map();
 
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
@@ -392,17 +392,17 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void until_transducer::get_robustness_map() {
-        childL->get_robustness_map();
-        childR->get_robustness_map();
+    void until_transducer::fill_robustness_map() {
+        childL->fill_robustness_map();
+        childR->fill_robustness_map();
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
     }
 
-    void until_transducer::get_online_robustness_map() {
-        childL->get_online_robustness_map();
-        childR->get_online_robustness_map();
+    void until_transducer::fill_online_robustness_map() {
+        childL->fill_online_robustness_map();
+        childR->fill_online_robustness_map();
 
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
