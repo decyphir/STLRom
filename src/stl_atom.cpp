@@ -321,7 +321,8 @@ namespace STLRom {
         }
 
         z.clear();
-        z.appendSample(start_time,value);        
+        z.appendSample(start_time,value,0.);
+        z.appendSample(end_time,value,0.);
         z.endTime = end_time;
         
 #ifdef DEBUG__
