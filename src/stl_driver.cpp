@@ -311,7 +311,8 @@ void STLDriver::set_param(const string &param, double n)
 double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
 {
         
-    if (data.empty())
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
         cout << "Empty data" << endl;
         return 0.;
@@ -341,7 +342,8 @@ double STLDriver::get_rob(const string &phi_in)
 vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
 {
     vector<double> out_rob;
-    if (data.empty())
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
         cout << "Empty data" << endl;
         return out_rob;
@@ -390,7 +392,8 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
 
 Signal STLDriver::eval_rob(const string &phi_in, double t_start, double t_end)
 {
-    if (data.empty())
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
         cout << "Empty data" << endl;
         return Signal();
@@ -425,7 +428,8 @@ Signal STLDriver::eval_rob(const string &phi_in, double t)
 vector<Signal> STLDriver::eval_online_rob(const string &phi_in, double t_start, double t_end)
 {
     vector<Signal> out_rob;
-    if (data.empty())
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
         cout << "Empty data" << endl;
         return out_rob;
@@ -640,13 +644,24 @@ void STLDriver::print(ostream &out) const
     }
     
     out << "\n# Data:" << endl;
-    if (data.empty())
+    if (std::all_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
-        out << "# No data yet.";                  
+        out << "No data yet.";                  
     }
     else
     {
-        out << "# "<< data.size() << " samples from t0=" << data.front().front() << " to t_end=" << data.back().front() << endl;
+        for (const auto &signal : signal_map)
+        {
+            out << "\n# Signal " << signal.first << ":"<< endl;
+            if (data[signal.second].empty())
+            {
+                out << "No data yet." << endl;
+            }
+            else
+            {
+                out << data[signal.second].size() << " samples from t0=" << data[signal.second].beginTime << " to t_end=" << data[signal.second].endTime << endl;
+            }
+        }
     }
-
 }

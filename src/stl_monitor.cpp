@@ -60,6 +60,12 @@ namespace STLRom
     }
 	Signal STLMonitor::eval_rob(double t_start, double t_end)
     {
+		if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
+		{
+			cout << "Empty data" << endl;
+			return Signal();
+		}
 		start_time = t_start;
 		end_time  = t_end;
 		if (formula)
@@ -88,6 +94,13 @@ namespace STLRom
     }
 	vector<Signal> STLMonitor::eval_online_rob(double t_start, double t_end)
     {
+		if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
+		{
+			cout << "Empty data" << endl;
+			vector<Signal> out_rob;
+			return out_rob;
+		}
 		start_time = t_start;
 		end_time  = t_end;
 		if (formula)

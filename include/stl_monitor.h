@@ -337,14 +337,26 @@ namespace STLRom
             out << endl;
 
             out << "\nData: ";
-            if (monitor.data.empty())
+            if (std::all_of(monitor.data.begin(), monitor.data.end(),
+            [](const Signal& s) { return s.empty(); }))
             {
                 out << "No data yet.";                  
             }
             else
             {
-                out << monitor.data.size() << " samples from t0=" << monitor.data.front().front() << " to t_end=" << monitor.data.back().front() << endl;
-            }            
+                for (const auto &signal : monitor.signal_map)
+                {
+                    out << "# Signal " << signal.first << ":"<< endl;
+                    if (monitor.data[signal.second].empty())
+                    {
+                        out << "No data yet." << endl;
+                    }
+                    else
+                    {
+                        out << monitor.data[signal.second].size() << " samples from t0=" << monitor.data[signal.second].beginTime << " to t_end=" << monitor.data[signal.second].endTime << endl;
+                    }
+                }
+            }           
             out << "Robustness on [" << monitor.start_time << "," << monitor.end_time << "]:";
             if (monitor.up_to_date)
                 out << endl << "at t=" << monitor.start_time << ":    lower_rob=" << monitor.lower_rob << "   <=    estimate=" << monitor.rob << "   <=    upper_rob= " << monitor.upper_rob <<  endl; 
