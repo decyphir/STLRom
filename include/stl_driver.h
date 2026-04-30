@@ -275,6 +275,13 @@ public:
     vector<double> get_online_rob(const string &phi_in);
     vector<double> get_online_rob(const string &phi_in, double);
 
+    Signal eval_rob(const string &phi_in);
+    Signal eval_rob(const string &phi_in, double);
+    Signal eval_rob(const string &phi_in, double, double);
+    vector<Signal> eval_online_rob(const string &phi_in);
+    vector<Signal> eval_online_rob(const string &phi_in, double);
+    vector<Signal> eval_online_rob(const string &phi_in, double, double);
+
 
     /**
      * Switch scanner input stream. Default is standard input (std::cin).
