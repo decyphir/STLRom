@@ -228,6 +228,7 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))
+		.def("get_robustness_map",&STLRom::STLDriver::get_robustness_map)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
