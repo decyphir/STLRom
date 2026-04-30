@@ -148,20 +148,18 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void not_transducer::fill_robustness_map() {
-        child->fill_robustness_map();
-        z_map.insert(child->z_map.begin(), child->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void not_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        child->fill_robustness_map(rob_map);
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void not_transducer::fill_online_robustness_map() {
-        child->fill_online_robustness_map();
-        z_map.insert(child->z_map.begin(), child->z_map.end());
-        z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
-        z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+    void not_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        child->fill_online_robustness_map(rob_maps);
+
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     double ev_transducer::compute_robustness() {
@@ -188,20 +186,18 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void ev_transducer::fill_robustness_map() {
-        child->fill_robustness_map();
-        z_map.insert(child->z_map.begin(), child->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void ev_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        child->fill_robustness_map(rob_map);
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void ev_transducer::fill_online_robustness_map() {
-        child->fill_online_robustness_map();
-        z_map.insert(child->z_map.begin(), child->z_map.end());
-        z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
-        z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+    void ev_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        child->fill_online_robustness_map(rob_maps);
+
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     double alw_transducer::compute_robustness() {
@@ -227,20 +223,18 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void alw_transducer::fill_robustness_map() {
-        child->fill_robustness_map();
-        z_map.insert(child->z_map.begin(), child->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void alw_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        child->fill_robustness_map(rob_map);
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void alw_transducer::fill_online_robustness_map() {
-        child->fill_online_robustness_map();
-        z_map.insert(child->z_map.begin(), child->z_map.end());
-        z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
-        z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+    void alw_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        child->fill_online_robustness_map(rob_maps);
+
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     double and_transducer::compute_robustness() {
@@ -267,28 +261,20 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void and_transducer::fill_robustness_map() {
-        childL->fill_robustness_map();
-        childR->fill_robustness_map();
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void and_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        childL->fill_robustness_map(rob_map);
+        childR->fill_robustness_map(rob_map);
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void and_transducer::fill_online_robustness_map() {
-        childL->fill_online_robustness_map();
-        childR->fill_online_robustness_map();
-
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
-        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
-        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
-        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+    void and_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        childL->fill_online_robustness_map(rob_maps);
+        childR->fill_online_robustness_map(rob_maps);
         
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     double or_transducer::compute_robustness() {
@@ -315,28 +301,22 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void or_transducer::fill_robustness_map() {
-        childL->fill_robustness_map();
-        childR->fill_robustness_map();
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void or_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        childL->fill_robustness_map(rob_map);
+        childR->fill_robustness_map(rob_map);
+
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void or_transducer::fill_online_robustness_map() {
-        childL->fill_online_robustness_map();
-        childR->fill_online_robustness_map();
+    void or_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        childL->fill_online_robustness_map(rob_maps);
+        childR->fill_online_robustness_map(rob_maps);
 
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
-        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
-        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
-        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
         
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     double implies_transducer::compute_robustness() {
@@ -353,28 +333,21 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void implies_transducer::fill_robustness_map() {
-        childL->fill_robustness_map();
-        childR->fill_robustness_map();
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void implies_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        childL->fill_robustness_map(rob_map);
+        childR->fill_robustness_map(rob_map);
+
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void implies_transducer::fill_online_robustness_map() {
-        childL->fill_online_robustness_map();
-        childR->fill_online_robustness_map();
-
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
-        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
-        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
-        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+    void implies_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        childL->fill_online_robustness_map(rob_maps);
+        childR->fill_online_robustness_map(rob_maps);
         
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     double until_transducer::compute_robustness() {
@@ -392,28 +365,22 @@ namespace STLRom {
         return z.front().value;
     }
 
-    void until_transducer::fill_robustness_map() {
-        childL->fill_robustness_map();
-        childR->fill_robustness_map();
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_map[this->get_formula_string()] = z;
+    void until_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        childL->fill_robustness_map(rob_map);
+        childR->fill_robustness_map(rob_map);
+
+
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void until_transducer::fill_online_robustness_map() {
-        childL->fill_online_robustness_map();
-        childR->fill_online_robustness_map();
+    void until_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        childL->fill_online_robustness_map(rob_maps);
+        childR->fill_online_robustness_map(rob_maps);
 
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
-        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
-        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
-        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
 
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
     /* Utility functions */

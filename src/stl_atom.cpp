@@ -332,38 +332,31 @@ namespace STLRom {
     }
 
 
-    void stl_atom::fill_robustness_map() {
-        childL->fill_robustness_map();
-        childR->fill_robustness_map();
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_map[this->get_formula_string()] = z;
-    }
-
-    void stl_atom::fill_online_robustness_map() {
-        childL->fill_online_robustness_map();
-        childR->fill_online_robustness_map();
+    void stl_atom::fill_robustness_map(robustness_map_t &rob_map) {
+        childL->fill_robustness_map(rob_map);
+        childR->fill_robustness_map(rob_map);
         
-        z_map.insert(childL->z_map.begin(), childL->z_map.end());
-        z_map.insert(childR->z_map.begin(), childR->z_map.end());
-        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
-        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
-        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
-        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
-
-        z_map[this->get_formula_string()] = z;
-        z_low_map[this->get_formula_string()] = z_low;
-        z_up_map[this->get_formula_string()] = z_up;
+        rob_map[this->get_formula_string()] = &z;
     }
 
-    void signal_transducer::fill_robustness_map() {
-        z_map[this->variable] = z;
+    void stl_atom::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        childL->fill_online_robustness_map(rob_maps);
+        childR->fill_online_robustness_map(rob_maps);
+        
+
+        rob_maps[0][this->get_formula_string()] = &z;
+        rob_maps[1][this->get_formula_string()] = &z_low;
+        rob_maps[2][this->get_formula_string()] = &z_up;
     }
 
-    void signal_transducer::fill_online_robustness_map() {
-        z_map[this->variable] = z;
-        z_low_map[this->variable] = z_low;
-        z_up_map[this->variable] = z_up;
+    void signal_transducer::fill_robustness_map(robustness_map_t &rob_map) {
+        rob_map[this->variable] = &z;
+    }
+
+    void signal_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
+        rob_maps[0][this->variable] = &z;
+        rob_maps[1][this->variable] = &z_low;
+        rob_maps[2][this->variable] = &z_up;
     }
 
 }

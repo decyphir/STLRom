@@ -50,9 +50,9 @@ namespace STLRom
 
         virtual double compute_robustness();
 
-        void fill_robustness_map();
+        void fill_robustness_map(robustness_map_t &rob_map);
 
-        void fill_online_robustness_map();
+        void fill_online_robustness_map(vector<robustness_map_t> &rob_maps);
 
         virtual void set_trace_data_ptr(const trace_data &trace)
         {
