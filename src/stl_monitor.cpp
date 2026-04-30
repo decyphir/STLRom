@@ -136,7 +136,7 @@ namespace STLRom
     }
 	
 
-	robustness_map STLMonitor::get_robustness_map() {
+	robustness_map_t STLMonitor::get_robustness_map() {
 		if (formula)
 		{
 			formula->fill_robustness_map();
@@ -145,12 +145,12 @@ namespace STLRom
 		else
 		{
 			cout << "No formula defined, returning empty robustness map." << endl; // TODO: does this happen?
-			robustness_map empty_map;
+			robustness_map_t empty_map;
 			return empty_map;
 		}
 	}
 
-	vector<robustness_map> STLMonitor::get_online_robustness_map() {
+	vector<robustness_map_t> STLMonitor::get_online_robustness_map() {
 		if (formula)
 		{
 			formula->fill_online_robustness_map();
@@ -159,7 +159,7 @@ namespace STLRom
 		else
 		{
 			cout << "No formula defined, returning empty robustness maps." << endl; // TODO: does this happen?
-			vector<robustness_map> empty_maps;
+			vector<robustness_map_t> empty_maps;
 			return empty_maps;
 		}
 	}

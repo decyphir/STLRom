@@ -17,7 +17,7 @@ namespace STLRom {
 
     typedef vector<Signal> trace_data;
 
-    typedef map<string, Signal> robustness_map;
+    typedef map<string, Signal> robustness_map_t;
 
     /* Virtual classes */
 
@@ -39,7 +39,7 @@ namespace STLRom {
         // z is estimated robustness signal, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
 
-        robustness_map z_map, z_up_map, z_low_map; // robustness maps for subformulas
+        robustness_map_t z_map, z_up_map, z_low_map; // robustness maps for subformulas
 
         transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
         

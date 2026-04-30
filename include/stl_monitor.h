@@ -275,8 +275,8 @@ namespace STLRom
         vector<Signal> eval_online_rob(double);
         vector<Signal> eval_online_rob(double, double);
 
-        robustness_map get_robustness_map();
-        vector<robustness_map> get_online_robustness_map();
+        robustness_map_t get_robustness_map();
+        vector<robustness_map_t> get_online_robustness_map();
 
 
         string get_signal_names() const;
