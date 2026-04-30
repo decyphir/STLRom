@@ -144,7 +144,9 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_online_rob)		
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_online_rob)		
-		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)		
+		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)
+		.def("get_robustness_map",&STLRom::STLMonitor::get_robustness_map)
+		.def("get_online_robustness_map",&STLRom::STLMonitor::get_online_robustness_map)		
 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
 		.def("get_param",&STLRom::STLMonitor::get_param)		
@@ -229,6 +231,7 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("t_start"),
 			py::arg("t_end"))
 		.def("get_robustness_map",&STLRom::STLDriver::get_robustness_map)
+		.def("get_online_robustness_map",&STLRom::STLDriver::get_online_robustness_map)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)

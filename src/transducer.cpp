@@ -154,6 +154,16 @@ namespace STLRom {
         z_map[this->get_formula_string()] = z;
     }
 
+    void not_transducer::get_online_robustness_map() {
+        child->get_online_robustness_map();
+        z_map.insert(child->z_map.begin(), child->z_map.end());
+        z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
+        z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
+    }
+
     double ev_transducer::compute_robustness() {
 
         #ifdef DEBUG__
@@ -184,6 +194,16 @@ namespace STLRom {
         z_map[this->get_formula_string()] = z;
     }
 
+    void ev_transducer::get_online_robustness_map() {
+        child->get_online_robustness_map();
+        z_map.insert(child->z_map.begin(), child->z_map.end());
+        z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
+        z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
+    }
+
     double alw_transducer::compute_robustness() {
 #ifdef DEBUG__
         printf(">  alw_transducer::compute_robustness:        IN." );
@@ -211,6 +231,16 @@ namespace STLRom {
         child->get_robustness_map();
         z_map.insert(child->z_map.begin(), child->z_map.end());
         z_map[this->get_formula_string()] = z;
+    }
+
+    void alw_transducer::get_online_robustness_map() {
+        child->get_online_robustness_map();
+        z_map.insert(child->z_map.begin(), child->z_map.end());
+        z_low_map.insert(child->z_low_map.begin(), child->z_low_map.end());
+        z_up_map.insert(child->z_up_map.begin(), child->z_up_map.end());
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
     }
 
     double and_transducer::compute_robustness() {
@@ -245,6 +275,22 @@ namespace STLRom {
         z_map[this->get_formula_string()] = z;
     }
 
+    void and_transducer::get_online_robustness_map() {
+        childL->get_online_robustness_map();
+        childR->get_online_robustness_map();
+
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
+        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
+        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
+        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+        
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
+    }
+
     double or_transducer::compute_robustness() {
 #ifdef DEBUG__
         printf( ">  or_transducer::compute_robustness:         IN." );
@@ -277,6 +323,22 @@ namespace STLRom {
         z_map[this->get_formula_string()] = z;
     }
 
+    void or_transducer::get_online_robustness_map() {
+        childL->get_online_robustness_map();
+        childR->get_online_robustness_map();
+
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
+        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
+        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
+        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+        
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
+    }
+
     double implies_transducer::compute_robustness() {
 
         childL->compute_robustness();
@@ -297,6 +359,22 @@ namespace STLRom {
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
+    }
+
+    void implies_transducer::get_online_robustness_map() {
+        childL->get_online_robustness_map();
+        childR->get_online_robustness_map();
+
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
+        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
+        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
+        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+        
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
     }
 
     double until_transducer::compute_robustness() {
@@ -320,6 +398,22 @@ namespace STLRom {
         z_map.insert(childL->z_map.begin(), childL->z_map.end());
         z_map.insert(childR->z_map.begin(), childR->z_map.end());
         z_map[this->get_formula_string()] = z;
+    }
+
+    void until_transducer::get_online_robustness_map() {
+        childL->get_online_robustness_map();
+        childR->get_online_robustness_map();
+
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
+        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
+        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
+        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
     }
 
     /* Utility functions */

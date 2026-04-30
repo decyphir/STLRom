@@ -340,8 +340,30 @@ namespace STLRom {
         z_map[this->get_formula_string()] = z;
     }
 
+    void stl_atom::get_online_robustness_map() {
+        childL->get_online_robustness_map();
+        childR->get_online_robustness_map();
+        
+        z_map.insert(childL->z_map.begin(), childL->z_map.end());
+        z_map.insert(childR->z_map.begin(), childR->z_map.end());
+        z_low_map.insert(childL->z_low_map.begin(), childL->z_low_map.end());
+        z_low_map.insert(childR->z_low_map.begin(), childR->z_low_map.end());
+        z_up_map.insert(childL->z_up_map.begin(), childL->z_up_map.end());
+        z_up_map.insert(childR->z_up_map.begin(), childR->z_up_map.end());
+
+        z_map[this->get_formula_string()] = z;
+        z_low_map[this->get_formula_string()] = z_low;
+        z_up_map[this->get_formula_string()] = z_up;
+    }
+
     void signal_transducer::get_robustness_map() {
         z_map[this->variable] = z;
+    }
+
+    void signal_transducer::get_online_robustness_map() {
+        z_map[this->variable] = z;
+        z_low_map[this->variable] = z_low;
+        z_up_map[this->variable] = z_up;
     }
 
 }
