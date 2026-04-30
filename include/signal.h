@@ -196,6 +196,9 @@ public:
     void addLastSample(); // add a sample at endTime. 
 	void removeInf();
 
+	void read_from_file(const string& filename);
+	void write_to_file(const string& filename) const;
+
 	inline const std::deque<Sample>& getSamplesDeque() const {
     	return *this;
     }

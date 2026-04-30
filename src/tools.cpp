@@ -97,7 +97,6 @@ bool read_trace(const string& filename,
         std::stringstream ss(line);
 		string token;
         vector<double> row;
-        double x;
 
         while (std::getline(ss, token, ',')) row.push_back(std::stod(token));
 
