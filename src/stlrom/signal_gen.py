@@ -2,7 +2,7 @@ from ._stlrom import Signal
 import numpy as np
 
 def get_time(t0=0, tf=10, dt=0.1):
-    return np.arange(t0, tf, dt)
+    return np.arange(t0, tf+dt, dt) # added +dt to include tf
 
 class SignalGen:
     def __init__(self, fun = lambda t:t):
