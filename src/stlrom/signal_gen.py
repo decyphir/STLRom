@@ -29,9 +29,9 @@ class SignalGen:
         return sig
 
 class OscillSignalGen(SignalGen):
-    def __init__(self, period=1, amplitude=1, base=0, damp=1):        
+    def __init__(self, period=1, amplitude=1, base=0, damp=0):        
         super().__init__()
-        self.param_map= {'period':1,'amplitude':1, 'base':0, 'damp':0}        
+        self.param_map= {'period':period,'amplitude':amplitude, 'base':base, 'damp':damp}        
         self._update_fun()        
 
     def _update_fun(self):
