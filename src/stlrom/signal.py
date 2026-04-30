@@ -47,3 +47,9 @@ def plot(self, label=None, ax=None):
     ax.figure.canvas.draw()
 
     return ax
+
+def plot_rob_map(rob_map, ax=None, same_figure=False):
+    keys = sorted(rob_map, key=len)
+    ax = rob_map[keys[0]].plot(label=keys[0], ax=ax)
+    for key in keys[1:]:
+        ax = rob_map[key].plot(label=key, ax=ax if same_figure else None)
