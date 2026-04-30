@@ -1,4 +1,4 @@
-def plot(self, label=None, ax=None):
+def plot(self, label=None, ax=None, title='Signal Plot'):
     import matplotlib.pyplot as plt
 
     samples_list = self.get_samples_list()
@@ -11,7 +11,7 @@ def plot(self, label=None, ax=None):
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Value')
-    ax.set_title('Signal Plot')
+    ax.set_title(title)
     ax.grid(True)
         
     def plot_sample(s, dt, color=None):
@@ -36,9 +36,12 @@ def plot(self, label=None, ax=None):
             sn = samples_list[i+1]
             dt = sn.time-s.time
             plot_sample(s,dt,color=col)
-    else:
+    elif len(samples_list) == 1:
         sn = samples_list[0]
         col = None
+    else:
+        print("No samples to plot.")
+        return ax
     
     col, l = plot_sample(sn, self.end_time-sn.time, col)
     l[0].set_label(label)
@@ -48,8 +51,8 @@ def plot(self, label=None, ax=None):
 
     return ax
 
-def plot_rob_map(rob_map, ax=None, same_figure=False):
+def plot_rob_map(rob_map, ax=None, same_figure=False, title='Robustness Map'):
     keys = sorted(rob_map, key=len)
-    ax = rob_map[keys[0]].plot(label=keys[0], ax=ax)
+    ax = rob_map[keys[0]].plot(label=keys[0], ax=ax, title=title)
     for key in keys[1:]:
-        ax = rob_map[key].plot(label=key, ax=ax if same_figure else None)
+        ax = rob_map[key].plot(label=key, ax=ax if same_figure else None, title=title)
