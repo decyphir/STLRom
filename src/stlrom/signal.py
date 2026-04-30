@@ -68,3 +68,14 @@ def plot_rob_map(rob_map, ax=None, same_figure=False, title='Robustness Map'):
 
     # return last ax
     return ax
+
+def plot_rob_map_widget(rob_map, title='Robustness Map'):
+    import ipywidgets as widgets
+
+    sorted_keys = sorted(rob_map.keys(), key=len, reverse=True)
+    dropdown = widgets.Dropdown(options=sorted_keys, description='Subformula:', layout=widgets.Layout(width=f'{len(sorted_keys[0])*0.5+6}em'))
+
+    def plot_subformula_rob_map(subformula):
+        rob_map[subformula].plot(label=f'{subformula}', title=title)
+
+    widgets.interact(plot_subformula_rob_map, subformula=dropdown)
