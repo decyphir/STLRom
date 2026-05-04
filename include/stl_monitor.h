@@ -239,7 +239,10 @@ namespace STLRom
 
         inline void reset_signal_data()
         {
-            data.clear();
+            for (auto &signal : data)
+            {
+                signal.clear();
+            }
             up_to_date = false;
         };
 
