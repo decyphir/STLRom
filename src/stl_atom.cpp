@@ -298,7 +298,7 @@ namespace STLRom {
 #endif
         short i = signal_map[variable];
         z = trace_data_ptr->at(i); // that a deep copy right ?
-        z.resize(start_time,end_time,0.); // TODO we should note here what the data horizon available is                  
+        z.resize(start_time,end_time); // TODO we should note here what the data horizon available is                  
 
         #ifdef DEBUG__
         printf("<< signal_transducer::compute_robustness      OUT.\n");
