@@ -466,23 +466,23 @@ robustness_map_t STLRom::STLDriver::get_robustness_map(const string &phi_in)
         cout << "Formula " << phi_in << " not found in formula_map." << endl;
     } else {
         transducer *phi = formula_map[phi_in];
-        phi->fill_robustness_map(rob_map);
+        phi->fill_robustness_map(rob_map, 0);
     }
     return rob_map;
 }
 
-vector<robustness_map_t> STLRom::STLDriver::get_online_robustness_map(const string &phi_in)
+robustness_map_t STLRom::STLDriver::get_online_robustness_map(const string &phi_in)
 {
-    vector<robustness_map_t> rob_maps(3);
+    robustness_map_t rob_map;
     if (formula_map.find(phi_in) == formula_map.end())
     {
         cout << "Formula " << phi_in << " not found in formula_map." << endl;
     } else {
         transducer *phi = formula_map[phi_in];
 
-        phi->fill_online_robustness_map(rob_maps);
+        phi->fill_online_robustness_map(rob_map, 0);
     }
-    return rob_maps;
+    return rob_map;
 }
 
 vector<Signal> STLDriver::eval_online_rob(const string &phi_in)

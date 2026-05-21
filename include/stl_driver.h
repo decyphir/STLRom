@@ -283,7 +283,7 @@ public:
     vector<Signal> eval_online_rob(const string &phi_in, double, double);
 
     robustness_map_t get_robustness_map(const string &phi_in);
-    vector<robustness_map_t> get_online_robustness_map(const string &phi_in);
+    robustness_map_t get_online_robustness_map(const string &phi_in);
 
 
     /**

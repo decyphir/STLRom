@@ -332,31 +332,27 @@ namespace STLRom {
     }
 
 
-    void stl_atom::fill_robustness_map(robustness_map_t &rob_map) {
-        childL->fill_robustness_map(rob_map);
-        childR->fill_robustness_map(rob_map);
+    void stl_atom::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        childL->fill_robustness_map(rob_map, depth+1);
+        childR->fill_robustness_map(rob_map, depth+1);
         
-        rob_map[this->get_formula_string()] = &z;
+        rob_map[this->get_formula_string()] = {depth = depth, z = &z};
     }
 
-    void stl_atom::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
-        childL->fill_online_robustness_map(rob_maps);
-        childR->fill_online_robustness_map(rob_maps);
+    void stl_atom::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        childL->fill_online_robustness_map(rob_map, depth+1);
+        childR->fill_online_robustness_map(rob_map, depth+1);
         
 
-        rob_maps[0][this->get_formula_string()] = &z;
-        rob_maps[1][this->get_formula_string()] = &z_low;
-        rob_maps[2][this->get_formula_string()] = &z_up;
+        rob_map[this->get_formula_string()] = {depth = depth, z = &z, z_low = &z_low, z_up = &z_up};
     }
 
-    void signal_transducer::fill_robustness_map(robustness_map_t &rob_map) {
-        rob_map[this->variable] = &z;
+    void signal_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        rob_map[this->variable] = {depth = depth, z = &z};
     }
 
-    void signal_transducer::fill_online_robustness_map(vector<robustness_map_t> &rob_maps) {
-        rob_maps[0][this->variable] = &z;
-        rob_maps[1][this->variable] = &z_low;
-        rob_maps[2][this->variable] = &z_up;
+    void signal_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        rob_map[this->variable] = {depth = depth, z = &z, z_low = &z_low, z_up = &z_up};
     }
 
 }
