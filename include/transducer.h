@@ -17,16 +17,15 @@ namespace STLRom {
 
     typedef vector<Signal> trace_data;
 
-    typedef map<string, robustness_info> robustness_map_t;
-
     struct robustness_info
     {
-        const Signal* z = nullptr;
-        const Signal* z_up = nullptr;
-        const Signal* z_low = nullptr;
         int depth;
+        const Signal* z;
+        const Signal* z_up;
+        const Signal* z_low;
     };
     
+    typedef map<string, robustness_info> robustness_map_t;
 
     /* Virtual classes */
 
