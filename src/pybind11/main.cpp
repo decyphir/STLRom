@@ -145,8 +145,46 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_online_rob)		
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_online_rob)		
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)
-		.def("get_robustness_map",&STLRom::STLMonitor::get_robustness_map)
-		.def("get_online_robustness_map",&STLRom::STLMonitor::get_online_robustness_map)		
+		.def("get_robustness_map",
+		[](STLRom::STLMonitor& self) {
+			const auto rob_map = self.get_robustness_map();
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				rob_dict[py::str(item.first)] = info_dict;
+			}
+
+			return rob_dict; 
+		 })
+		.def("get_online_robustness_map",
+		[](STLRom::STLMonitor& self) {
+			const auto rob_map = self.get_online_robustness_map();
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				rob_dict[py::str(item.first)] = info_dict;
+			}
+
+			return rob_dict; 
+		 })
 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
 		.def("get_param",&STLRom::STLMonitor::get_param)		
@@ -230,8 +268,50 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))
-		.def("get_robustness_map",&STLRom::STLDriver::get_robustness_map)
-		.def("get_online_robustness_map",&STLRom::STLDriver::get_online_robustness_map)
+		.def("get_robustness_map",
+		[](STLRom::STLDriver& self, const string &phi_in) {
+			const auto rob_map = self.get_robustness_map(phi_in);
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				rob_dict[py::str(item.first)] = info_dict;
+			}
+
+			return rob_dict; 
+		 },
+		 py::arg("phi_in") = "phi"
+		)
+		.def("get_online_robustness_map",
+		[](STLRom::STLDriver& self, const string &phi_in) {
+			const auto rob_map = self.get_online_robustness_map(phi_in);
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				rob_dict[py::str(item.first)] = info_dict;
+			}
+
+			return rob_dict; 
+		 },
+		 py::arg("phi_in") = "phi"
+		)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
