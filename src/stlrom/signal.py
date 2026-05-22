@@ -57,17 +57,38 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     return ax
 
-def plot_rob_map(rob_map, ax=None, same_figure=False, title='Robustness Map'):
-    keys = sorted(rob_map, key=len)
-    ax = rob_map[keys[0]].plot(label=keys[0], ax=ax, title=title, draw_canvas=False)
+
+
+def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_figure=False, title='Robustness Map'):
+    keys = sorted(rob_map)
+    if max_depth is not None:
+        max_depth = min(max_depth, keys[-1])
+        keys = [k for k in keys if k <= max_depth]
+
+    if to_plot not in {"robustness", "lower", "upper"}:
+        raise ValueError(f"Invalid to_plot value: {to_plot}. Must be one of 'robustness', 'lower', or 'upper'.")
+    
+    if to_plot == "robustness":
+        to_plot = "z"
+    elif to_plot == "lower":
+        to_plot = "z_low"
+        title = "Lower Robustness Map" if title == 'Robustness Map' else title
+    elif to_plot == "upper":
+        to_plot = "z_up"
+        title = "Upper Robustness Map" if title == 'Robustness Map' else title
+
+    first_formula = next(iter(rob_map[keys[0]]))
+    ax = rob_map[keys[0]][first_formula][to_plot].plot(label=f"{first_formula} [depth {keys[0]}]", ax=ax, title=title, draw_canvas=False)
     for key in keys[1:]:
-        if not same_figure:
-            ax.figure.canvas.draw()
-        ax = rob_map[key].plot(label=key, ax=ax if same_figure else None, title=title, draw_canvas=False)
+        for formula, info in rob_map[key].items():
+            if not same_figure:
+                ax.figure.canvas.draw()
+            ax = info[to_plot].plot(label=f"{formula} [depth {key}]", ax=ax if same_figure else None, title=title, draw_canvas=False)
     ax.figure.canvas.draw()
 
-    # return last ax
     return ax
+
+
 
 def plot_rob_map_widget(rob_map, title='Robustness Map'):
     import ipywidgets as widgets
