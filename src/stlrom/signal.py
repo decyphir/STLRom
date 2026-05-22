@@ -97,7 +97,7 @@ def plot_rob_map_widget(rob_map, title='Robustness Map'):
     sorted_depths = sorted(rob_map.keys())
 
     depth_checkboxes = [widgets.Checkbox(value=(i==0), description=f"Depth {i}") for i in sorted_depths[:-1]]
-    depth_checkboxes.append(widgets.Checkbox(value=True, description=f"Plot Data"))
+    depth_checkboxes.append(widgets.Checkbox(value=False, description=f"Plot Data"))
 
     rob_dropdown = widgets.Dropdown(options=[('Robustness', 'z'), ('Lower', 'z_low'), ('Upper', 'z_up')], description='Robustness:')
     
@@ -119,7 +119,8 @@ def plot_rob_map_widget(rob_map, title='Robustness Map'):
                     info[robustness].plot(label=f"{formula}", title=title, ax=ax)
                     any_plotted = True
                 else:
-                    print(f"No data to plot for formula '{formula}' at depth {depth}.")
+                    # print(f"No data to plot for formula '{formula}' at depth {depth}.")
+                    pass
         if not any_plotted:
             ax.text(0.5, 0.5, 'No data to plot for selected depth(s) and robustness type.', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
 
