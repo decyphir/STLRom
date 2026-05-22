@@ -92,11 +92,35 @@ def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_fi
 
 def plot_rob_map_widget(rob_map, title='Robustness Map'):
     import ipywidgets as widgets
+    import matplotlib.pyplot as plt
 
-    sorted_keys = sorted(rob_map.keys(), key=len, reverse=True)
-    dropdown = widgets.Dropdown(options=sorted_keys, description='Subformula:', layout=widgets.Layout(width=f'{len(sorted_keys[0])*0.5+6}em'))
+    sorted_depths = sorted(rob_map.keys())
 
-    def plot_subformula_rob_map(subformula):
-        rob_map[subformula].plot(label=f'{subformula}', title=title)
+    depth_checkboxes = [widgets.Checkbox(value=(i==0), description=f"Depth {i}") for i in sorted_depths[:-1]]
+    depth_checkboxes.append(widgets.Checkbox(value=True, description=f"Plot Data"))
 
-    widgets.interact(plot_subformula_rob_map, subformula=dropdown)
+    rob_dropdown = widgets.Dropdown(options=[('Robustness', 'z'), ('Lower', 'z_low'), ('Upper', 'z_up')], description='Robustness:')
+    
+    def plot_depth(robustness, **depths):
+        any_plotted = False
+        ax = plt.figure(figsize=(15, 5)).gca()
+        selected = [int(depth) for depth, checked in depths.items() if checked]
+
+        if sorted_depths[-1] in selected:
+            for formula, info in rob_map[sorted_depths[-1]].items():
+                if info["z"] is not None and len(info["z"].get_samples_list()) > 0:
+                    info["z"].plot(label=f"{formula}", title=title, ax=ax)
+                    any_plotted = True
+            selected.remove(sorted_depths[-1])
+
+        for depth in selected:
+            for formula, info in rob_map[depth].items():
+                if info[robustness] is not None and len(info[robustness].get_samples_list()) > 0:
+                    info[robustness].plot(label=f"{formula}", title=title, ax=ax)
+                    any_plotted = True
+                else:
+                    print(f"No data to plot for formula '{formula}' at depth {depth}.")
+        if not any_plotted:
+            ax.text(0.5, 0.5, 'No data to plot for selected depth(s) and robustness type.', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+
+    widgets.interact(plot_depth, robustness=rob_dropdown, **{str(depth): checkbox for depth, checkbox in zip(sorted_depths, depth_checkboxes)})
