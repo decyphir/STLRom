@@ -556,13 +556,13 @@ namespace STLRom {
         };
 
         virtual void print(ostream &os) const {
-            os << " (";
+            os << "(";
             childL->print(os);
             os << ") until_";
             I->print(os);
             os << " (";
             childR->print(os);
-            os << ") ";
+            os << ")";
         }
         ;
 

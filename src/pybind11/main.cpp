@@ -72,7 +72,7 @@ PYBIND11_MODULE(_stlrom, m) {
             std::ostringstream oss;
             oss << sig;
             return oss.str();
-        })		
+        })	
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
 		.def("value_at", &STLRom::Signal::valueAt)
@@ -151,16 +151,28 @@ PYBIND11_MODULE(_stlrom, m) {
 			
 			py::dict rob_dict;
 			
+			// reminder, rob map contains pairs (string,rob_info) where string is the formula of a subformula 
+			// rob_info is a struct containing the depth of the subformula in the formula tree and the robustness signals (z, z_low, z_up)
 			for (const auto& item : rob_map) {
-				py::dict info_dict;
+				py::dict info_dict; // this dict will contain the robustness information for a given subformula (z, z_low, z_up)
 
-				info_dict["depth"] = item.second.depth;
+				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
 				info_dict["z_low"] = item.second.z_low;
 				info_dict["z_up"] = item.second.z_up;
 
-				rob_dict[py::str(item.first)] = info_dict;
+				py::dict depth_dict; // grouping by depth
+
+				if (rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
 			}
 
 			return rob_dict; 
@@ -174,13 +186,23 @@ PYBIND11_MODULE(_stlrom, m) {
 			for (const auto& item : rob_map) {
 				py::dict info_dict;
 
-				info_dict["depth"] = item.second.depth;
+				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
 				info_dict["z_low"] = item.second.z_low;
 				info_dict["z_up"] = item.second.z_up;
 
-				rob_dict[py::str(item.first)] = info_dict;
+				py::dict depth_dict; // grouping by depth
+
+				if(rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
 			}
 
 			return rob_dict; 
@@ -277,13 +299,23 @@ PYBIND11_MODULE(_stlrom, m) {
 			for (const auto& item : rob_map) {
 				py::dict info_dict;
 
-				info_dict["depth"] = item.second.depth;
+				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
 				info_dict["z_low"] = item.second.z_low;
 				info_dict["z_up"] = item.second.z_up;
 
-				rob_dict[py::str(item.first)] = info_dict;
+				py::dict depth_dict; // grouping by depth
+
+				if (rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
 			}
 
 			return rob_dict; 
@@ -299,13 +331,22 @@ PYBIND11_MODULE(_stlrom, m) {
 			for (const auto& item : rob_map) {
 				py::dict info_dict;
 
-				info_dict["depth"] = item.second.depth;
+				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
 				info_dict["z_low"] = item.second.z_low;
 				info_dict["z_up"] = item.second.z_up;
 
-				rob_dict[py::str(item.first)] = info_dict;
+				py::dict depth_dict; // grouping by depth
+				if (rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
 			}
 
 			return rob_dict; 
