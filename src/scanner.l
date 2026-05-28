@@ -163,7 +163,7 @@
 
 [ \t\r]+    { /* skip whitespace */ }
 
-"#".*\n { 
+"#"[^\n]* { 
     /* Comments; TODO check locations */
 }
 
