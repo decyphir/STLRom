@@ -95,7 +95,16 @@ public:
 
     /** append new sample to data */
     void add_sample(vector <double> sample);
-    
+
+    /** set signals data */
+    void set_signals(const std::vector<Signal>& signals);
+
+    /** load signals from csv file */
+    void load_csv(const vector<string>& files);
+
+    /** write signals to csv file */
+    void write_csv(const std::string& directory) const;
+
     string get_signals_names() const;
 
     /// CONSTRUCTORS
@@ -266,6 +275,16 @@ public:
     vector<double> get_online_rob(const string &phi_in);
     vector<double> get_online_rob(const string &phi_in, double);
 
+    Signal eval_rob(const string &phi_in);
+    Signal eval_rob(const string &phi_in, double);
+    Signal eval_rob(const string &phi_in, double, double);
+    vector<Signal> eval_online_rob(const string &phi_in);
+    vector<Signal> eval_online_rob(const string &phi_in, double);
+    vector<Signal> eval_online_rob(const string &phi_in, double, double);
+
+    robustness_map_t get_robustness_map(const string &phi_in);
+    robustness_map_t get_online_robustness_map(const string &phi_in);
+
 
     /**
      * Switch scanner input stream. Default is standard input (std::cin).
@@ -293,11 +312,11 @@ public:
         return os;
     }
     /** Read a trace file */
-    inline bool read_trace_file(string trace_file_name)
-    {
-        data.clear();
-        return read_trace(trace_file_name, data);
-    }
+    //inline bool read_trace_file(string trace_file_name)
+    //{
+    //    data.clear();
+    //    return read_trace(trace_file_name, data);
+    //}
 
 
     /** dump all assigned formulas satisfaction function to a file */

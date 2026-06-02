@@ -57,6 +57,9 @@ namespace STLRom {
 
         double tL = -1, tR = -1;
 
+        auto last_itL = itL;
+        auto last_itR = itR;
+
         while(tL < endTime || tR < endTime) {
             tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
             tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
@@ -75,27 +78,30 @@ namespace STLRom {
             bool equals = false;
             bool first_eq_ineq = false; // first point in a subseries of equality points or inequality points (for comp::equal)
 
+            auto& sL = (itL != childL->z.end()) ? *itL : *(last_itL);
+            auto& sR = (itR != childR->z.end()) ? *itR : *(last_itR);
+
             if(tL < tR) {
                 t = tL;
                 advance_L = true;
 
-                vL = (*itL).value;
-                vR = (*itR).valueAt(t);
+                vL = (sL).value;
+                vR = (sR).valueAt(t);
             } else if (tL > tR) {
                 t = tR;
                 advance_R = true;
 
-                vL = (*itL).valueAt(t);
-                vR = (*itR).value;
+                vL = (sL).valueAt(t);
+                vR = (sR).value;
             } else { // equality (might cause issues)
                 t = tL;
                 advance_L = true;
                 advance_R = true;
 
-                vL = (*itL).value;
-                vR = (*itR).value;
+                vL = (sL).value;
+                vR = (sR).value;
             }
-            
+
 
 
             
@@ -227,7 +233,6 @@ namespace STLRom {
                         }
                     } 
                 }
-    
             }
 
             z.appendSample(t, vt, dt);
@@ -241,8 +246,8 @@ namespace STLRom {
             d_prev_neq = d_neq;
             v_prev_neq = v_neq;
 
-            if (advance_L) itL++;
-            if (advance_R) itR++;
+            if (advance_L && itL != childL->z.end()) {last_itL = itL; itL++;}
+            if (advance_R && itR != childR->z.end()) {last_itR = itR; itR++;}
 
             first_pass = false;
         }
@@ -283,32 +288,13 @@ namespace STLRom {
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
         short i = signal_map[variable];
-        double t=0., v=0.;  
-        double res= 0.;
-            
-        if (i) {
-            while ( (td_idx <= trace_data_ptr->size()-1)  && t<=end_time)   {
-                t = (trace_data_ptr->at(td_idx))[0];
-                v = (trace_data_ptr->at(td_idx))[i];
-                // cout << "t: " << t << " v: " << v << endl;
-                z.appendSample(t, v);
-                td_idx++;
-			}
-		}
+        z = trace_data_ptr->at(i); // that a deep copy right ?
+        z.resize(start_time,end_time); // TODO we should note here what the data horizon available is                  
 
-        //if (t>end_time)  
-        z.endTime = end_time;
-        
-        if (z.endTime>start_time)
-            z.resize(start_time, max(start_time,z.endTime),v);  // if we reached start_time trim everything before
-        else
-            z.resize(z.endTime, z.endTime, v);   // otherwise, only keep the last value seen before start_time
-
-        res= z.front().value;    
-#ifdef DEBUG__
+        #ifdef DEBUG__
         printf("<< signal_transducer::compute_robustness      OUT.\n");
 #endif
-        return res;
+        return z.front().value;
     }
 
     double constant_transducer::compute_robustness() {
@@ -325,27 +311,40 @@ namespace STLRom {
                 cout << "Parameter " << param << " not found (?)." << endl;                
         }
 
-        double t=0.;  
-            
-        while ((td_idx <= trace_data_ptr->size()-1) && t<=end_time)   {
-            t = (trace_data_ptr->at(td_idx))[0];
-            z.appendSample(t, value);
-            td_idx++;
-        }
-		
-        if (t>end_time)  
-            z.endTime = end_time;
+        z.clear();
+        z.appendSample(start_time,value,0.);
+        z.appendSample(end_time,value,0.);
+        z.endTime = end_time;
         
-        if (z.endTime>start_time) {
-            z.resize(start_time, max(start_time,z.endTime),value);  // if we reached start_time trim everything before
-        }
-        else {
-            z.resize(z.endTime, z.endTime, value);   // otherwise, only keep the last value seen before start_time
-        }
 #ifdef DEBUG__
         printf("<< constant_transducer::compute_robustness OUT.\n");
 #endif
         return value;
     }
+
+
+    void stl_atom::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        childL->fill_robustness_map(rob_map, depth+1);
+        childR->fill_robustness_map(rob_map, depth+1);
+        
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+    }
+
+    void stl_atom::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        childL->fill_online_robustness_map(rob_map, depth+1);
+        childR->fill_online_robustness_map(rob_map, depth+1);
+        
+
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+    }
+
+    void signal_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        rob_map[this->variable] = robustness_info{depth, &z, nullptr, nullptr};
+    }
+
+    void signal_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        rob_map[this->variable] = robustness_info{depth, &z, &z_up, &z_low};
+    }
+
 }
 

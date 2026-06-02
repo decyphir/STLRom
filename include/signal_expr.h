@@ -8,12 +8,13 @@
 #ifndef SIGNAL_EXPR_H_
 #define SIGNAL_EXPR_H_
 
+#include "signal.h"
 #include "transducer.h"
 
 namespace STLRom
 {
 
-    typedef vector<vector<double>>::const_iterator trace_data_iterator;
+    typedef vector<Signal>::const_iterator trace_data_iterator;
 
     /* signal_transducer: read data without transformation - has a variable name which must be
      * defined in the signal map   */
@@ -48,6 +49,10 @@ namespace STLRom
         virtual ~signal_transducer(){};
 
         virtual double compute_robustness();
+
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
 
         virtual void set_trace_data_ptr(const trace_data &trace)
         {

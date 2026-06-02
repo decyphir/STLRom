@@ -311,7 +311,8 @@ void STLDriver::set_param(const string &param, double n)
 double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
 {
         
-    if (data.empty())
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
         cout << "Empty data" << endl;
         return 0.;
@@ -341,7 +342,8 @@ double STLDriver::get_rob(const string &phi_in)
 vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
 {
     vector<double> out_rob;
-    if (data.empty())
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
         cout << "Empty data" << endl;
         return out_rob;
@@ -365,6 +367,132 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
     out_rob = {rob, lower_rob, upper_rob};
 
     return out_rob;
+}
+
+
+// Signal STLMonitor::eval_rob(double t_start, double t_end)
+//     {
+// 		start_time = t_start;
+// 		end_time  = t_end;
+// 		if (formula)
+//         {
+// 			// Ensure formula reads the right data
+// 			formula->set_trace_data_ptr(data);
+// 			formula->set_param_map_ptr(param_map);
+// 			Signal::semantics=semantics;
+// 			Signal::interpol = interpol;
+// 			formula->reset();				
+// 			formula->set_horizon(t_start, t_end);
+// 			rob = formula->compute_robustness();
+//     		up_to_date = true;
+// 		}			
+//         return formula->z;
+//     }	
+
+
+Signal STLDriver::eval_rob(const string &phi_in, double t_start, double t_end)
+{
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
+    {
+        cout << "Empty data" << endl;
+        return Signal();
+    }
+
+    if (formula_map.find(phi_in) == formula_map.end())
+    {
+        cout << "Formula " << phi_in << " not found in formula_map." << endl;
+        return Signal();
+    }
+    transducer *phi = formula_map[phi_in];
+    phi->set_trace_data_ptr(data);
+    phi->set_param_map_ptr(param_map);
+    Signal::semantics = semantics;
+    Signal::interpol = interpol;
+    phi->reset();
+    phi->set_horizon(t_start, t_end);
+    phi->compute_robustness();
+    return phi->z;
+}
+
+Signal STLDriver::eval_rob(const string &phi_in)
+{
+    return eval_rob(phi_in, 0., 0.);
+}
+
+Signal STLDriver::eval_rob(const string &phi_in, double t)
+{
+    return eval_rob(phi_in, t, t);
+}
+
+vector<Signal> STLDriver::eval_online_rob(const string &phi_in, double t_start, double t_end)
+{
+    vector<Signal> out_rob;
+    if (std::any_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
+    {
+        cout << "Empty data" << endl;
+        return out_rob;
+    }
+
+    if (formula_map.find(phi_in) == formula_map.end())
+    {
+        cout << "Formula " << phi_in << " not found in formula_map." << endl;
+        return out_rob;
+    }
+    transducer *phi = formula_map[phi_in];
+
+    phi->set_trace_data_ptr(data); // is this necessary?
+    phi->set_param_map_ptr(param_map);
+    Signal::semantics = semantics;
+    Signal::interpol = interpol;
+    phi->reset();
+    phi->set_horizon(t_start, t_end);
+
+    phi->compute_robustness();
+    phi->compute_lower_rob();
+    phi->compute_upper_rob();
+
+    out_rob = {phi->z, phi->z_low, phi->z_up};
+
+    return out_rob;
+}
+
+robustness_map_t STLRom::STLDriver::get_robustness_map(const string &phi_in)
+{
+    robustness_map_t rob_map;
+    if (formula_map.find(phi_in) == formula_map.end())
+    {
+        cout << "Formula " << phi_in << " not found in formula_map." << endl;
+    } else {
+        transducer *phi = formula_map[phi_in];
+        phi->fill_robustness_map(rob_map, 0);
+    }
+    return rob_map;
+}
+
+robustness_map_t STLRom::STLDriver::get_online_robustness_map(const string &phi_in)
+{
+    robustness_map_t rob_map;
+    if (formula_map.find(phi_in) == formula_map.end())
+    {
+        cout << "Formula " << phi_in << " not found in formula_map." << endl;
+    } else {
+        transducer *phi = formula_map[phi_in];
+
+        phi->fill_online_robustness_map(rob_map, 0);
+    }
+    return rob_map;
+}
+
+vector<Signal> STLDriver::eval_online_rob(const string &phi_in)
+{
+    return eval_online_rob(phi_in, 0., 0.);
+}
+
+vector<Signal> STLDriver::eval_online_rob(const string &phi_in, double t)
+{
+    return eval_online_rob(phi_in, t, t);
 }
 
 vector<double> STLDriver::get_online_rob(const string &phi_in)
@@ -413,15 +541,54 @@ STLMonitor STLDriver::get_monitor(const string &id) const
 
 void STLDriver::add_sample(vector<double> s)
 {
-    if (s.size() != signal_map.size() + 1)
+    if (s.size() != signal_map.size() + 1) 
     {
         throw std::invalid_argument("Sample size does not match the number of signals.");
     }
-    if (!data.empty() && s[0] <= data.back()[0])
-    {
-        throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
+    
+    // We don't need to check, that will be done at the Signal level
+    //if (!data.empty() && s[0] <= data.back()[0])
+    //{
+    //    throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
+    //}
+    
+    double t = s[0];
+    for(int i=1; i<s.size();i++)
+        data[i-1].appendSample(s[0],s[i]);
+}
+
+void STLDriver::set_signals(const std::vector<Signal>& signals)
+{
+    if (signals.size() != signal_map.size()) {
+        throw std::invalid_argument("Number of signals does not match the number of declared signals.");
     }
-    data.push_back(s);
+
+    data = signals; // copy
+}
+
+void STLDriver::load_csv(const vector<string>& files)
+{
+    if (files.size() != signal_map.size()) {
+        throw std::invalid_argument("Number of files does not match the number of declared signals.");
+    }
+
+    for (int i = 0; i < files.size(); i++) {
+        data[i].read_from_file(files[i]);
+    }
+}
+
+void STLDriver::write_csv(const std::string& directory) const
+{
+    string dir = directory;
+    
+    if (dir.back() != '/') dir += '/';
+
+    for (const auto &signal : signal_map)
+    {
+        string filename = dir + signal.first + ".csv";
+
+        data[signal.second].write_to_file(filename);
+    }
 }
 
 string STLDriver::get_signals_names() const
@@ -519,13 +686,24 @@ void STLDriver::print(ostream &out) const
     }
     
     out << "\n# Data:" << endl;
-    if (data.empty())
+    if (std::all_of(data.begin(), data.end(),
+            [](const Signal& s) { return s.empty(); }))
     {
-        out << "# No data yet.";                  
+        out << "No data yet.";                  
     }
     else
     {
-        out << "# "<< data.size() << " samples from t0=" << data.front().front() << " to t_end=" << data.back().front() << endl;
+        for (const auto &signal : signal_map)
+        {
+            out << "\n# Signal " << signal.first << ":"<< endl;
+            if (data[signal.second].empty())
+            {
+                out << "No data yet." << endl;
+            }
+            else
+            {
+                out << data[signal.second].size() << " samples from t0=" << data[signal.second].beginTime << " to t_end=" << data[signal.second].endTime << endl;
+            }
+        }
     }
-
 }

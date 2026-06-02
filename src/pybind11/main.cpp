@@ -31,28 +31,12 @@ int read_point(){
 
 void print_monitor(STLDriver& d) {
 	stringstream os; 
-	
-	/*
-	auto it = d.formula_map.find("phi");
-	transducer *phi;
-	if (it != d.formula_map.end())
-	{
-		//phi = (it->second)->clone();
-		phi = (it->second);
-		py::print(" found, yeah.");
-	}
-	else
-	{
-		py::print(" undefined.");
-	}
-	*/
 	STLMonitor m = d.get_monitor("phi");
 	transducer* phi = m.formula;
 	os << "Monitor lower rob:" << m.lower_rob <<endl;
 	phi->print(os);
 	py::print(os.str());
 }
-
 
 PYBIND11_MODULE(_stlrom, m) {
 	//Class Point
@@ -88,9 +72,11 @@ PYBIND11_MODULE(_stlrom, m) {
             std::ostringstream oss;
             oss << sig;
             return oss.str();
-        })		
+        })	
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
+		.def("value_at", &STLRom::Signal::valueAt)
+		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("compute_not",&STLRom::Signal::compute_not)	
 		.def("compute_and", &STLRom::Signal::compute_and)
 		.def("compute_or", &STLRom::Signal::compute_or)
@@ -116,7 +102,7 @@ PYBIND11_MODULE(_stlrom, m) {
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
-	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
+//	m.def("rand_trace_data",&rand_trace_data,"function generating random traces");
 	
 	//Class transducer 
 	py::class_<STLRom::transducer>(m, "transducer")
@@ -144,6 +130,9 @@ PYBIND11_MODULE(_stlrom, m) {
             return oss.str();
         })
 		.def("add_sample",&STLRom::STLMonitor::add_sample)
+		.def("set_signals",&STLRom::STLMonitor::set_signals)
+		.def("load_csv",&STLRom::STLMonitor::load_csv)
+		.def("write_csv",&STLRom::STLMonitor::write_csv)
 		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
 		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
 		.def("set_semantics",&STLRom::STLMonitor::set_semantics)
@@ -155,7 +144,69 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_online_rob)		
 		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_online_rob)		
-		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)		
+		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)
+		.def("get_robustness_map",
+		[](STLRom::STLMonitor& self) {
+			const auto rob_map = self.get_robustness_map();
+			
+			py::dict rob_dict;
+			
+			// reminder, rob map contains pairs (string,rob_info) where string is the formula of a subformula 
+			// rob_info is a struct containing the depth of the subformula in the formula tree and the robustness signals (z, z_low, z_up)
+			for (const auto& item : rob_map) {
+				py::dict info_dict; // this dict will contain the robustness information for a given subformula (z, z_low, z_up)
+
+				// info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				py::dict depth_dict; // grouping by depth
+
+				if (rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
+			}
+
+			return rob_dict; 
+		 })
+		.def("get_online_robustness_map",
+		[](STLRom::STLMonitor& self) {
+			const auto rob_map = self.get_online_robustness_map();
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				// info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				py::dict depth_dict; // grouping by depth
+
+				if(rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
+			}
+
+			return rob_dict; 
+		 })
 		.def("set_eval_time",&STLRom::STLMonitor::set_eval_time)
 		.def("set_param",&STLRom::STLMonitor::set_param)
 		.def("get_param",&STLRom::STLMonitor::get_param)		
@@ -173,6 +224,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
 		.def_readwrite("end_time",&STLRom::STLMonitor::end_time)
+		.def_readwrite("signal_map",&STLRom::STLMonitor::signal_map)
+		.def_readwrite("param_map",&STLRom::STLMonitor::param_map)
 		;
 
 	//Class STLDriver
@@ -192,6 +245,9 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("parse_string",&STLRom::STLDriver::parse_string)
 		.def("disp",&STLRom::STLDriver::disp)		
 		.def("add_sample",&STLRom::STLDriver::add_sample)
+		.def("set_signals",&STLRom::STLDriver::set_signals)
+		.def("load_csv",&STLRom::STLDriver::load_csv)
+		.def("write_csv",&STLRom::STLDriver::write_csv)
 		.def("get_monitor",&STLRom::STLDriver::get_monitor)
 		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
 		.def("set_semantics",&STLRom::STLDriver::set_semantics)
@@ -210,9 +266,98 @@ PYBIND11_MODULE(_stlrom, m) {
          },
 	     py::arg("phi_in") = "phi",
          py::arg("t0") = 0.)
+		.def("eval_rob",
+			(Signal (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::eval_rob,
+			py::arg("phi_in"))
+		.def("eval_rob",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::eval_rob,
+			py::arg("phi_in"),
+			py::arg("t"))
+		.def("eval_rob",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::eval_rob,
+			py::arg("phi_in"),
+			py::arg("t_start"),
+			py::arg("t_end"))
+		.def("eval_online_rob",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::eval_online_rob,
+			py::arg("phi_in"))
+		.def("eval_online_rob",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::eval_online_rob,
+			py::arg("phi_in"),
+			py::arg("t"))
+		.def("eval_online_rob",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::eval_online_rob,
+			py::arg("phi_in"),
+			py::arg("t_start"),
+			py::arg("t_end"))
+		.def("get_robustness_map",
+		[](STLRom::STLDriver& self, const string &phi_in) {
+			const auto rob_map = self.get_robustness_map(phi_in);
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				// info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				py::dict depth_dict; // grouping by depth
+
+				if (rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
+			}
+
+			return rob_dict; 
+		 },
+		 py::arg("phi_in") = "phi"
+		)
+		.def("get_online_robustness_map",
+		[](STLRom::STLDriver& self, const string &phi_in) {
+			const auto rob_map = self.get_online_robustness_map(phi_in);
+			
+			py::dict rob_dict;
+			
+			for (const auto& item : rob_map) {
+				py::dict info_dict;
+
+				// info_dict["depth"] = item.second.depth;
+
+				info_dict["z"] = item.second.z;
+				info_dict["z_low"] = item.second.z_low;
+				info_dict["z_up"] = item.second.z_up;
+
+				py::dict depth_dict; // grouping by depth
+				if (rob_dict.contains(py::int_(item.second.depth))) {
+					depth_dict = rob_dict[py::int_(item.second.depth)];
+				} else {
+					depth_dict = py::dict();
+				}
+
+				depth_dict[py::str(item.first)] = info_dict;
+
+				rob_dict[py::int_(item.second.depth)] = depth_dict;
+			}
+
+			return rob_dict; 
+		 },
+		 py::arg("phi_in") = "phi"
+		)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
+		.def_readwrite("signal_map",&STLRom::STLDriver::signal_map)
+		.def_readwrite("param_map",&STLRom::STLDriver::param_map)
 		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__deepcopy__", [](const STLRom::STLDriver &self, py::dict) { return STLRom::STLDriver(self); })

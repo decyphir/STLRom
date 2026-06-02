@@ -7,6 +7,7 @@
 #include <string>
 #include "robustness.h"
 #include "interval.h"
+#include "signal.h"
 
 using namespace std;
 
@@ -14,7 +15,17 @@ using namespace std;
 
 namespace STLRom {
 
-    typedef vector<vector<double> > trace_data;
+    typedef vector<Signal> trace_data;
+
+    struct robustness_info
+    {
+        int depth;
+        const Signal* z;
+        const Signal* z_up;
+        const Signal* z_low;
+    };
+    
+    typedef map<string, robustness_info> robustness_map_t;
 
     /* Virtual classes */
 
@@ -23,7 +34,7 @@ namespace STLRom {
 
     public:
 
-        const trace_data *trace_data_ptr; // signal data to monitor vector of vector of double
+        const trace_data *trace_data_ptr; // signal data to monitor: vector of Signal
         const map<string, double> *param_map_ptr;   //  parameter values    
         
         map<string, double> param_map;   //  parameter values
@@ -73,13 +84,22 @@ namespace STLRom {
             if (trace_data_ptr->empty())
                 return 0.; // reasonable default ? 
             else
-                return (trace_data_ptr->back()).front(); // time of last data sample
+                return (trace_data_ptr->back()).back().time; // TODO: last time of last signal only, really ?
         }
         // compute quantitative semantics for current data
         virtual double compute_robustness(){    
             return 0;};
         virtual double compute_lower_rob();
         virtual double compute_upper_rob();
+
+        // get robustness map(s)
+        virtual void fill_robustness_map(robustness_map_t &rob_map, int depth) {
+
+        };
+
+        virtual void fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+
+        };
 
         // update quantitative semantics based on new data
         virtual double update_robustness();
@@ -102,7 +122,7 @@ namespace STLRom {
             return  os.str();
         };  
             
-        void print_trace(); 
+        //void print_trace(); 
 
         // looks into param_map for a parameter value - returns success
         bool get_param(const string&, double &);
@@ -287,6 +307,10 @@ namespace STLRom {
 
         double compute_upper_rob();
 
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
         void print() const{
             print(cout);
         };
@@ -321,6 +345,10 @@ namespace STLRom {
         double compute_lower_rob();
 
         double compute_upper_rob();
+
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
 
 
         void print() const{
@@ -360,6 +388,10 @@ namespace STLRom {
 
         double compute_upper_rob();
 
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
         void print() const{
             print(cout);
         };
@@ -397,6 +429,10 @@ namespace STLRom {
 
         double compute_upper_rob();
 
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
         void print() const{
             print(cout);
         };
@@ -431,6 +467,10 @@ namespace STLRom {
         double compute_robustness();
         double compute_lower_rob();
         double compute_upper_rob();
+
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
 
 
         void print() const{
@@ -468,6 +508,10 @@ namespace STLRom {
         double compute_lower_rob();
         double compute_upper_rob();
 
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
         void print() const{
             print(cout);
         };
@@ -503,18 +547,22 @@ namespace STLRom {
         double compute_lower_rob();
         double compute_upper_rob();
 
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
         void print() const{
             print(cout);
         };
 
         virtual void print(ostream &os) const {
-            os << " (";
+            os << "(";
             childL->print(os);
             os << ") until_";
             I->print(os);
             os << " (";
             childR->print(os);
-            os << ") ";
+            os << ")";
         }
         ;
 
@@ -560,6 +608,10 @@ namespace STLRom {
         };
 
         double compute_robustness();
+
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
 
         virtual void print(ostream &os) const {
             childL->print(os);

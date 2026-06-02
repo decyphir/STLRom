@@ -239,7 +239,10 @@ namespace STLRom
 
         inline void reset_signal_data()
         {
-            data.clear();
+            for (auto &signal : data)
+            {
+                signal.clear();
+            }
             up_to_date = false;
         };
 
@@ -249,6 +252,17 @@ namespace STLRom
 
         // append new sample to data
         void add_sample(vector<double> s);
+
+        // set signals data 
+        void set_signals(const std::vector<Signal>& signals);
+
+        /** load signals from csv file */
+        void load_csv(const vector<string>& files);
+
+        /** write signals to csv file */
+        void write_csv(const std::string& directory) const;
+
+
         inline void set_eval_time(double t_start, double t_end)
         {
             start_time = t_start;
@@ -264,6 +278,8 @@ namespace STLRom
         vector<Signal> eval_online_rob(double);
         vector<Signal> eval_online_rob(double, double);
 
+        robustness_map_t get_robustness_map();
+        robustness_map_t get_online_robustness_map();
 
 
         string get_signal_names() const;
@@ -326,14 +342,26 @@ namespace STLRom
             out << endl;
 
             out << "\nData: ";
-            if (monitor.data.empty())
+            if (std::all_of(monitor.data.begin(), monitor.data.end(),
+            [](const Signal& s) { return s.empty(); }))
             {
                 out << "No data yet.";                  
             }
             else
             {
-                out << monitor.data.size() << " samples from t0=" << monitor.data.front().front() << " to t_end=" << monitor.data.back().front() << endl;
-            }            
+                for (const auto &signal : monitor.signal_map)
+                {
+                    out << "# Signal " << signal.first << ":"<< endl;
+                    if (monitor.data[signal.second].empty())
+                    {
+                        out << "No data yet." << endl;
+                    }
+                    else
+                    {
+                        out << monitor.data[signal.second].size() << " samples from t0=" << monitor.data[signal.second].beginTime << " to t_end=" << monitor.data[signal.second].endTime << endl;
+                    }
+                }
+            }           
             out << "Robustness on [" << monitor.start_time << "," << monitor.end_time << "]:";
             if (monitor.up_to_date)
                 out << endl << "at t=" << monitor.start_time << ":    lower_rob=" << monitor.lower_rob << "   <=    estimate=" << monitor.rob << "   <=    upper_rob= " << monitor.upper_rob <<  endl; 

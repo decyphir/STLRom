@@ -20,6 +20,12 @@ dependencies = [
     "matplotlib",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "ipykernel",
+    "ipywidgets"
+]
+
 [tool.scikit-build]
 minimum-version = "build-system.requires"
 cmake.args = [
