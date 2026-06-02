@@ -130,6 +130,8 @@
 %token                 PARAM_DECL      "param_decl"
 %token                 SIGNAL_DECL     "signal_decl"
 %token                 TEST            "test"
+%token                 LE              "<="
+%token                 GE              ">="
 
 %token                 CONSTANT_IDENTIFIER "constant_identifier"
 
@@ -149,7 +151,7 @@
 %left OR
 %left NOT
 %left IMPLIES
-%left LT GT
+%left LT GT LE GE
 %left BOX DIAMOND UNTIL ASSIGN
 %left PLUS MINUS
 %left MULT
@@ -163,7 +165,7 @@
 %type <STLRom::transducer*> constant_signal
 %type <STLRom::transducer*> stl_formula
 %type <STLRom::interval*>   interval
-%type <std::string>            op
+%type <std::string>            op op_eq
 %type <std::string>            constant
 /* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
@@ -312,6 +314,11 @@ op        : LT { $$ = "<"; }
           | PARAM_EQ PARAM_EQ { $$ = "="; }
           ;
 
+op_eq     : 
+            LE { $$ = ">"; } // a <= b <=> !(a > b)
+          | GE { $$ = "<"; } // a >= b <=> !(a < b)
+          ;
+
 interval : LINT constant COMMA constant RINT
          {
              $$ = new interval($2, $4);
@@ -323,7 +330,19 @@ interval : LINT constant COMMA constant RINT
          }
 
 stl_formula :
-             stl_atom
+             signal_expr op_eq signal_expr
+             {
+                auto atom = new stl_atom($1, $2, $3);
+                atom->trace_data_ptr = &driver.data;
+                atom->param_map = driver.param_map;
+                atom->signal_map = driver.signal_map;
+
+                $$ = new not_transducer(atom);
+                $$->trace_data_ptr = &driver.data;
+                $$->param_map = driver.param_map;
+                $$->signal_map = driver.signal_map;
+             }
+             | stl_atom
              {
                  $$ = $1;
              }

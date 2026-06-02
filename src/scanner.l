@@ -72,8 +72,8 @@
 "->"      { return STLRom::Parser::make_IMPLIES(yylloc); }
 "<"       { return STLRom::Parser::make_LT(yylloc); }
 ">"       { return STLRom::Parser::make_GT(yylloc); }
-"<="      { return STLRom::Parser::make_LT(yylloc); }
-">="      { return STLRom::Parser::make_GT(yylloc); }
+"<="      { return STLRom::Parser::make_LE(yylloc); }
+">="      { return STLRom::Parser::make_GE(yylloc); }
 "!"       { return STLRom::Parser::make_NOT(yylloc); }
 ","       { return STLRom::Parser::make_COMMA(yylloc); }
 "&"       { return STLRom::Parser::make_AND(yylloc); }
