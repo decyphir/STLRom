@@ -540,6 +540,7 @@ start : assignement
       | start assignement
       | start param_assignements
       | start END
+      | END
 
 
 %%
