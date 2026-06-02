@@ -43,19 +43,22 @@ double random_double()
 
 string signal_map_to_string(map<string, int> signal_map)
 	{
-	// get number of signals
+	
+        // get number of signals
 		int n_signals = signal_map.size();
-		// cout << "n_signals:" << n_signals << endl;
+		//cout << "n_signals:" << n_signals << endl;
 		string signames[n_signals];
 
 		//     for (auto ii = signal_map->begin(); ii != signal_map->end(); ii++){
 		for (const auto &ii : signal_map)
 		{
-			string sig = ii.first;
-			int idx = ii.second - 1;
+		    string sig = ii.first;
+			int idx = ii.second;
 			signames[idx] = sig;
-		}
-
+			//cout << sig <<  ": " << idx << endl;
+        
+        }
+        
 		string str_out = signames[0];
 		for (int idx = 1; idx < n_signals; idx++)
 		{

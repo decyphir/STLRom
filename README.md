@@ -1,22 +1,24 @@
-# STLRom 
+# STLRom
 
-STLRom is a C++ library with python bindings for Robust online monitoring of Signal Temporal Logic. It computes interval robustness as defined in 'Robust online monitoring of signal temporal logic' by Deshmuk et al, although the algorithm is not exactly the one described in this paper. 
+STLRom is a C++ library with python bindings for Robust online monitoring of Signal Temporal Logic. It computes interval robustness as defined in 'Robust online monitoring of signal temporal logic' by Deshmuk et al, although the algorithm is not exactly the one described in this paper.
 
 ## Install
 
-### Install from pypi 
+### Install from pypi
 
 In an environment with pip, first make sure that `python-dev` or equivalent is installed, e.g., in Ubuntu 24.04:
+
 ```bash
 sudo apt install python-dev-is-python3
 ```
+
 To build the library, `bison` and `flex` are also required.  Then build and install with pip:
 
 ```bash
 pip install stlrom
 ```
 
-### Install from source 
+### Install from source
 
 Requirements: same as above (`bison`,`flex` and `python-dev`).
 
@@ -24,12 +26,14 @@ Requirements: same as above (`bison`,`flex` and `python-dev`).
 
 #### Using `pip`
 
-From the `stlrom` folder, install with 
+From the `stlrom` folder, install with
+
 ```bash
 pip install -e .
 ```
 
 #### Using `uv`
+
 A python interface for stlrom is implemented with pybind11. To build and install it in a local virtual environment we recommend using [uv](https://docs.astral.sh/uv/getting-started/installation/).
 To create a virtual environment, build and install stlrom, run:
 
@@ -38,6 +42,7 @@ uv venv
 source .venv/bin/activate
 uv pip install -e .
 ```
+
 Note this requires compiling the C++ library, so cmake and a C++ compiler must be available.
 
 It is also possible to install the Python interface by simply running the following command in the project's root directory:
@@ -47,25 +52,28 @@ uv sync
 ```
 
 then you can activate the virtual environment by running
+
 ```bash
 source .venv/bin/activate
 ```
+
 and then using Python normally inside the virtual enviornment.
 
 #### Testing the python bindings
 
 In the build folder, execute
+
 ```bash
 make test-python
 ```
-This will run the unit tests python programs from the `test` folder. This assumes having run `cmake`, having built the Python library, and having activated the `uv` virtual environment.
 
+This will run the unit tests python programs from the `test` folder. This assumes having run `cmake`, having built the Python library, and having activated the `uv` virtual environment.
 
 ### Building the C++ library only
 
 STLRom is primarily a C++ library. It comes with a standard cmake configuration file. Assuming cmake and a C++ development environment are installed, a library called stlromlib can be built with
 
-```
+```bash
 mkdir build; cd build
 cmake ..
 make
