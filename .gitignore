@@ -7,3 +7,6 @@ src/location.hh
 src/parser.cpp
 src/scanner.cpp
 .vscode/
+src/position.hh
+.gitignore
+src/stack.hh

@@ -4,6 +4,15 @@ STLRom is a C++ library with python bindings for Robust online monitoring of Sig
 
 ## Install
 
+### Requirements
+
+Building and installing STLRom has been tested on Linux (Ubuntu) and Mac OS. 
+STLRom depends on "recent" versions of Flex and Bison. To install them on Linux, use `apt`. On Mac OS, Homebrew is required:
+```
+brew install bison flex 
+``` 
+
+
 ### Install from pypi
 
 In an environment with pip, first make sure that `python-dev` or equivalent is installed, e.g., in Ubuntu 24.04:
@@ -12,7 +21,7 @@ In an environment with pip, first make sure that `python-dev` or equivalent is i
 sudo apt install python-dev-is-python3
 ```
 
-To build the library, `bison` and `flex` are also required.  Then build and install with pip:
+To build the library, `bison` and `flex` are also required, as mentioned above.  Then build and install with pip:
 
 ```bash
 pip install stlrom
