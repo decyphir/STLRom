@@ -10,3 +10,5 @@ src/scanner.cpp
 src/position.hh
 .gitignore
 src/stack.hh
+*.ipynb_checkpoints
+.virtual_documents
