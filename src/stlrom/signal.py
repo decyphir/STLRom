@@ -36,7 +36,7 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     times += [sn.time, self.end_time, np.nan]
     values += [sn.value, sn.value_at(self.end_time), np.nan]
 
-    l_line, = ax.plot(times, values, linestyle='-')
+    l_line, = ax.plot(times, values, linestyle='-', **kwargs)
 
     c = l_line.get_color()
 
