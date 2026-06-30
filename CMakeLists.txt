@@ -54,7 +54,7 @@ ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 add_executable(STLRomParser ${SOURCE_FILES} ${HEADER_FILES} ${BISON_MyParser_OUTPUTS} ${FLEX_MyScanner_OUTPUTS})
 
 # --- MAC OS FIX: Link Flex Library (libfl) to your executable ---
-if(FLEX_LIBRARIES)
+if(APPLE AND FLEX_LIBRARIES)
     target_link_libraries(STLRomParser PRIVATE ${FLEX_LIBRARIES})
 endif()
 # ----------------------------------------------------------------
