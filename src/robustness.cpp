@@ -114,8 +114,14 @@ void Signal::compute_not(const Signal &y) {
 	clear();
 	beginTime = y.beginTime;
 	endTime = y.endTime;
-	for (auto i = y.begin(); i != y.end(); i++) {
-		push_back(Sample(i->time, -(i->value), -(i->derivative)));
+	if (Signal::semantics == Semantics::FUZZY) {
+		for (auto i = y.begin(); i != y.end(); i++) {
+			push_back(Sample(i->time, 1-(i->value), -(i->derivative)));
+		}
+	} else {
+		for (auto i = y.begin(); i != y.end(); i++) {
+			push_back(Sample(i->time, -(i->value), -(i->derivative)));
+		}
 	}
 }
 
@@ -668,8 +674,14 @@ Signal * computeNot(Signal * y) {
 	z->beginTime = y->beginTime;
 	z->endTime = y->endTime;
     
-	for (i = y->begin(); i != y->end(); i++) {
-		z->push_back(Sample(i->time, -(i->value), -(i->derivative)));
+	if (Signal::semantics == Semantics::FUZZY) {
+		for (i = y->begin(); i != y->end(); i++) {
+			z->push_back(Sample(i->time, 1-(i->value), -(i->derivative)));
+		}
+	} else {
+		for (i = y->begin(); i != y->end(); i++) {
+			z->push_back(Sample(i->time, -(i->value), -(i->derivative)));
+		}
 	}
 	return z;
 }

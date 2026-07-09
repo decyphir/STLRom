@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <transducer.h>
 #include <string>
 #include <iostream>
@@ -265,14 +266,22 @@ namespace STLRom {
 			case Semantics::LEFT_TIME:
                 z_space = z;
                 z.compute_left_time_rob(z_space);
+                if (z.empty()) {return 0.0;}
                 return z.front().value;
             case Semantics::RIGHT_TIME:
                 z_space = z;
                 z.compute_right_time_rob(z_space);
+                if (z.empty()) {return 0.0;}
                 return z.front().value;
             case Semantics::BOOLEAN:
                 z_space = z;
                 z.compute_boolean(z_space);
+                if (z.empty()) {return 0.0;}
+                return z.front().value;
+            case Semantics::FUZZY:
+                z_space = z;
+                z.compute_boolean(z_space);
+                if (z.empty()) {return 0.0;}
                 return z.front().value;
 			default:
 				throw std::invalid_argument("Invalid semantics value");

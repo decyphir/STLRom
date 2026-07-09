@@ -185,6 +185,10 @@ namespace STLRom
             {
                 semantics = Semantics::BOOLEAN;
             }
+            else if (sem == "FUZZY")
+            {
+                semantics = Semantics::FUZZY;
+            }
             else
             {
                 throw std::invalid_argument("Invalid semantics string");
@@ -203,6 +207,8 @@ namespace STLRom
                 return "RIGHT_TIME";
             case Semantics::BOOLEAN:
                 return "BOOLEAN";
+            case Semantics::FUZZY:
+                return "FUZZY";
             default:
                 throw std::invalid_argument("Invalid semantics value");
             }
