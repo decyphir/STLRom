@@ -53,29 +53,21 @@ namespace STLRom {
     }
     
     void Signal::appendSample(double t, double v) {
-        if ((t <= endTime) && size() > 0)
-            return;
-
-        if (size() == 0)
-        {
-            push_back(Sample(t, v, 0.));
-            beginTime = t;
-            endTime = t;
-        }
-        else
-        {
-            back().derivative = (v - back().value) / (t - back().time);
-            push_back(Sample(t, v, 0.));
-            endTime = t;
-        }
+        appendSample(t,v,0.,true);
     }
 
     void Signal::appendSample(double t, double v, double d)
+    {
+        appendSample(t,v,d,true);
+    }
+
+    void Signal::appendSample(double t, double v, double d, bool interp)
     {
         if ((t <= endTime) && size() > 0)
         {            
             return;
         }
+
         if (size() == 0)
         {
             push_back(Sample(t, v, d));
@@ -84,10 +76,16 @@ namespace STLRom {
         }
         else
         {
+            if (interp) 
+            {   // we discard the derivative of last sample and make it so it 
+                // interpolates linearly with the new one   
+                back().derivative = (v - back().value) / (t - back().time);
+            }
             push_back(Sample(t, v, d));
             endTime = t;
         }
     }
+
 
     void Signal::appendSignal(Signal s) {
 

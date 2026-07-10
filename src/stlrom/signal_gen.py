@@ -24,8 +24,10 @@ class SignalGen:
         for item in kargs:
             self.param_map[item]= kargs[item]
         self._update_fun()
+        return self
 
-    def get_signal(self, time=None, t0=0, tf=10, dt=.1):
+    def get_signal(self, time=None, t0=0, tf=10, dt=.1,**kargs):
+        self.set_param(kargs)
         sig = Signal()
         #sig.set_interpol(self.interp)
         if time is None:
