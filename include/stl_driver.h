@@ -91,8 +91,20 @@ public:
     /** data array - time is first column */
     trace_data data;
 
-    /** append new sample to data */
+    /** append new sample to data, default linear interpolation */
     void add_sample(vector <double> sample);
+
+    /** append new sample to data */
+    void add_sample(vector <double> sample, bool interp);
+
+    /** append new sample to signal, default linear interpolation */
+    void add_signal_sample(string phi, double t, double v);
+
+    /** append new sample to signal, default linear interpolation */
+    void add_signal_sample(string phi, double t, double v, double d);
+
+    /** append new sample to signal */
+    void add_signal_sample(string phi, double t, double v, double d, bool interp);
 
     /** set signals data */
     void set_signals(const std::vector<Signal>& signals);

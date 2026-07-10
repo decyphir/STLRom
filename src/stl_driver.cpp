@@ -80,13 +80,6 @@ STLDriver::STLDriver(const STLDriver &other) :
     param_map(other.param_map),
     signal_map(other.signal_map),
     data(other.data)
-    // stl_test_map(other.stl_test_map),
-    // trace_test_queue(other.trace_test_queue),
-    // report(other.report),
-    // test_log(other.test_log),
-    // nb_test_pos(other.nb_test_pos),
-    // nb_test_total(other.nb_test_total),
-    // error_flag(other.error_flag)
 {
     // Deep copy of formula_map
     for (const auto &pair : other.formula_map)
@@ -166,8 +159,6 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
     return *this;
 }
 
-
-
 bool STLDriver::parse_stream(std::istream &in) {
     m_scanner.switch_streams(&in, NULL);
     return (parse() == 0);
@@ -202,7 +193,6 @@ bool STLDriver::parse_string(const std::string &input) {
     std::istringstream iss(input);
     return parse_stream(iss);
 }
-
 
 int STLDriver::parse() {
     m_parser.set_debug_level(trace_parsing);
@@ -481,21 +471,42 @@ STLMonitor STLDriver::get_monitor(const string &id) const
 
 void STLDriver::add_sample(vector<double> s)
 {
+    add_sample(s, true);
+}
+
+void STLDriver::add_sample(vector<double> s, bool interp)
+{
     if (s.size() != signal_map.size() + 1) 
     {
         throw std::invalid_argument("Sample size does not match the number of signals.");
     }
     
-    // We don't need to check, that will be done at the Signal level
-    //if (!data.empty() && s[0] <= data.back()[0])
-    //{
-    //    throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
-    //}
-    
     double t = s[0];
     for(int i=1; i<s.size();i++)
-        data[i-1].appendSample(s[0],s[i]);
+        data[i-1].appendSample(s[0],s[i], 0., interp);
 }
+
+void STLDriver::add_signal_sample(string sig, double t, double v)
+{
+    add_signal_sample(sig, t,v,0., 1);
+}
+
+void STLDriver::add_signal_sample(string sig, double t, double v, double d)
+{
+    add_signal_sample(sig, t,v,d, 1);
+}
+
+void STLDriver::add_signal_sample(string sig, double t, double v, double d, bool interp)
+{
+    if (signal_map.find(sig) == signal_map.end())
+    {
+        cout << "Signal " << sig << " not found in signal_map." << endl;
+        return;
+    }
+    int sig_idx = signal_map[sig];
+    data[sig_idx].appendSample(t,v,d,interp);   
+}
+
 
 void STLDriver::set_signals(const std::vector<Signal>& signals)
 {

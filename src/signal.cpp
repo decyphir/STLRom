@@ -86,17 +86,6 @@ namespace STLRom {
         }
     }
 
-
-    void Signal::appendSignal(Signal s) {
-
-        Signal::const_iterator iter_s;
-
-        for(iter_s = s.begin(); iter_s != s.end(); iter_s++) {
-            appendSample((*iter_s).time,(*iter_s).value,(*iter_s).derivative);
-        }
-
-    }
-
     //remove redundant sample (no jump and no change in derivative)
     void Signal::simplify() {
 #ifdef DEBUG___

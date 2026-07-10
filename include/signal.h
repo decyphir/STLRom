@@ -139,8 +139,6 @@ public:
 	void appendSample(double t, double v, double d);
     void appendSample(double t, double v, double d, bool interp);
 	
-	void appendSignal(Signal);
-  	
 	inline double valueAt(double t) const {
 		if (!empty()) {
 			auto it = std::lower_bound(
