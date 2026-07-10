@@ -6,9 +6,8 @@
 
 namespace STLRom {
 
-    // Default semantics and interpolation
+    // Default semantics
     Semantics Signal::semantics = Semantics::SPACE;
-    Interpol Signal::interpol = Interpol::LINEAR; 
 
     double Signal::BigM = 10000.;
     double Signal::Eps = 1e-10;
@@ -24,7 +23,6 @@ namespace STLRom {
 
     }
 
-    // TODO refactor piecewise constant vs piecewise linear...
     Signal::Signal(double * T, double * V, int n) {
 #ifdef DEBUG__
         printf(">> Signal::Signal:                              IN." );
@@ -37,22 +35,9 @@ namespace STLRom {
             push_back(Sample(T[0], V[0], 0.));
         else
         {
-            switch (Signal::interpol)
+            for (int i = 0; i < n - 1; i++)
             {
-            case Interpol::PREVIOUS:
-                for (int i = 0; i < n - 1; i++)
-                {
-                    push_back(Sample(T[i], V[i], 0.));
-                }
-                break;
-            case Interpol::LINEAR:
-                for (int i = 0; i < n - 1; i++)
-                {
-                    push_back(Sample(T[i], V[i], (V[i + 1] - V[i]) / (T[i + 1] - T[i])));
-                }
-                break;
-            default:
-                throw invalid_argument("Invalid interpolation value");
+                push_back(Sample(T[i], V[i], (V[i + 1] - V[i]) / (T[i + 1] - T[i])));
             }
             push_back(Sample(T[n - 1], V[n - 1], 0.));
         }
@@ -71,37 +56,17 @@ namespace STLRom {
         if ((t <= endTime) && size() > 0)
             return;
 
-        switch (Signal::interpol)
+        if (size() == 0)
         {
-        case Interpol::PREVIOUS:
-            if (size() == 0)
-            {
-                push_back(Sample(t, v, 0.));
-                beginTime = t;
-                endTime = t;
-            }
-            else
-            {
-                push_back(Sample(t, v, 0.));
-                endTime = t;
-            }
-            break;
-        case Interpol::LINEAR:
-            if (size() == 0)
-            {
-                push_back(Sample(t, v, 0.));
-                beginTime = t;
-                endTime = t;
-            }
-            else
-            {
-                back().derivative = (v - back().value) / (t - back().time);
-                push_back(Sample(t, v, 0.));
-                endTime = t;
-            }
-            break;
-        default:
-            throw invalid_argument("Invalid interpolation value");
+            push_back(Sample(t, v, 0.));
+            beginTime = t;
+            endTime = t;
+        }
+        else
+        {
+            back().derivative = (v - back().value) / (t - back().time);
+            push_back(Sample(t, v, 0.));
+            endTime = t;
         }
     }
 
@@ -111,37 +76,16 @@ namespace STLRom {
         {            
             return;
         }
-        switch (Signal::interpol)
+        if (size() == 0)
         {
-        case Interpol::PREVIOUS:
-            if (size() == 0)
-            {
-                push_back(Sample(t, v, 0.));
-                beginTime = t;
-                endTime = t;
-            }
-            else
-            {
-                push_back(Sample(t, v, 0.));
-                endTime = t;
-            }
-            break;
-        case Interpol::LINEAR:
-            if (size() == 0)
-            {
-                push_back(Sample(t, v, d));
-                beginTime = t;
-                endTime = t;
-            }
-            else
-            {
-                // back().derivative = (v - back().value) / (t - back().time);
-                push_back(Sample(t, v, d));
-                endTime = t;
-            }
-            break;
-        default:
-            throw invalid_argument("Invalid interpolation value");
+            push_back(Sample(t, v, d));
+            beginTime = t;
+            endTime = t;
+        }
+        else
+        {
+            push_back(Sample(t, v, d));
+            endTime = t;
         }
     }
 
@@ -155,7 +99,7 @@ namespace STLRom {
 
     }
 
-    //remove linear interpolations
+    //remove redundant sample (no jump and no change in derivative)
     void Signal::simplify() {
 #ifdef DEBUG___
         printf(">>>Signal::simplify:                          IN." );

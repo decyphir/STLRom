@@ -32,7 +32,6 @@
 #include <vector>
 #include <map>
 
-
 #include "scanner.h"
 #include "transducer.h"
 #include "stl_monitor.h"
@@ -67,7 +66,6 @@ class STLDriver
 public:
 
     Semantics semantics;  /**< semantics to use */
-    Interpol  interpol;   /**< interpolation method */
 
     /** enable debug output in the flex scanner */
     bool trace_scanning;
@@ -169,39 +167,6 @@ public:
             throw std::invalid_argument("Invalid semantics value");
         }
     }
-
-    inline void set_interpol(const std::string &interp)
-    {
-        if (interp == "PREVIOUS")
-        {
-            interpol = Interpol::PREVIOUS;
-        }
-        else if (interp == "LINEAR")
-        {
-            interpol = Interpol::LINEAR;
-        }
-        else
-        {
-            throw std::invalid_argument("Invalid interpol string");
-        }
-    }
-
-    inline std::string get_interpol()
-    {
-        switch (interpol)
-        {
-        case Interpol::PREVIOUS:
-            return "PREVIOUS";
-        case Interpol::LINEAR:
-            return "LINEAR";
-        default:
-            throw std::invalid_argument("Invalid interpol value");
-        }
-    }
-    
-
-    // TODO: add get_param, set_param, get_online_rob, set_online_rob.
-
 
     /// PARSER
     /**

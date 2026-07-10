@@ -27,14 +27,12 @@ namespace STLRom
         double start_time, end_time;
         transducer *formula;
         Semantics semantics;
-        Interpol interpol;
 
-        STLMonitor() : interpol(Interpol::LINEAR), semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), up_to_date(false), start_time(0.0), end_time(0.0) {}
+        STLMonitor() : semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), up_to_date(false), start_time(0.0), end_time(0.0) {}
 
         // Copy constructor
         STLMonitor(const STLMonitor &other)
-            : interpol(other.interpol),
-              semantics(other.semantics),
+            : semantics(other.semantics),
               data(other.data),
               param_map(other.param_map),
               signal_map(other.signal_map),
@@ -57,7 +55,6 @@ namespace STLRom
         {
             if (this != &other)
             {
-                interpol = other.interpol;
                 semantics = other.semantics;
                 data = other.data;
                 param_map = other.param_map;
@@ -86,8 +83,7 @@ namespace STLRom
 
         // Move constructor
         STLMonitor(STLMonitor &&other) noexcept
-            : interpol(other.interpol),
-              semantics(other.semantics),
+            : semantics(other.semantics),
               data(std::move(other.data)),
               param_map(std::move(other.param_map)),
               signal_map(std::move(other.signal_map)),
@@ -106,7 +102,6 @@ namespace STLRom
                 data = std::move(other.data);
                 param_map = std::move(other.param_map);
                 signal_map = std::move(other.signal_map);
-                interpol = other.interpol;
                 semantics = other.semantics;
                 rob = other.rob;
                 lower_rob = other.lower_rob;
@@ -172,36 +167,6 @@ namespace STLRom
                 return "BOOLEAN";
             default:
                 throw std::invalid_argument("Invalid semantics value");
-            }
-        }
-
-        inline void set_interpol(const std::string &interp)
-        {
-            cout << "interpol:" << interp << endl;
-            if (interp == "PREVIOUS")
-            {
-                interpol = Interpol::PREVIOUS;
-            }
-            else if (interp == "LINEAR")
-            {
-                interpol = Interpol::LINEAR;
-            }
-            else
-            {
-                throw std::invalid_argument("Invalid interpol string");
-            }
-        }
-
-        inline std::string get_interpol()
-        {
-            switch (interpol)
-            {
-            case Interpol::PREVIOUS:
-                return "PREVIOUS";
-            case Interpol::LINEAR:
-                return "LINEAR";
-            default:
-                throw std::invalid_argument("Invalid interpol value");
             }
         }
 

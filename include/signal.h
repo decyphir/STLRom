@@ -72,11 +72,6 @@ enum class Semantics {
 		BOOLEAN
 	};
 
-enum class Interpol {
-		PREVIOUS,
-		LINEAR
-	};
-
 //piecewise-linear, right-continuous signals
 class Signal : public std::deque<Sample> {
 public:
@@ -87,8 +82,6 @@ public:
 	// Guess that should be else where... 
 	
 	static Semantics semantics;
-	static Interpol interpol;
-
 
 	inline static void set_semantics(const std::string& sem) {
 		if (sem == "SPACE") {
@@ -118,28 +111,6 @@ public:
 				throw std::invalid_argument("Invalid semantics value");
 		}
 	}
-
-	inline static void set_interpol(const std::string& interp) {
-		if (interp == "PREVIOUS") {
-			interpol = Interpol::PREVIOUS;
-		} else if (interp == "LINEAR") {
-			interpol = Interpol::LINEAR;
-		} else {
-			throw std::invalid_argument("Invalid interpol string");
-		}
-	}
-
-	inline static std::string get_interpol() {
-		switch (interpol) {
-			case Interpol::PREVIOUS:
-				return "PREVIOUS";
-			case Interpol::LINEAR:
-				return "LINEAR";
-			default:
-				throw std::invalid_argument("Invalid interpol value");
-		}
-	}
-
 
 	inline static void set_BigM(double val){
 		BigM=val;

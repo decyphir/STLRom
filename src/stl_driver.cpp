@@ -41,15 +41,10 @@ constexpr const char* RESET = "\033[0m";
 STLDriver::STLDriver() :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    interpol(Interpol::LINEAR),
     semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
     verbose_parser(false)
-    // report(""),
-    // nb_test_pos(0),
-    // nb_test_total(0),
-    // error_flag(false)
 {
 
 }
@@ -58,15 +53,10 @@ STLDriver::STLDriver(trace_data _trace) :
     m_scanner(*this),
     m_parser(m_scanner, *this),
     data(std::move(_trace)),
-    interpol(Interpol::LINEAR),
     semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
     verbose_parser(false)
-    // report(""),
-    // nb_test_pos(0),
-    // nb_test_total(0),
-    // error_flag(false)
 {
 
 }
@@ -83,7 +73,6 @@ STLDriver::STLDriver(const STLDriver &other) :
     m_scanner(*this),
     m_parser(m_scanner, *this),
     semantics(other.semantics),
-    interpol(other.interpol),
     trace_scanning(other.trace_scanning),
     trace_parsing(other.trace_parsing),
     verbose_parser(other.verbose_parser),
@@ -118,7 +107,6 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         formula_map.clear();
 
         semantics = other.semantics;
-        interpol = other.interpol;
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
         verbose_parser = other.verbose_parser;
@@ -126,14 +114,7 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         param_map = other.param_map;
         signal_map = other.signal_map;
         data = other.data;
-        // stl_test_map = other.stl_test_map;
-        // trace_test_queue = other.trace_test_queue;
-        // report = other.report;
-        // test_log = other.test_log;
-        // nb_test_pos = other.nb_test_pos;
-        // nb_test_total = other.nb_test_total;
-        // error_flag = other.error_flag;
-
+ 
         // Deep copy of formula_map
         for (const auto &pair : other.formula_map)
         {
@@ -147,7 +128,6 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
     m_scanner(*this),
     m_parser(m_scanner, *this),
     semantics(other.semantics),
-    interpol(other.interpol),
     trace_scanning(other.trace_scanning),
     trace_parsing(other.trace_parsing),
     verbose_parser(other.verbose_parser),
@@ -156,13 +136,7 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
     signal_map(std::move(other.signal_map)),
     data(std::move(other.data)),
     formula_map(std::move(other.formula_map))
-    // stl_test_map(std::move(other.stl_test_map)),
-    // trace_test_queue(std::move(other.trace_test_queue)),
-    // report(std::move(other.report)),
-    // test_log(std::move(other.test_log)),
-    // nb_test_pos(other.nb_test_pos),
-    // nb_test_total(other.nb_test_total),
-    // error_flag(other.error_flag)
+ 
 {
     other.formula_map.clear();
 }
@@ -178,7 +152,6 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         }
 
         semantics = other.semantics;
-        interpol = other.interpol;
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
         verbose_parser = other.verbose_parser;
@@ -187,14 +160,7 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         signal_map = std::move(other.signal_map);
         data = std::move(other.data);
         formula_map = std::move(other.formula_map);
-        // stl_test_map = std::move(other.stl_test_map);
-        // trace_test_queue = std::move(other.trace_test_queue);
-        // report = std::move(other.report);
-        // test_log = std::move(other.test_log);
-        // nb_test_pos = other.nb_test_pos;
-        // nb_test_total = other.nb_test_total;
-        // error_flag = other.error_flag;
-
+ 
         other.formula_map.clear();
     }
     return *this;
@@ -327,7 +293,6 @@ double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
     phi->set_trace_data_ptr(data);
     phi->set_param_map_ptr(param_map);
     Signal::semantics = semantics;
-    Signal::interpol = interpol;
     phi->reset();
     phi->set_horizon(t0, t0);
     return phi->compute_robustness();        
@@ -358,7 +323,6 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
     phi->set_trace_data_ptr(data);
     phi->set_param_map_ptr(param_map);
     Signal::semantics = semantics;
-    Signal::interpol = interpol;
     phi->reset();
     phi->set_horizon(t0, t0);
     double rob = phi->compute_robustness();
@@ -368,27 +332,6 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
 
     return out_rob;
 }
-
-
-// Signal STLMonitor::eval_rob(double t_start, double t_end)
-//     {
-// 		start_time = t_start;
-// 		end_time  = t_end;
-// 		if (formula)
-//         {
-// 			// Ensure formula reads the right data
-// 			formula->set_trace_data_ptr(data);
-// 			formula->set_param_map_ptr(param_map);
-// 			Signal::semantics=semantics;
-// 			Signal::interpol = interpol;
-// 			formula->reset();				
-// 			formula->set_horizon(t_start, t_end);
-// 			rob = formula->compute_robustness();
-//     		up_to_date = true;
-// 		}			
-//         return formula->z;
-//     }	
-
 
 Signal STLDriver::eval_rob(const string &phi_in, double t_start, double t_end)
 {
@@ -408,7 +351,6 @@ Signal STLDriver::eval_rob(const string &phi_in, double t_start, double t_end)
     phi->set_trace_data_ptr(data);
     phi->set_param_map_ptr(param_map);
     Signal::semantics = semantics;
-    Signal::interpol = interpol;
     phi->reset();
     phi->set_horizon(t_start, t_end);
     phi->compute_robustness();
@@ -445,7 +387,6 @@ vector<Signal> STLDriver::eval_online_rob(const string &phi_in, double t_start, 
     phi->set_trace_data_ptr(data); // is this necessary?
     phi->set_param_map_ptr(param_map);
     Signal::semantics = semantics;
-    Signal::interpol = interpol;
     phi->reset();
     phi->set_horizon(t_start, t_end);
 
@@ -511,7 +452,6 @@ STLMonitor STLDriver::get_monitor(const string &id) const
         {
             try
             {
-                phi.interpol = interpol;
                 phi.semantics = semantics;
                 phi.data = data;
                 phi.formula = (it->second)->clone();

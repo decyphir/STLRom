@@ -4,14 +4,21 @@ import numpy as np
 def get_time(t0=0, tf=10, dt=0.1):
     return np.arange(t0, tf+dt, dt) # added +dt to include tf
 
+# WIP SignalGen should probably be interface only, below it interpolates a function fun
 class SignalGen:
-    def __init__(self, fun = lambda t:t):
+    def __init__(self, t0=0, tf=0, fun = lambda t:t):
         self.fun =  fun        
         self.interp =  'LINEAR' # 'PREVIOUS' or 'LINEAR'
         self.param_map={}
 
     def _update_fun():
         pass
+
+    def _add_pwl_sample(self, t, v):
+        self.sig.append_sample(t,v)
+    
+    def _add_pwc_sample(self,t, v):
+        self.sig.append_sample(t,v,0)
 
     def set_param(self, **kargs):
         for item in kargs:
@@ -20,7 +27,7 @@ class SignalGen:
 
     def get_signal(self, time=None, t0=0, tf=10, dt=.1):
         sig = Signal()
-        sig.set_interpol(self.interp)
+        #sig.set_interpol(self.interp)
         if time is None:
             time = get_time(t0, tf, dt)
         for t in time:
@@ -29,7 +36,7 @@ class SignalGen:
         return sig
 
 class OscillSignalGen(SignalGen):
-    def __init__(self, period=1, amplitude=1, base=0, damp=0):        
+    def __init__(self, t0=0, tf=0, period=1, amplitude=1, base=0, damp=0):        
         super().__init__()
         self.param_map= {'period':period,'amplitude':amplitude, 'base':base, 'damp':damp}        
         self._update_fun()        
@@ -43,8 +50,9 @@ class OscillSignalGen(SignalGen):
 
 
 class PWCSignalGen(SignalGen):
-    def __init__(self, times=[0, 1.], values=[0., 1.]):        
+    def __init__(self, t0=0, tf=0,times=[0, 1.], values=[0., 1.]):        
         super().__init__()
+        self.interp='PREVIOUS'
         self.param_map= {'times':times,'values':values}        
         self._update_fun()        
 
@@ -55,15 +63,16 @@ class PWCSignalGen(SignalGen):
         self.sig = s
         self.fun = lambda t: s.value_at(t)
 
-    def get_signal(self, t0=0, tf=10):        
+    def get_signal(self, t0=0, tf=0):        
         s = self.sig
         s.resize(t0, tf)
         return s
 
 
 class PWLSignalGen(SignalGen):
-    def __init__(self, times=[0, 1.], values=[0., 1.]):        
+    def __init__(self, t0=0, tf=0,times=[0, 1.], values=[0., 1.], derivatives=None):        
         super().__init__()
+        self.interp = 'LINEAR'
         self.param_map= {'times':times,'values':values}        
         self._update_fun()        
 
@@ -75,6 +84,48 @@ class PWLSignalGen(SignalGen):
         self.fun = lambda t: s.value_at(t)
 
     def get_signal(self, t0=0, tf=10):        
+        s = self.sig
+        s.resize(t0, tf)
+        return s
+
+class RandSignalGen(SignalGen):
+    def __init__(self, seed=0, t0=0, tf=0, dt_min=0.1, dt_max=1, v_min=-10, v_max=10, interp='PREVIOUS'):
+        super().__init__()
+        self.param_map={'seed':seed, 'dt_min':dt_min,'dt_max': dt_max, 'v_min': v_min, 'v_max': v_max }
+        self.interp = interp
+        self._update_fun()
+        self.get_signal(t0,tf) 
+
+    def _fun(self, t):
+        dt_min = self.param_map['dt_min']
+        dt_max = self.param_map['dt_max']
+        v_min = self.param_map['v_min']
+        v_max = self.param_map['v_max']
+        t_end = self.sig.end_time
+
+        while t>t_end:
+            v = self.rng.uniform(v_min,v_max)
+            dt = self.rng.uniform(dt_min,dt_max)
+            self.add_sample(t_end+dt, v)
+            t_end= self.sig.end_time    
+        
+        return self.sig.value_at(t)
+
+    def _update_fun(self):
+        self.rng = np.random.default_rng(self.param_map['seed'])
+        self.fun = lambda t: self._fun(t)
+        self.sig = Signal()
+        if self.interp=='LINEAR':
+            self.add_sample = self._add_pwl_sample
+        else:
+            self.add_sample = self._add_pwc_sample
+        
+        v_min = self.param_map['v_min']
+        v_max = self.param_map['v_max']
+        self.add_sample(0, self.rng.uniform(v_min, v_max))
+
+    def get_signal(self, t0=0, tf=10):        
+        self._fun(tf)
         s = self.sig
         s.resize(t0, tf)
         return s

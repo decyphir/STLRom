@@ -89,7 +89,6 @@ namespace STLRom
 			formula->set_trace_data_ptr(data);
 			formula->set_param_map_ptr(param_map);
 			Signal::semantics=semantics;
-			Signal::interpol = interpol;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
 			rob = formula->compute_robustness();
@@ -124,7 +123,6 @@ namespace STLRom
 			formula->set_trace_data_ptr(data);
 			formula->set_param_map_ptr(param_map);
 			Signal::semantics=semantics;
-			Signal::interpol = interpol;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
 			rob = formula->compute_robustness();

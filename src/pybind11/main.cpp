@@ -88,8 +88,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_readwrite("end_time",&STLRom::Signal::endTime)
 		.def_static("set_semantics",  &STLRom::Signal::set_semantics)
 		.def_static("get_semantics",  &STLRom::Signal::get_semantics)
-		.def_static("set_interpol",  &STLRom::Signal::set_interpol)
-		.def_static("get_interpol",  &STLRom::Signal::get_interpol)
 		.def_static("set_BigM",&STLRom::Signal::set_BigM)
 		.def_static("get_BigM",&STLRom::Signal::get_BigM)
 		.def_static("set_Eps",&STLRom::Signal::set_Eps)
@@ -137,8 +135,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
 		.def("set_semantics",&STLRom::STLMonitor::set_semantics)
 		.def("get_semantics",&STLRom::STLMonitor::get_semantics)
-		.def("set_interpol",&STLRom::STLMonitor::set_interpol)
-		.def("get_interpol",&STLRom::STLMonitor::get_interpol)	
 		.def("eval_rob",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_rob)		
 		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_rob)		
 		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
@@ -252,8 +248,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_signals_names",&STLRom::STLDriver::get_signals_names) 
 		.def("set_semantics",&STLRom::STLDriver::set_semantics)
 		.def("get_semantics",&STLRom::STLDriver::get_semantics)
-		.def("set_interpol",&STLRom::STLDriver::set_interpol)
-		.def("get_interpol",&STLRom::STLDriver::get_interpol)
 		.def("get_rob",
 		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
              return self.get_rob(phi_in, t0); 
