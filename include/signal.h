@@ -136,6 +136,8 @@ public:
 	Signal(double *, double *, int); //create continuous signal from array of sampling points (time, value) with linear interpolation
 	
 	void appendSample(double t, double v);
+	void appendConstantSample(double t, double v);
+
 	void appendSample(double t, double v, double d);
     void appendSample(double t, double v, double d, bool interp);
 	

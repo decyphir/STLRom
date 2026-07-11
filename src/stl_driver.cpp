@@ -513,7 +513,6 @@ void STLDriver::set_signals(const std::vector<Signal>& signals)
     if (signals.size() != signal_map.size()) {
         throw std::invalid_argument("Number of signals does not match the number of declared signals.");
     }
-
     data = signals; // copy
 }
 
