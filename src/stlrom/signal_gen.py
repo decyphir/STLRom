@@ -27,7 +27,7 @@ class SignalGen:
         return self
 
     def get_signal(self, time=None, t0=0, tf=10, dt=.1,**kargs):
-        self.set_param(kargs)
+        self.set_param(**kargs)
         sig = Signal()
         #sig.set_interpol(self.interp)
         if time is None:
@@ -61,7 +61,7 @@ class PWCSignalGen(SignalGen):
     def _update_fun(self):
         s = Signal()
         for t,v in zip(self.param_map['times'], self.param_map['values']):            
-            s.append_sample(t,v,0.)
+            s.append_constant_sample(t,v)
         self.sig = s
         self.fun = lambda t: s.value_at(t)
 

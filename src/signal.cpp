@@ -149,9 +149,14 @@ namespace STLRom {
         }
         else {
             //trim or extend front of signal
-            while(front().time < t_start) pop_front();        
-            push_front(Sample(t_start, front().valueAt(t_start), front().derivative));
-        
+            while(front().time < t_start) 
+                pop_front();        
+            
+            if (front().time != t_start) {
+                Sample new_front = Sample(t_start, front().valueAt(t_start), front().derivative);
+                pop_front();
+                push_front(new_front);
+            }
             //trim or extend end of signal
             while(t_end<back().time) pop_back();
         }
@@ -168,7 +173,6 @@ namespace STLRom {
         cout << "to start_time:" << t_start << " and end_time:" << t_end << endl;
         cout << "IN: " << *this << endl;
     #endif
-
         if ( t_end<t_start-1e-14 ) {
             clear();
             beginTime=0.;
@@ -188,6 +192,7 @@ namespace STLRom {
         //trim or extend front of signal
         if(beginTime > t_start) {
             //double der = (front().value-v)/(front().time-t_start);
+            cout << "push font ?? " << Sample(t_start, front().value, 0) << endl;
             push_front(Sample(t_start, front().value, 0));
         }
         else {
@@ -196,7 +201,7 @@ namespace STLRom {
                 pop_front();
             }
             if (empty()) {
-                //			cout << "push empty " << first << endl;
+                cout << "push empty " << first << endl;
                 push_front(Sample(t_start, first.valueAt(t_start), 0));
                 if (endTime < t_start)
                     endTime = t_start;
@@ -208,6 +213,7 @@ namespace STLRom {
                 }
             }
         }
+
         //trim or extend back of signal
         if(endTime < t_end) {
             //		cout << "push_back here" << endl;
@@ -239,17 +245,6 @@ namespace STLRom {
 
         for(i = begin(); i != end(); i++) {
             i->time=i->time + a;
-        }
-    }
-
-    void Signal::removeInf() {
-
-        while((!empty())&&
-              (back().value==TOP ||
-               back().derivative == TOP ||
-               back().value==BOTTOM ||
-               back().derivative == BOTTOM)) {
-            pop_back();
         }
     }
 

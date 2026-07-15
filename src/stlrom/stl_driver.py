@@ -36,3 +36,21 @@ def plot_signal(self, sig, label=None, ax=None):
         label = str(sig) #FIXME: dummy if sig is integer
     return plot(S, label=label, ax=ax)
     
+def plot_signals(self, sig_names=None, same_ax=True, ax=None):
+    if sig_names is None:
+        sig_names= list(self.signal_map.keys())
+
+    if len(sig_names)>0:    
+        if ax is None:
+            ax = self.plot_signal(sig_names[0])
+        else:
+            self.plot_signal(sig_names[0], ax=ax)
+        if same_ax:
+            for sig in sig_names[1:]:
+                self.plot_signal(sig, ax=ax)
+        else:
+            for sig in sig_names[1:]:
+                self.plot_signal(sig)
+
+            
+    

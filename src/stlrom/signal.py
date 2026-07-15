@@ -2,7 +2,9 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     import matplotlib.pyplot as plt
 
     draw_canvas = kwargs.pop('draw_canvas', True)
-    
+    draw_samples = kwargs.pop('draw_samples', False)
+    plot_sat = kwargs.pop('plot_sat', False)
+
     samples_list = self.get_samples_list()
 
     if ax is None:
@@ -40,13 +42,14 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     c = l_line.get_color()
 
-    ax.plot(
-        [s.time for s in samples_list],
-        [s.value for s in samples_list],
-        linestyle='None',
-        marker='o',
-        color=c
-    )
+    if draw_samples:
+        ax.plot(
+            [s.time for s in samples_list],
+            [s.value for s in samples_list],
+            linestyle='None',
+            marker='o',
+            color=c
+        )
 
     l_line.set_label(label)
 
@@ -54,6 +57,13 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     if draw_canvas:
         ax.figure.canvas.draw()
+
+    if plot_sat:
+        y_sat = self.copy()
+        y_sat.compute_boolean(self)
+        ax_bool = ax.twinx(); ax_bool.set_yticks([0, 1]); ax_bool.set_yticklabels(['False', 'True']);
+        y_sat.plot(f"{label} Bool sat.", ax=ax_bool)
+
 
     return ax
 

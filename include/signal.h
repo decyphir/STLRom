@@ -168,7 +168,7 @@ public:
 	void resize(double, double, double); //restricts/extends the signal to [s,t) with default value v where not defined
 	void shift(double); //shifts the signal of delta_t time units
     void addLastSample(); // add a sample at endTime. 
-	void removeInf();
+	void to_sat();
 
 	void read_from_file(const string& filename);
 	void write_to_file(const string& filename) const;
