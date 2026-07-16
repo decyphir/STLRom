@@ -18,7 +18,7 @@ class SignalGen:
         self.sig.append_sample(t,v)
     
     def _add_pwc_sample(self,t, v):
-        self.sig.append_sample(t,v,0)
+        self.sig.append_constant_sample(t,v)
 
     def set_param(self, **kargs):
         for item in kargs:
