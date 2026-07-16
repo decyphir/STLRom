@@ -323,7 +323,7 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
     return out_rob;
 }
 
-Signal STLDriver::eval_rob(const string &phi_in, double t_start, double t_end)
+Signal STLDriver::get_rob_signal(const string &phi_in, double t_start, double t_end)
 {
     if (std::any_of(data.begin(), data.end(),
             [](const Signal& s) { return s.empty(); }))
@@ -347,17 +347,17 @@ Signal STLDriver::eval_rob(const string &phi_in, double t_start, double t_end)
     return phi->z;
 }
 
-Signal STLDriver::eval_rob(const string &phi_in)
+Signal STLDriver::get_rob_signal(const string &phi_in)
 {
-    return eval_rob(phi_in, 0., 0.);
+    return get_rob_signal(phi_in, 0., 0.);
 }
 
-Signal STLDriver::eval_rob(const string &phi_in, double t)
+Signal STLDriver::get_rob_signal(const string &phi_in, double t)
 {
-    return eval_rob(phi_in, t, t);
+    return get_rob_signal(phi_in, t, t);
 }
 
-vector<Signal> STLDriver::eval_online_rob(const string &phi_in, double t_start, double t_end)
+vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_start, double t_end)
 {
     vector<Signal> out_rob;
     if (std::any_of(data.begin(), data.end(),
@@ -416,14 +416,14 @@ robustness_map_t STLRom::STLDriver::get_online_robustness_map(const string &phi_
     return rob_map;
 }
 
-vector<Signal> STLDriver::eval_online_rob(const string &phi_in)
+vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in)
 {
-    return eval_online_rob(phi_in, 0., 0.);
+    return get_online_rob_signal(phi_in, 0., 0.);
 }
 
-vector<Signal> STLDriver::eval_online_rob(const string &phi_in, double t)
+vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t)
 {
-    return eval_online_rob(phi_in, t, t);
+    return get_online_rob_signal(phi_in, t, t);
 }
 
 vector<double> STLDriver::get_online_rob(const string &phi_in)

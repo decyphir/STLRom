@@ -137,12 +137,12 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_upper_rob",&STLRom::STLMonitor::get_upper_rob)
 		.def("set_semantics",&STLRom::STLMonitor::set_semantics)
 		.def("get_semantics",&STLRom::STLMonitor::get_semantics)
-		.def("eval_rob",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_rob)		
-		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_rob)		
-		.def("eval_rob",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_rob)		
-		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::eval_online_rob)		
-		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::eval_online_rob)		
-		.def("eval_online_rob",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::eval_online_rob)
+		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_rob_signal)		
+		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_rob_signal)		
+		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_rob_signal)		
+		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_online_rob_signal)		
+		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_online_rob_signal)		
+		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_online_rob_signal)
 		.def("get_robustness_map",
 		[](STLRom::STLMonitor& self) {
 			const auto rob_map = self.get_robustness_map();
@@ -263,27 +263,27 @@ PYBIND11_MODULE(_stlrom, m) {
          },
 	     py::arg("phi_in") = "phi",
          py::arg("t0") = 0.)
-		.def("eval_rob",
-			(Signal (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::eval_rob,
+		.def("get_rob_signal",
+			(Signal (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::get_rob_signal,
 			py::arg("phi_in"))
-		.def("eval_rob",
-			(Signal (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::eval_rob,
+		.def("get_rob_signal",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::get_rob_signal,
 			py::arg("phi_in"),
 			py::arg("t"))
-		.def("eval_rob",
-			(Signal (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::eval_rob,
+		.def("get_rob_signal",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::get_rob_signal,
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))
-		.def("eval_online_rob",
-			(vector<Signal> (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::eval_online_rob,
+		.def("get_online_rob_signal",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"))
-		.def("eval_online_rob",
-			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::eval_online_rob,
+		.def("get_online_rob_signal",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"),
 			py::arg("t"))
-		.def("eval_online_rob",
-			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::eval_online_rob,
+		.def("get_online_rob_signal",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))

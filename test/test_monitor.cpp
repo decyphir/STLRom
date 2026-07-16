@@ -64,10 +64,10 @@ int main(int argc, char** argv) {
     mu.add_sample(v);
     phi.add_sample(v);
     
- //   double rho_mu = mu.eval_rob();
+ //   double rho_mu = mu.get_rob_signal();
  //   cout << "rho(mu): " << rho_mu << endl;
     
-    Signal rho_phi = phi.eval_rob();
+    Signal rho_phi = phi.get_rob_signal();
     cout << "rho(phi): " << rho_phi << endl;
     
 

@@ -15,6 +15,7 @@ STLDriver.plot_signals = plot_signals
 
 STLMonitor.get_signal_idx = get_signal_idx
 STLMonitor.get_signal = get_signal
+STLMonitor.plot_signal = plot_signal
 STLMonitor.plot_signals = plot_signals
 
 

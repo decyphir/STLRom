@@ -4,6 +4,7 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     draw_canvas = kwargs.pop('draw_canvas', True)
     draw_samples = kwargs.pop('draw_samples', False)
     plot_sat = kwargs.pop('plot_sat', False)
+    step_plot  = kwargs.pop('step_plot', False)
 
     samples_list = self.get_samples_list()
 
@@ -38,8 +39,11 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     times += [sn.time, self.end_time, np.nan]
     values += [sn.value, sn.value_at(self.end_time), np.nan]
 
-    l_line, = ax.plot(times, values, linestyle='-', **kwargs)
-
+    if step_plot:
+        l_line, = ax.step(times, values, linestyle='-', **kwargs)
+    else:
+        l_line, = ax.plot(times, values, linestyle='-', **kwargs)
+    
     c = l_line.get_color()
 
     if draw_samples:
@@ -61,8 +65,8 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     if plot_sat:
         y_sat = self.copy()
         y_sat.compute_boolean(self)
-        ax_bool = ax.twinx(); ax_bool.set_yticks([0, 1]); ax_bool.set_yticklabels(['False', 'True']);
-        y_sat.plot(f"{label} Bool sat.", ax=ax_bool)
+        ax_bool = ax.twinx(); ax_bool.set_yticks([0, 1]); ax_bool.set_yticklabels(['FALSE', 'TRUE']);
+        y_sat.plot(f"{label} (Boolean sat.)", ax=ax_bool, color='black', step_plot=True)
 
 
     return ax

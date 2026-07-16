@@ -66,14 +66,14 @@ namespace STLRom
 	}
 
 
-	Signal STLMonitor::eval_rob() {
-        return eval_rob(start_time, end_time);
+	Signal STLMonitor::get_rob_signal() {
+        return get_rob_signal(start_time, end_time);
     }
 
-    Signal STLMonitor::eval_rob(double t) {        
-		return eval_rob(t,t);
+    Signal STLMonitor::get_rob_signal(double t) {        
+		return get_rob_signal(t,t);
     }
-	Signal STLMonitor::eval_rob(double t_start, double t_end)
+	Signal STLMonitor::get_rob_signal(double t_start, double t_end)
     {
 		if (std::any_of(data.begin(), data.end(),
             [](const Signal& s) { return s.empty(); }))
@@ -99,14 +99,14 @@ namespace STLRom
 
 
 
-    vector<Signal> STLMonitor::eval_online_rob() {
-        return eval_online_rob(start_time, end_time);
+    vector<Signal> STLMonitor::get_online_rob_signal() {
+        return get_online_rob_signal(start_time, end_time);
     }
 
-    vector<Signal> STLMonitor::eval_online_rob(double t) {        
-		return eval_online_rob(t,t);
+    vector<Signal> STLMonitor::get_online_rob_signal(double t) {        
+		return get_online_rob_signal(t,t);
     }
-	vector<Signal> STLMonitor::eval_online_rob(double t_start, double t_end)
+	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end)
     {
 		if (std::any_of(data.begin(), data.end(),
             [](const Signal& s) { return s.empty(); }))

@@ -41,7 +41,7 @@ phi.add_sample([0., 0., 0.])  # time, x, y
 phi.add_sample([0.5, 1.1, 2.2])
 
 #phi.set_eval_time(0.,1.)
-phi.eval_rob() # should be -2.
+phi.get_rob_signal() # should be -2.
 
 print_signal(phi.formula.z)
 print(phi.rob)

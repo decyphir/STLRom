@@ -20,11 +20,11 @@ d1.add_sample([1.5, -1])
 #print(d1.get_online_rob('mu',3))
 
 #mu = d1.get_monitor('mu')
-#mu.eval_rob(0,3)
+#mu.get_rob_signal(0,3)
 #print('z:',mu.formula.z)
 #print('z_low:',mu.formula.z_low)
 #print('z_up:',mu.formula.z_up)
 
 phi = d1.get_monitor('phi')
-phi.eval_rob(0,3)
+phi.get_rob_signal(0,3)
 #print(phi.formula.z)

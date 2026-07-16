@@ -252,12 +252,12 @@ public:
     vector<double> get_online_rob(const string &phi_in);
     vector<double> get_online_rob(const string &phi_in, double);
 
-    Signal eval_rob(const string &phi_in);
-    Signal eval_rob(const string &phi_in, double);
-    Signal eval_rob(const string &phi_in, double, double);
-    vector<Signal> eval_online_rob(const string &phi_in);
-    vector<Signal> eval_online_rob(const string &phi_in, double);
-    vector<Signal> eval_online_rob(const string &phi_in, double, double);
+    Signal get_rob_signal(const string &phi_in);
+    Signal get_rob_signal(const string &phi_in, double);
+    Signal get_rob_signal(const string &phi_in, double, double);
+    vector<Signal> get_online_rob_signal(const string &phi_in);
+    vector<Signal> get_online_rob_signal(const string &phi_in, double);
+    vector<Signal> get_online_rob_signal(const string &phi_in, double, double);
 
     robustness_map_t get_robustness_map(const string &phi_in);
     robustness_map_t get_online_robustness_map(const string &phi_in);

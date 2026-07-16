@@ -137,8 +137,8 @@ stl_driver.add_sample([2.1, 10, 20])
 # create monitor for phi 
 phi1 = stl_driver.get_monitor("phi1")
 
-print('Robustness of phi1 at time 0.: ', phi1.eval_rob())
-print('Robustness of phi1 from time 1.: ', phi1.eval_rob(1.))
+print('Robustness of phi1 at time 0.: ', phi1.get_rob_signal())
+print('Robustness of phi1 from time 1.: ', phi1.get_rob_signal(1.))
 ```
 
 
