@@ -303,6 +303,84 @@ namespace STLRom {
 
         file << endTime << "," << back().valueAt(endTime) << ",0\n"; // FIXME: is 0 derivative correct here ?
     }
+    
+    
+	bool Signal::operator==(const Signal& that) const {
+        if (beginTime != that.beginTime || endTime != that.endTime) {
+            return false;
+        }
+        auto it = this->getSamplesDeque().cbegin();
+        for (auto s : that.getSamplesDeque()) {
+            if (it == this->getSamplesDeque().cend() || s != *it) {
+                return false;
+            }
+            it++;
+        }
+        return true;
+    }
+
+
+	bool Signal::operator!=(const Signal& that) const {
+        if (beginTime != that.beginTime || endTime != that.endTime) {
+            return true;
+        }
+        auto it = this->getSamplesDeque().cbegin();
+        for (auto s : that.getSamplesDeque()) {
+            if (it == this->getSamplesDeque().cend() || s != *it) {
+                return true;
+            }
+            it++;
+        }
+        return false;
+    }
+
+    Signal Signal::operator+(const Signal& that) const {
+        // Addition of two signals defined on the union of time domains.
+        // The value of a signal is assumed to be 0 when outside time domain. // TODO Result can be discontinuous
+        Signal result = Signal();
+        auto sig1 = this->getSamplesDeque();
+        auto sig2 = that.getSamplesDeque();
+        auto s2 = sig2.cbegin();
+        while (s2 != sig2.cend() && s2->time < this->beginTime) {
+            result.appendSample(s2->time, s2->value, s2->derivative);
+            s2++;
+        }
+        for (Sample s1 : sig1) {
+            while (s2 != sig2.cend() && s2->time < s1.time) {
+                result.appendSample(s2->time, s2->value + this->valueAt(s2->time), s2->derivative + this->derivativeAt(s2->time));
+                s2++;
+            }
+            if (s1.time < that.beginTime) {
+                result.appendSample(s1.time, s1.value, s1.derivative);
+            } else {
+                result.appendSample(s1.time, s1.value + that.valueAt(s1.time), s1.derivative + that.derivativeAt(s1.time));
+            }
+        }
+        while (s2 != sig2.cend()) {
+            result.appendSample(s2->time, s2->value, s2->derivative);
+            s2++;
+        }
+
+        result.simplify();
+        return result;
+    }
+
+    Signal Signal::operator-(const Signal& that) const {
+        return *this + (that * -1.);
+    }
+
+	Signal Signal::operator*(double p) const {
+        Signal result = Signal();
+        for (Sample s : this->getSamplesDeque()) {
+            result.appendSample(s.time, p*s.value, p*s.derivative);
+        }
+        return result;
+    }
+
+	Signal Signal::operator/(double p) const {
+        return *this * (1/p);
+    }
+
 
     /*
      * friend functions
