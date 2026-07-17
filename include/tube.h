@@ -1,0 +1,36 @@
+#ifndef __TUBE_H
+#define __TUBE_H
+
+#include <iostream>
+#include "signal.h"
+
+using namespace std;
+
+namespace STLRom {
+
+class Tube {
+public:
+    Signal signal;
+    Signal lower_signal;
+    Signal upper_signal;
+
+	Tube();
+    Tube(Signal s);
+    Tube(Signal s, Signal lower_s, Signal upper_s);
+
+    // arithmetics operations?
+    
+	Tube operator+(const Tube& that) const;
+	Tube operator-(const Tube& that) const;
+	Tube operator*(double) const;
+	Tube operator/(double) const;
+
+    // robustness functions?
+}
+;
+
+std::ostream& operator<<(std::ostream& os, const Tube& T);
+
+}
+
+#endif

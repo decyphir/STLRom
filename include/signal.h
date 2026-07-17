@@ -29,6 +29,15 @@ public:
 	Point(double t, double v) : time(t), value(v) { }
 	void print_point(){cout << std::fixed << std::setprecision(5) <<"Time "<<time<<" Value "<<value<<endl;}
 	
+	inline
+	bool operator==(const Point& that) const {
+		return (time == that.time && value == that.value);
+	}
+	inline
+	bool operator!=(const Point& that) const {
+		return (time != that.time || value != that.value);
+	}
+
 	friend std::ostream & operator<<(std::ostream &, const Point &);
 };
 
@@ -44,6 +53,15 @@ public:
 
 	void print_sample(){cout << std::fixed << std::setprecision(5) <<"Time "<<time<<" Value "<<value<< " Derivative "<< derivative << endl;}
 	
+	inline
+	bool operator==(const Sample& that) const {
+		return (time == that.time && value == that.value && derivative == that.derivative);
+	}
+	inline
+	bool operator!=(const Sample& that) const {
+		return (time != that.time || value != that.value || derivative != that.derivative);
+	}
+
 	friend std::ostream & operator<<(std::ostream &, const Sample &);
 };
 
@@ -163,6 +181,28 @@ public:
 			std::cout << "EMPTY Signal, returning 0." << std::endl;
 		 	return 0.;
 		}
+	}
+
+	inline double derivativeAt(double t) const {
+		if (!empty()) {
+			auto it = std::lower_bound(
+        		begin(), 
+        		end(), 
+        		t, 
+        		[](const Sample& s, double val) { 
+	    	        return s.time < val;     
+				}
+			);
+			if (it != begin()) {
+	        	auto last_valid = std::prev(it); 	    	
+				return last_valid->derivative;  
+			} else  {
+				return it->derivative;
+			}	               					    
+		} else {
+			std::cout << "EMPTY Signal, returning 0." << std::endl;
+		 	return 0.;
+		}
 	}		
 	
 	void simplify(); //remove sampling points where (y,dy) is continuous.
@@ -193,6 +233,15 @@ public:
 			cout << "Couldn't open file " << filename.c_str() << " for writing signal" << endl; // TODO implement exception
 		}
 	}
+
+	/** Overloaded functions */
+	bool operator==(const Signal& that) const;
+	bool operator!=(const Signal& that) const;
+
+	Signal operator+(const Signal& that) const;
+	Signal operator-(const Signal& that) const;
+	Signal operator*(double) const;
+	Signal operator/(double) const;
 
     /** Robustness computation functions - all these methods first clear content */
 
