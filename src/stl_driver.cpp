@@ -443,7 +443,8 @@ STLMonitor STLDriver::get_monitor(const string &id) const
             try
             {
                 phi.semantics = semantics;
-                phi.data = data;
+                phi.owned_data = STLData(data, signal_map);
+                phi.data = &phi.owned_data;
                 phi.formula = (it->second)->clone();
                 phi.signal_map = signal_map;
                 phi.param_map = param_map;

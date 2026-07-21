@@ -13,33 +13,20 @@ namespace STLRom
 
 	void STLMonitor::add_sample(vector<double> s)
 	{
-		if (s.size() != signal_map.size() + 1) 
-	    {
-        	throw std::invalid_argument("Sample size does not match the number of signals.");
-    	}
-    
-    // We don't need to check, that will be done at the Signal level
-    //if (!data.empty() && s[0] <= data.back()[0])
-    //{
-    //    throw std::invalid_argument("Sample time must be strictly greater than the last sample time.");
-    //}
-		
-    	double t = s[0];
-    	for(int i=1; i<s.size();i++)
-	        data[i-1].appendSample(s[0],s[i]);
-		
+		data->add_sample(s);
 		up_to_date = false;
 	}
 
 	void STLMonitor::set_signals(const std::vector<Signal>& signals)
-{
-    if (signals.size() != signal_map.size()) {
-        throw std::invalid_argument("Number of signals does not match the number of declared signals.");
-    }
+	{
+		if (signals.size() != signal_map.size()) {
+			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
+		}
 
-    data = signals; // copy
-}
+		data->set_data_vector(signals); // copy TODO: check if it's actually a copy
+	}
 
+	// TODO: better convert to STLData
 	void STLMonitor::load_csv(const vector<string>& files)
 	{
 		if (files.size() != signal_map.size()) {
@@ -47,10 +34,11 @@ namespace STLRom
 		}
 
 		for (int i = 0; i < files.size(); i++) {
-			data[i].read_from_file(files[i]);
+			data->data_vector[i].read_from_file(files[i]);
 		}
 	}
 
+	// TODO: better convert to STLData
 	void STLMonitor::write_csv(const std::string& directory) const
 	{
 		string dir = directory;
@@ -61,7 +49,7 @@ namespace STLRom
 		{
 		    string filename = dir + signal.first + ".csv";
 
-			data[signal.second].write_to_file(filename);
+			data->data_vector[signal.second].write_to_file(filename);
 		}
 	}
 
@@ -75,8 +63,7 @@ namespace STLRom
     }
 	Signal STLMonitor::get_rob_signal(double t_start, double t_end)
     {
-		if (std::any_of(data.begin(), data.end(),
-            [](const Signal& s) { return s.empty(); }))
+		if (data->is_empty())
 		{
 			cout << "Empty data" << endl;
 			return Signal();
@@ -86,7 +73,7 @@ namespace STLRom
 		if (formula)
         {
 			// Ensure formula reads the right data
-			formula->set_trace_data_ptr(data);
+			formula->set_trace_data_ptr(data->data_vector); // TODO: convert to STLData
 			formula->set_param_map_ptr(param_map);
 			Signal::semantics=semantics;
 			formula->reset();				
@@ -108,8 +95,7 @@ namespace STLRom
     }
 	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end)
     {
-		if (std::any_of(data.begin(), data.end(),
-            [](const Signal& s) { return s.empty(); }))
+		if (data->is_empty())
 		{
 			cout << "Empty data" << endl;
 			vector<Signal> out_rob;
@@ -120,7 +106,7 @@ namespace STLRom
 		if (formula)
         {
 			// Ensure formula reads the right data
-			formula->set_trace_data_ptr(data);
+			formula->set_trace_data_ptr(data->data_vector); // TODO : convert to STLData
 			formula->set_param_map_ptr(param_map);
 			Signal::semantics=semantics;
 			formula->reset();				

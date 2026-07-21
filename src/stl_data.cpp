@@ -21,6 +21,10 @@ namespace STLRom
             [](const Signal& s) { return s.empty(); });
     }
 
+    void STLData::set_data_vector(const trace_data &data_vector)
+    {
+        this->data_vector = data_vector;
+    }
 
     void STLData::add_sample(vector <double> sample, bool interp)
     {
@@ -42,6 +46,8 @@ namespace STLRom
     {
         add_sample(sample, true);
     }
+
+    
 
 
 }

@@ -22,10 +22,14 @@ namespace STLRom
             // constructor with vector of signals
             explicit STLData(trace_data data_vector) : data_vector(std::move(data_vector)) {}
 
+            // constructor with vector of signals and signal map
+            explicit STLData(trace_data data_vector, map<string, int> signal_map) : data_vector(std::move(data_vector)),
+            signal_map(std::move(signal_map)) {}
+
             // other necessary constructors
             // Copy constructor
             STLData(const STLData &other)
-                : data_vector(other.data_vector)
+                : data_vector(other.data_vector), signal_map(other.signal_map)
             {
             }
 
@@ -35,13 +39,14 @@ namespace STLRom
                 if (this != &other)
                 {
                     data_vector = other.data_vector;
+                    signal_map = other.signal_map;
                 }
                 return *this;
             }
 
             // Move constructor
             STLData(STLData &&other) noexcept
-                : data_vector(std::move(other.data_vector))
+                : data_vector(std::move(other.data_vector)), signal_map(std::move(other.signal_map))
             {
             }
 
@@ -51,6 +56,7 @@ namespace STLRom
                 if (this != &other)
                 {
                     data_vector = std::move(other.data_vector);
+                    signal_map = std::move(other.signal_map);
                 }
                 return *this;
             }
@@ -70,6 +76,8 @@ namespace STLRom
 
             // check if ALL signals are empty
             bool is_empty() const;
+
+            void set_data_vector(const trace_data &data_vector);
 
             friend ostream &operator<<(ostream &out, const STLData &data)
             {
@@ -91,7 +99,8 @@ namespace STLRom
                             out << data.data_vector[signal.second].size() << " samples from t0=" << data.data_vector[signal.second].beginTime << " to t_end=" << data.data_vector[signal.second].endTime << endl;
                         }
                     }
-                }  
+                } 
+                return out; 
             }
     };
 }

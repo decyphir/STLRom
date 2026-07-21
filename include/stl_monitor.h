@@ -8,6 +8,7 @@
 #include "transducer.h"
 #include "tools.h"
 #include "signal.h"
+#include "stl_data.h"
 
 namespace STLRom
 {
@@ -15,7 +16,8 @@ namespace STLRom
     class STLMonitor
     {
     public:
-        trace_data data;
+        STLData *data;
+        STLData owned_data;
         map<string, double> param_map;
         map<string, int> signal_map;
 
@@ -33,7 +35,7 @@ namespace STLRom
         // Copy constructor
         STLMonitor(const STLMonitor &other)
             : semantics(other.semantics),
-              data(other.data),
+              owned_data(other.owned_data),
               param_map(other.param_map),
               signal_map(other.signal_map),
               rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
@@ -48,6 +50,15 @@ namespace STLRom
             {
                 formula = nullptr;
             }
+
+            if (other.data == &other.owned_data)
+            {
+                data = &owned_data;
+            } 
+            else
+            {
+                data = other.data;
+            }
         }
 
         // Copy assignment operator
@@ -56,7 +67,7 @@ namespace STLRom
             if (this != &other)
             {
                 semantics = other.semantics;
-                data = other.data;
+                owned_data = other.owned_data;
                 param_map = other.param_map;
                 signal_map = other.signal_map;
                 rob = other.rob;
@@ -77,6 +88,15 @@ namespace STLRom
                 {
                     formula = nullptr;
                 }
+
+                if (other.data == &other.owned_data)
+                {
+                    data = &owned_data;
+                } 
+                else
+                {
+                    data = other.data;
+                }
             }
             return *this;
         }
@@ -84,7 +104,7 @@ namespace STLRom
         // Move constructor
         STLMonitor(STLMonitor &&other) noexcept
             : semantics(other.semantics),
-              data(std::move(other.data)),
+              owned_data(std::move(other.owned_data)),
               param_map(std::move(other.param_map)),
               signal_map(std::move(other.signal_map)),
               rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
@@ -92,6 +112,14 @@ namespace STLRom
               start_time(other.start_time), end_time(other.end_time), formula(other.formula)
         {
             other.formula = nullptr;
+            if (other.data == &other.owned_data)
+            {
+                data = &owned_data;
+            } 
+            else
+            {
+                data = other.data;
+            }
         }
 
         // Move assignment operator
@@ -99,7 +127,7 @@ namespace STLRom
         {
             if (this != &other)
             {
-                data = std::move(other.data);
+                owned_data = std::move(other.owned_data);
                 param_map = std::move(other.param_map);
                 signal_map = std::move(other.signal_map);
                 semantics = other.semantics;
@@ -115,6 +143,15 @@ namespace STLRom
                 }
                 formula = other.formula;
                 other.formula = nullptr;
+
+                if (other.data == &other.owned_data)
+                {
+                    data = &owned_data;
+                } 
+                else
+                {
+                    data = other.data;
+                }
             }
             return *this;
         }
@@ -204,10 +241,7 @@ namespace STLRom
 
         inline void reset_signal_data()
         {
-            for (auto &signal : data)
-            {
-                signal.clear();
-            }
+            data->reset_signal_data();
             up_to_date = false;
         };
 
@@ -307,26 +341,8 @@ namespace STLRom
             out << endl;
 
             out << "\nData: ";
-            if (std::all_of(monitor.data.begin(), monitor.data.end(),
-            [](const Signal& s) { return s.empty(); }))
-            {
-                out << "No data yet.";                  
-            }
-            else
-            {
-                for (const auto &signal : monitor.signal_map)
-                {
-                    out << "# Signal " << signal.first << ":"<< endl;
-                    if (monitor.data[signal.second].empty())
-                    {
-                        out << "No data yet." << endl;
-                    }
-                    else
-                    {
-                        out << monitor.data[signal.second].size() << " samples from t0=" << monitor.data[signal.second].beginTime << " to t_end=" << monitor.data[signal.second].endTime << endl;
-                    }
-                }
-            }           
+            out << *monitor.data;
+            
             out << "Robustness on [" << monitor.start_time << "," << monitor.end_time << "]:";
             if (monitor.up_to_date)
                 out << endl << "at t=" << monitor.start_time << ":    lower_rob=" << monitor.lower_rob << "   <=    estimate=" << monitor.rob << "   <=    upper_rob= " << monitor.upper_rob <<  endl; 
