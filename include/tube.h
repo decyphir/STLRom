@@ -16,6 +16,8 @@ public:
 	Tube();
     Tube(Signal lower_s, Signal upper_s);
 
+    void inflate(double r);
+
     // arithmetics operations?
     
 	Tube operator+(const Tube& that) const;
