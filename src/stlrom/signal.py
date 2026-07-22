@@ -4,6 +4,7 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     draw_canvas = kwargs.pop('draw_canvas', True)
     draw_samples = kwargs.pop('draw_samples', False)
     plot_sat = kwargs.pop('plot_sat', False)
+    legend = kwargs.pop('legend', True)
 
     samples_list = self.get_samples_list()
 
@@ -66,17 +67,23 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
         
     l_line.set_label(label)
 
-    ax.legend()
-
     if draw_canvas:
         ax.figure.canvas.draw()
+
+    h, l = ax.get_legend_handles_labels()
 
     if plot_sat:
         y_sat = self.copy()
         y_sat.compute_boolean(self)
         ax_bool = ax.twinx(); ax_bool.set_yticks([0, 1]); ax_bool.set_yticklabels(['FALSE', 'TRUE']);
-        y_sat.plot(f"{label} (Boolean sat.)", ax=ax_bool, color='black', linestyle='--')
+        y_sat.plot(f"{label} (Boolean sat.)", ax=ax_bool, color='black', linestyle='--', legend=False)
 
+        h2, l2 = ax_bool.get_legend_handles_labels()
+        h.extend(h2)
+        l.extend(l2)
+
+    if legend:
+        ax.legend(h, l)
 
     return ax
 
