@@ -67,6 +67,9 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
     while (itL != zL.end() && itL->time < beginTime) ++itL;
     while (itR != zR.end() && itR->time < beginTime) ++itR;
 
+    auto last_itL = itL;
+    auto last_itR = itR;
+
     while (true) {
 
         double tL = (itL != zL.end()) ? itL->time : std::numeric_limits<double>::infinity();
@@ -79,19 +82,24 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
 
         if (tL < tR) {
             vL = itL->value;
-            vR = (*itR).valueAt(t);
+            vR = last_itR->valueAt(t);
+
+            last_itL = itL;
             ++itL;
 
         } else if (tR < tL) {
-            vL = (*itL).valueAt(t);
+            vL = last_itL->valueAt(t);
             vR = itR->value;
+
+            last_itR = itR;
             ++itR;
 
         } else {
             vL = itL->value;
             vR = itR->value;
-            ++itL;
-            ++itR;
+
+            last_itL = itL; last_itR = itR;
+            ++itL; ++itR;
         }
 
         out.appendSample(t, op(vL, vR));
