@@ -64,8 +64,7 @@ namespace STLRom {
             tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
             tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
 
-            double dL = (*itL).derivative;
-            double dR = (*itR).derivative;
+            
             double vR, vL;
 
             // Stop when we overtake the overlap
@@ -80,18 +79,20 @@ namespace STLRom {
 
             auto& sL = (itL != childL->z.end()) ? *itL : *(last_itL);
             auto& sR = (itR != childR->z.end()) ? *itR : *(last_itR);
+            double dL = (sL).derivative;
+            double dR = (sR).derivative;
 
             if(tL < tR) {
                 t = tL;
                 advance_L = true;
 
                 vL = (sL).value;
-                vR = (sR).valueAt(t);
+                vR = (*last_itR).valueAt(t);
             } else if (tL > tR) {
                 t = tR;
                 advance_R = true;
 
-                vL = (sL).valueAt(t);
+                vL = (*last_itL).valueAt(t);
                 vR = (sR).value;
             } else { // equality (might cause issues)
                 t = tL;
