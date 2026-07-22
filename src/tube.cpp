@@ -15,6 +15,16 @@ Tube::Tube(Signal lower_s, Signal upper_s)
     : lower_signal(lower_s), upper_signal(upper_s) {
 } // TODO assert lower_s <= upper_s? // TODO assert same time domains?
 
+// add (resp. retract) radius r to the upper_signal (lower_signal)
+void Tube::inflate(double r) {
+	Signal signal_r = Signal(0, r, 1);
+	fesetround(FE_DOWNWARD);
+	this->lower_signal - signal_r;
+	fesetround(FE_UPWARD);
+	this->upper_signal + signal_r;
+	fesetround(FE_TONEAREST);
+}
+
 Tube Tube::operator+(const Tube& that) const {
 	fesetround(FE_DOWNWARD);
 	Signal lower_s = this->lower_signal + that.lower_signal;

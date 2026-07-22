@@ -111,6 +111,7 @@ PYBIND11_MODULE(_stlrom, m) {
             oss << tube;
             return oss.str();
         })
+		.def("inflate",&STLRom::Tube::inflate)	
 		.def_readwrite("lower_signal", &STLRom::Tube::lower_signal)
 		.def_readwrite("upper_signal", &STLRom::Tube::upper_signal);
 		
