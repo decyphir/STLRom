@@ -113,8 +113,11 @@ PYBIND11_MODULE(_stlrom, m) {
         })
 		.def("inflate",&STLRom::Tube::inflate)	
 		.def_readwrite("lower_signal", &STLRom::Tube::lower_signal)
-		.def_readwrite("upper_signal", &STLRom::Tube::upper_signal);
-		
+		.def_readwrite("upper_signal", &STLRom::Tube::upper_signal)
+		.def("copy", [](const STLRom::Tube &self) { return STLRom::Tube(self); })
+		.def("__copy__", [](const STLRom::Tube &self) { return STLRom::Tube(self); })
+		.def("__deepcopy__", [](const STLRom::Tube &self, py::dict) { return STLRom::Tube(self); })
+		.def("__del__", [](STLRom::Tube &self) {});
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
