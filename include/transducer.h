@@ -8,6 +8,7 @@
 #include "robustness.h"
 #include "interval.h"
 #include "signal.h"
+#include "tube.h"
 
 using namespace std;
 
@@ -21,8 +22,7 @@ namespace STLRom {
     {
         int depth;
         const Signal* z;
-        const Signal* z_up;
-        const Signal* z_low;
+        const Tube* z_tube;
     };
     
     typedef map<string, robustness_info> robustness_map_t;
@@ -44,8 +44,9 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
-        // z is estimated robustness signal, z_up upper bound, z_low lower bound
-        Signal z, z_up, z_low;
+        // z is estimated robustness signal, z_tube.upper_signal is upper bound, z_tube.lower_signal lower bound
+        Signal z;
+        Tube z_tube;
 
         transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
         
@@ -56,7 +57,7 @@ namespace STLRom {
         
         virtual ~transducer() {};
 
-        // Reset z, z_low, z_up
+        // Reset z, z_tube
         virtual void reset();
 
         // Initializes horizons

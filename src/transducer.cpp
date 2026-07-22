@@ -71,23 +71,23 @@ namespace STLRom {
     /* reset */
     void transducer::reset() {        
         z.clear();z.beginTime=0.; z.endTime=0.;
-        z_low.clear();z_low.beginTime=0.; z_low.endTime=0.;
-        z_up.clear();z_up.beginTime=0.; z_up.endTime=0.;
+        z_tube.lower_signal.clear();z_tube.lower_signal.beginTime=0.; z_tube.lower_signal.endTime=0.;
+        z_tube.upper_signal.clear();z_tube.upper_signal.beginTime=0.; z_tube.upper_signal.endTime=0.;
         
     }
 
     void unary_transducer::reset() {        
         z.clear();z.beginTime=0.; z.endTime=0.;
-        z_low.clear();z_low.beginTime=0.; z_low.endTime=0.;
-        z_up.clear();z_up.beginTime=0.; z_up.endTime=0.;
+        z_tube.lower_signal.clear();z_tube.lower_signal.beginTime=0.; z_tube.lower_signal.endTime=0.;
+        z_tube.upper_signal.clear();z_tube.upper_signal.beginTime=0.; z_tube.upper_signal.endTime=0.;
         
         child->reset();
     }
 
     void binary_transducer::reset() {        
         z.clear();z.beginTime=0.; z.endTime=0.;
-        z_low.clear();z_low.beginTime=0.; z_low.endTime=0.;
-        z_up.clear();z_up.beginTime=0.; z_up.endTime=0.;
+        z_tube.lower_signal.clear();z_tube.lower_signal.beginTime=0.; z_tube.lower_signal.endTime=0.;
+        z_tube.upper_signal.clear();z_tube.upper_signal.beginTime=0.; z_tube.upper_signal.endTime=0.;
         
         childL->reset();
         childR->reset();
@@ -114,10 +114,10 @@ namespace STLRom {
         return z.endTime;
     }
     double transducer::get_end_complete_low() {
-        return z_low.endTime;
+        return z_tube.lower_signal.endTime;
     }
     double transducer::get_end_complete_up() {
-        return z_up.endTime;
+        return z_tube.upper_signal.endTime;
     }
 
     // get end time complete for timed transducers
@@ -130,13 +130,13 @@ namespace STLRom {
     double timed_unary_transducer::get_end_complete_low() {
         double b;
         if (!get_param(I->end_str,b)) b = I->end;	
-        return child->z_low.endTime-b;
+        return child->z_tube.lower_signal.endTime-b;
     }
 
     double timed_unary_transducer::get_end_complete_up() {
         double b;
         if (!get_param(I->end_str,b)) b = I->end;
-        return child->z_up.endTime-b;
+        return child->z_tube.upper_signal.endTime-b;
     }
 
 
@@ -151,13 +151,13 @@ namespace STLRom {
     void not_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void not_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_online_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     double ev_transducer::compute_robustness() {
@@ -187,13 +187,13 @@ namespace STLRom {
     void ev_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void ev_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_online_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     double alw_transducer::compute_robustness() {
@@ -222,13 +222,13 @@ namespace STLRom {
     void alw_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void alw_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_online_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     double and_transducer::compute_robustness() {
@@ -259,14 +259,14 @@ namespace STLRom {
         childL->fill_robustness_map(rob_map, depth+1);
         childR->fill_robustness_map(rob_map, depth+1);
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void and_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
         childL->fill_online_robustness_map(rob_map, depth+1);
         childR->fill_online_robustness_map(rob_map, depth+1);
         
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     double or_transducer::compute_robustness() {
@@ -298,7 +298,7 @@ namespace STLRom {
         childR->fill_robustness_map(rob_map, depth+1);
 
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void or_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
@@ -306,7 +306,7 @@ namespace STLRom {
         childR->fill_online_robustness_map(rob_map, depth+1);
 
         
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     double implies_transducer::compute_robustness() {
@@ -328,14 +328,14 @@ namespace STLRom {
         childR->fill_robustness_map(rob_map, depth+1);
 
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void implies_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
         childL->fill_online_robustness_map(rob_map, depth+1);
         childR->fill_online_robustness_map(rob_map, depth+1);
         
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     double until_transducer::compute_robustness() {
@@ -358,7 +358,7 @@ namespace STLRom {
         childR->fill_robustness_map(rob_map, depth+1);
 
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
     }
 
     void until_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
@@ -366,7 +366,7 @@ namespace STLRom {
         childR->fill_online_robustness_map(rob_map, depth+1);
 
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
     }
 
     /* Utility functions */
