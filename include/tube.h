@@ -26,10 +26,12 @@ public:
 	Tube operator/(double) const;
 
     // robustness functions?
+
+
+    friend std::ostream& operator<<(std::ostream&, const Tube&);
 }
 ;
 
-std::ostream& operator<<(std::ostream& os, const Tube& T);
 
 }
 

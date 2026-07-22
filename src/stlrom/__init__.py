@@ -7,6 +7,9 @@ Signal.plot = plot
 Signal.__repr__ = lambda self: (
     f"Signal(begin_time={self.begin_time}, end_time={self.end_time}, num_samples={self.get_samples_list().__len__()})"
 )
+Tube.__repr__ = lambda self: (
+    f"Tube(lower_signal={self.lower_signal.__repr__()}, upper_signal={self.upper_signal.__repr__()})"
+)
 
 STLDriver.get_signal_idx = get_signal_idx
 STLDriver.get_signal = get_signal
