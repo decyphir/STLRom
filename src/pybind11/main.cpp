@@ -10,6 +10,7 @@
 #include <limits>
 #include "stl_driver.h"
 #include "signal.h"
+#include "tube.h"
 #include "tools.h"
 #include "transducer.h"
 #include <pybind11/pybind11.h>
@@ -102,6 +103,17 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("__deepcopy__", [](const STLRom::Signal &self, py::dict) { return STLRom::Signal(self); })
 		.def("__del__", [](STLRom::Signal &self) {});
 		
+	//Class Tube
+	py::class_<STLRom::Tube>(m, "Tube")
+		.def(py::init<>())
+		.def("__str__", [](const Tube &tube) {
+            std::ostringstream oss;
+            oss << tube;
+            return oss.str();
+        })
+		.def_readwrite("lower_signal", &STLRom::Tube::lower_signal)
+		.def_readwrite("upper_signal", &STLRom::Tube::upper_signal);
+		
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
@@ -120,8 +132,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_childR",&STLRom::transducer::get_childR)
 		.def("get_formula_string",&STLRom::transducer::get_formula_string)				
 		.def_readwrite("z",&STLRom::transducer::z)
-		.def_readwrite("z_low",&STLRom::transducer::z_low)
-		.def_readwrite("z_up",&STLRom::transducer::z_up)
+		.def_readwrite("z_tube",&STLRom::transducer::z_tube)
 		;
 
 	//Class STLMonitor
@@ -154,15 +165,14 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::dict rob_dict;
 			
 			// reminder, rob map contains pairs (string,rob_info) where string is the formula of a subformula 
-			// rob_info is a struct containing the depth of the subformula in the formula tree and the robustness signals (z, z_low, z_up)
+			// rob_info is a struct containing the depth of the subformula in the formula tree and the robustness signals (z, z_tube)
 			for (const auto& item : rob_map) {
-				py::dict info_dict; // this dict will contain the robustness information for a given subformula (z, z_low, z_up)
+				py::dict info_dict; // this dict will contain the robustness information for a given subformula (z, z_tube)
 
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_low"] = item.second.z_low;
-				info_dict["z_up"] = item.second.z_up;
+				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 
@@ -191,8 +201,7 @@ PYBIND11_MODULE(_stlrom, m) {
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_low"] = item.second.z_low;
-				info_dict["z_up"] = item.second.z_up;
+				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 
@@ -302,8 +311,7 @@ PYBIND11_MODULE(_stlrom, m) {
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_low"] = item.second.z_low;
-				info_dict["z_up"] = item.second.z_up;
+				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 
@@ -334,8 +342,7 @@ PYBIND11_MODULE(_stlrom, m) {
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_low"] = item.second.z_low;
-				info_dict["z_up"] = item.second.z_up;
+				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 				if (rob_dict.contains(py::int_(item.second.depth))) {

@@ -176,7 +176,7 @@ namespace STLRom
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
 		}			
-        return {formula->z, formula->z_low, formula->z_up};
+        return {formula->z, formula->z_tube.lower_signal, formula->z_tube.upper_signal};
     }
 	
 

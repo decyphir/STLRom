@@ -10,13 +10,11 @@ namespace STLRom {
 
 class Tube {
 public:
-    Signal signal;
     Signal lower_signal;
     Signal upper_signal;
 
 	Tube();
-    Tube(Signal s);
-    Tube(Signal s, Signal lower_s, Signal upper_s);
+    Tube(Signal lower_s, Signal upper_s);
 
     // arithmetics operations?
     
