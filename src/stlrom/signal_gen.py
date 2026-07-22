@@ -15,7 +15,7 @@ class SignalGen:
         pass
 
     def _add_pwl_sample(self, t, v):
-        self.sig.append_sample(t,v)
+        self.sig.append_sample(t,v,0.,True)
     
     def _add_pwc_sample(self,t, v):
         self.sig.append_constant_sample(t,v)
@@ -91,10 +91,10 @@ class PWLSignalGen(SignalGen):
         return s
 
 class RandSignalGen(SignalGen):
-    def __init__(self, seed=0, t0=0, tf=0, dt_min=0.1, dt_max=1, v_min=-10, v_max=10, interp='PREVIOUS'):
+    def __init__(self, seed=0, t0=0, tf=0, dt_min=0.1, dt_max=1, v_min=-5, v_max=5, dv_max=1, interp='PREVIOUS'):
         super().__init__()
-        self.param_map={'seed':seed, 'dt_min':dt_min,'dt_max': dt_max, 'v_min': v_min, 'v_max': v_max }
-        self.interp = interp
+        self.param_map={'seed':seed, 'dt_min':dt_min,'dt_max': dt_max, 'v_min': v_min, 'v_max': v_max, 'dv_max': dv_max }
+        self.interp = interp        
         self._update_fun()
         self.get_signal(t0,tf) 
 
@@ -103,13 +103,18 @@ class RandSignalGen(SignalGen):
         dt_max = self.param_map['dt_max']
         v_min = self.param_map['v_min']
         v_max = self.param_map['v_max']
+        dv_max = self.param_map['dv_max']
         t_end = self.sig.end_time
-
-        while t>t_end:
-            v = self.rng.uniform(v_min,v_max)
-            dt = self.rng.uniform(dt_min,dt_max)
+            
+        while t>t_end:            
+            dv = self.rng.uniform(-dv_max,dv_max) 
+            dt = self.rng.uniform(dt_min,dt_max)            
+            v_prev = self.last_v
+            v = max(v_prev+dv, v_min)
+            v = min(v, v_max)
             self.add_sample(t_end+dt, v)
             t_end= self.sig.end_time    
+            self.last_v = v
         
         return self.sig.value_at(t)
 
@@ -123,8 +128,10 @@ class RandSignalGen(SignalGen):
             self.add_sample = self._add_pwc_sample
         
         v_min = self.param_map['v_min']
-        v_max = self.param_map['v_max']
-        self.add_sample(0, self.rng.uniform(v_min, v_max))
+        v_max = self.param_map['v_max']        
+        v = self.rng.uniform(v_min, v_max)                  
+        self.last_v = v
+        self.add_sample(0.,v)
 
     def get_signal(self, t0=0, tf=10):        
         self._fun(tf)

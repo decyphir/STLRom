@@ -101,9 +101,6 @@ namespace STLRom {
                 vL = (sL).value;
                 vR = (sR).value;
             }
-
-
-
             
             v_neq = vL - vR;
             d_neq = dL - dR;
