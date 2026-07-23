@@ -4,7 +4,7 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     draw_canvas = kwargs.pop('draw_canvas', True)
     draw_samples = kwargs.pop('draw_samples', False)
     plot_sat = kwargs.pop('plot_sat', False)
-    step_plot  = kwargs.pop('step_plot', False)
+    legend = kwargs.pop('legend', True)
 
     samples_list = self.get_samples_list()
 
@@ -26,27 +26,35 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     times = []
     values = []
+    samples_times = []
+    samples_values = []
 
     for i in range(len(samples_list) - 1):
         s = samples_list[i]
         sn = samples_list[i + 1]
-
-        times += [s.time, sn.time, np.nan]
-        values += [s.value, s.value_at(sn.time), np.nan]
+        
+        sn_v = s.value_at(sn.time)
+        times += [s.time, sn.time]
+        values += [s.value, sn_v]
+        
+        samples_times += [s.time, sn.time, np.nan]
+        samples_values += [s.value, sn_v, np.nan]
 
     # Last segment (to end_time)
     sn = samples_list[-1]
-    times += [sn.time, self.end_time, np.nan]
-    values += [sn.value, sn.value_at(self.end_time), np.nan]
 
-    if step_plot:
-        l_line, = ax.step(times, values, linestyle='-', **kwargs)
-    else:
-        l_line, = ax.plot(times, values, linestyle='-', **kwargs)
-    
-    c = l_line.get_color()
+    sn_v = sn.value_at(self.end_time)
+    times += [sn.time, self.end_time]
+    values += [sn.value, sn_v]
 
+    samples_times += [sn.time, self.end_time, np.nan]
+    samples_values += [sn.value, sn_v, np.nan]
+        
     if draw_samples:
+        l_line, = ax.plot(samples_times, samples_values, **kwargs)    
+        c = l_line.get_color()
+        ax.plot(times, values, linestyle='--', color=c)    
+        
         ax.plot(
             [s.time for s in samples_list],
             [s.value for s in samples_list],
@@ -54,20 +62,28 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
             marker='o',
             color=c
         )
-
+    else:
+        l_line, = ax.plot(times, values, **kwargs)    
+        
     l_line.set_label(label)
-
-    ax.legend()
 
     if draw_canvas:
         ax.figure.canvas.draw()
+
+    h, l = ax.get_legend_handles_labels()
 
     if plot_sat:
         y_sat = self.copy()
         y_sat.compute_boolean(self)
         ax_bool = ax.twinx(); ax_bool.set_yticks([0, 1]); ax_bool.set_yticklabels(['FALSE', 'TRUE']);
-        y_sat.plot(f"{label} (Boolean sat.)", ax=ax_bool, color='black', step_plot=True)
+        y_sat.plot(f"{label} (Boolean sat.)", ax=ax_bool, color='black', linestyle='--', legend=False)
 
+        h2, l2 = ax_bool.get_legend_handles_labels()
+        h.extend(h2)
+        l.extend(l2)
+
+    if legend:
+        ax.legend(h, l)
 
     return ax
 

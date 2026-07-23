@@ -53,16 +53,24 @@ namespace STLRom {
     }
     
     void Signal::appendSample(double t, double v) {
-        appendSample(t,v,0.,true);
+        appendSample(t,v,0.,false);
     }
 
     void Signal::appendConstantSample(double t, double v) {
         appendSample(t,v,0.,false);
     }
 
+    void Signal::appendLinearSample(double t, double v) {
+        appendSample(t,v,0.,true);
+    }
+
+    void Signal::appendLinearSample(double t, double v, double d) {
+        appendSample(t,v,d,true);
+    }
+
     void Signal::appendSample(double t, double v, double d)
     {
-        appendSample(t,v,d,true);
+        appendSample(t,v,d,false);
     }
 
     void Signal::appendSample(double t, double v, double d, bool interp)

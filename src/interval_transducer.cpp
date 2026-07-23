@@ -30,7 +30,7 @@ namespace STLRom {
         if (end_time>last_data_t) 
         {   
             z_low.resize(start_time, last_data_t, BOTTOM);
-            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0.);
+            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
             z_low.endTime = end_time;
         }
         
@@ -61,7 +61,7 @@ namespace STLRom {
         if (end_time>last_data_t) 
         {   
             z_up.resize(start_time, last_data_t, TOP);
-            z_up.appendSample(last_data_t+Signal::Eps, TOP, 0.);
+            z_up.appendSample(last_data_t+Signal::Eps, TOP, 0., false);
             z_up.endTime = end_time;
         }
 
