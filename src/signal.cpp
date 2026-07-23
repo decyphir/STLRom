@@ -1,5 +1,6 @@
 #include "signal.h"
 #include "iomanip"
+#include "tools.h"
 #include <vector>
 #include <sstream>
 
@@ -335,32 +336,10 @@ namespace STLRom {
     }
 
     Signal Signal::operator+(const Signal& that) const {
-        // Addition of two signals defined on the union of time domains.
-        // The value of a signal is assumed to be 0 when outside time domain. // TODO Result can be discontinuous
+        // Addition of two signals defined on the intersection of time domains.
+        // TODO Compute on the union of time domains?
         Signal result = Signal();
-        auto sig1 = this->getSamplesDeque();
-        auto sig2 = that.getSamplesDeque();
-        auto s2 = sig2.cbegin();
-        while (s2 != sig2.cend() && s2->time < this->beginTime) {
-            result.appendSample(s2->time, s2->value, s2->derivative);
-            s2++;
-        }
-        for (Sample s1 : sig1) {
-            while (s2 != sig2.cend() && s2->time < s1.time) {
-                result.appendSample(s2->time, s2->value + this->valueAt(s2->time), s2->derivative + this->derivativeAt(s2->time));
-                s2++;
-            }
-            if (s1.time < that.beginTime) {
-                result.appendSample(s1.time, s1.value, s1.derivative);
-            } else {
-                result.appendSample(s1.time, s1.value + that.valueAt(s1.time), s1.derivative + that.derivativeAt(s1.time));
-            }
-        }
-        while (s2 != sig2.cend()) {
-            result.appendSample(s2->time, s2->value, s2->derivative);
-            s2++;
-        }
-
+    	merge_signals_with_op(result, *this, that, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
         result.simplify();
         return result;
     }
