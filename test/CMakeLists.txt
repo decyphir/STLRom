@@ -1,7 +1,7 @@
 project(STLRomtest)
 
 # C++ Test Executables
-set(CPP_TESTS test_driver test_until test_monitor test_stress)
+set(CPP_TESTS test_driver test_until test_monitor test_stress test_stl_data)
 
 foreach(t ${CPP_TESTS})
     add_executable(${t} "${CMAKE_CURRENT_SOURCE_DIR}/${t}.cpp")
