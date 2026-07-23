@@ -118,11 +118,11 @@
         return STLRom::Parser::make_PHI_ID(yytext, yylloc);
     }
     else        
-    if (m_driver.param_map.find(yytext) != m_driver.param_map.end()) {
+    if (m_driver.worker.param_map.find(yytext) != m_driver.worker.param_map.end()) {
         return STLRom::Parser::make_PARAM_ID(yytext, yylloc);
     }
     else 
-    if (m_driver.signal_map.find(yytext) != m_driver.signal_map.end()) {
+    if (m_driver.data.signal_map.find(yytext) != m_driver.data.signal_map.end()) {
         return STLRom::Parser::make_SIGNAL_ID(yytext, yylloc);
     }
     else 

@@ -50,6 +50,27 @@ namespace STLRom
         add_sample(sample, true);
     }
 
+    void STLData::add_signal_sample(string sig, double t, double v, double d, bool interp)
+    {
+        if (signal_map.find(sig) == signal_map.end())
+        {
+            cout << "Signal " << sig << " not found in signal_map." << endl;
+            return;
+        }
+        int sig_idx = signal_map[sig];
+        data_vector[sig_idx].appendSample(t,v,d,interp);   
+    }
+
+    void STLData::add_signal_sample(string sig, double t, double v)
+    {
+        add_signal_sample(sig, t,v,0., 1);
+    }
+
+    void STLData::add_signal_sample(string sig, double t, double v, double d)
+    {
+        add_signal_sample(sig, t,v,d, 1);
+    }
+
     
 
 

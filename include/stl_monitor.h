@@ -31,6 +31,11 @@ namespace STLRom
 
         STLMonitor() : semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), up_to_date(false), start_time(0.0), end_time(0.0) {}
 
+        STLMonitor(STLData* dataptr) : STLMonitor()
+        {
+            data = dataptr;
+        }
+
         // Copy constructor
         STLMonitor(const STLMonitor &other)
             : semantics(other.semantics),
@@ -234,6 +239,14 @@ namespace STLRom
             }
         };
 
+        inline void set_formula(transducer* formula)
+        {
+            this->formula = formula;
+            rob = 0.0; lower_rob = 0.0; upper_rob = 0.0;
+            set_eval_time(0., 0.);
+            up_to_date = false;
+        }
+
         inline void reset_signal_data()
         {
             data->reset_signal_data();
@@ -242,7 +255,7 @@ namespace STLRom
 
         inline double get_lower_rob() { return lower_rob; };
         inline double get_upper_rob() { return upper_rob; };
-        inline double get_rob() { return rob; };
+        // inline double get_rob() { return rob; };
 
         // append new sample to data
         void add_sample(vector<double> s);
@@ -263,6 +276,13 @@ namespace STLRom
             end_time = t_end;
             up_to_date = false;
         }
+
+
+        double get_rob();
+        double get_rob(double);
+
+        vector<double> get_online_rob();
+        vector<double> get_online_rob(double);
 
         Signal get_rob_signal();
         Signal get_rob_signal(double);

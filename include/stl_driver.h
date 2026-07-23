@@ -80,17 +80,14 @@ public:
     /** stream name (file or input stream) used for error messages */
     std::string streamname;
 
-    /** parameters in formulas */
-    map<string, double> param_map;
-
-    /** signals in formulas */
-    map<string, int> signal_map;
-
     /** formulas defined by the driver */
     map<string, transducer*> formula_map;
 
-    /** data array - time is first column */
-    trace_data data;
+    /** data object */
+    STLData data;
+
+    /** worker monitor -- all monitoring algorithms and parameters inside */
+    STLMonitor worker;
 
     /** append new sample to data, default linear interpolation */
     void add_sample(vector <double> sample);

@@ -188,26 +188,26 @@ constant : CONSTANT
 constant_signal : CONSTANT
         {
             $$ = new constant_transducer($1);
-            $$->trace_data_ptr = &driver.data;
-            $$->param_map = driver.param_map;
-            $$->signal_map = driver.signal_map;
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
         }
         ;
         | PARAM_ID
         {
            $$ = new constant_transducer($1);
-           $$->trace_data_ptr = &driver.data;
-           $$->param_map = driver.param_map;
-           $$->signal_map = driver.signal_map;
+           $$->trace_data_ptr = &driver.data.data_vector;
+           $$->param_map = driver.worker.param_map;
+           $$->signal_map = driver.data.signal_map;
         };
 
 signal: SIGNAL_ID LINT TIME RINT
         {
             $$ = new signal_transducer($1);
 
-            $$->trace_data_ptr = &driver.data;
-            $$->param_map = driver.param_map;
-            $$->signal_map = driver.signal_map;
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
 
 
             // WARNING TODO:
@@ -217,7 +217,7 @@ signal: SIGNAL_ID LINT TIME RINT
             // Alex: I'm commenting, because with the new change, this will *always* be called
             // for the first signal. We don't want to delete always the first signal, do we?
             //
-            //int i = driver.signal_map[$1];
+            //int i = driver.data.signal_map[$1];
 
             //if (i==0) {
             //    cout << "Parsing error: unknown signal " << $1 << endl;
@@ -250,16 +250,16 @@ signal_unaryexpr : signal_atom
         | ABS LPAREN signal_expr RPAREN
         {
             $$ = new abs_transducer($3);
-            $$->trace_data_ptr = &driver.data;
-            $$->param_map = driver.param_map;
-            $$->signal_map = driver.signal_map;
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
         }
         | MINUS signal_unaryexpr %prec UNARY_OPERATOR /* unary operators only work with abs, constants, and parenthesized stuff, so not signal_expr */
         {
             $$ = new unary_minus_transducer($2);
-            $$->trace_data_ptr = &driver.data;
-            $$->param_map = driver.param_map;
-            $$->signal_map = driver.signal_map;
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
         }
         | PLUS signal_unaryexpr %prec UNARY_OPERATOR
         {
@@ -273,9 +273,9 @@ signal_multexpr : signal_unaryexpr
         | signal_multexpr MULT signal_unaryexpr /* changed for precedence */
           {
 	      $$ = new mult_transducer($1, $3);
-          $$->trace_data_ptr = &driver.data;
-          $$->param_map = driver.param_map;
-          $$->signal_map = driver.signal_map;
+          $$->trace_data_ptr = &driver.data.data_vector;
+          $$->param_map = driver.worker.param_map;
+          $$->signal_map = driver.data.signal_map;
           }
 
 signal_addexpr : signal_multexpr
@@ -285,16 +285,16 @@ signal_addexpr : signal_multexpr
         | signal_addexpr PLUS signal_multexpr
           {
 	      $$ = new plus_transducer($1, $3);
-          $$->trace_data_ptr = &driver.data;
-          $$->param_map = driver.param_map;
-          $$->signal_map = driver.signal_map;
+          $$->trace_data_ptr = &driver.data.data_vector;
+          $$->param_map = driver.worker.param_map;
+          $$->signal_map = driver.data.signal_map;
           }
         | signal_addexpr MINUS signal_multexpr
           {
 	        $$ = new minus_transducer($1, $3);
-            $$->trace_data_ptr = &driver.data;
-            $$->param_map = driver.param_map;
-            $$->signal_map = driver.signal_map;
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
           }
 
 signal_expr : signal_addexpr
@@ -306,9 +306,9 @@ signal_expr : signal_addexpr
 stl_atom : signal_expr op signal_expr
           {
               $$ = new stl_atom($1, $2, $3);
-              $$->trace_data_ptr = &driver.data;
-              $$->param_map = driver.param_map;
-              $$->signal_map = driver.signal_map;
+              $$->trace_data_ptr = &driver.data.data_vector;
+              $$->param_map = driver.worker.param_map;
+              $$->signal_map = driver.data.signal_map;
           }
           ;
 
@@ -336,14 +336,14 @@ stl_formula :
              signal_expr op_eq signal_expr
              {
                 auto atom = new stl_atom($1, $2, $3);
-                atom->trace_data_ptr = &driver.data;
-                atom->param_map = driver.param_map;
-                atom->signal_map = driver.signal_map;
+                atom->trace_data_ptr = &driver.data.data_vector;
+                atom->param_map = driver.worker.param_map;
+                atom->signal_map = driver.data.signal_map;
 
                 $$ = new not_transducer(atom);
-                $$->trace_data_ptr = &driver.data;
-                $$->param_map = driver.param_map;
-                $$->signal_map = driver.signal_map;
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
              }
              | stl_atom
              {
@@ -352,55 +352,55 @@ stl_formula :
              | NOT stl_formula %prec NOT
              {
                  $$ = new not_transducer($2);
-                 $$->trace_data_ptr = &driver.data;
-                 $$->param_map = driver.param_map;
-                 $$->signal_map = driver.signal_map;
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
              }
              | stl_formula AND stl_formula %prec AND
              {
                  $$ = new and_transducer($1, $3);
-                 $$->trace_data_ptr = &driver.data;
-                 $$->param_map = driver.param_map;
-                 $$->signal_map = driver.signal_map;
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
              }
              | stl_formula OR stl_formula %prec AND
              {
                  $$ = new or_transducer($1, $3);
-                 $$->trace_data_ptr = &driver.data;
-                 $$->param_map = driver.param_map;
-                 $$->signal_map = driver.signal_map;
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
 
              }
              | stl_formula IMPLIES stl_formula %prec AND
              {
                  $$ = new implies_transducer($1, $3);
-                 $$->trace_data_ptr = &driver.data;
-                 $$->param_map = driver.param_map;
-                 $$->signal_map = driver.signal_map;
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
 
              }
              | DIAMOND interval stl_formula %prec DIAMOND
              {
                 $$ = new ev_transducer($2, $3);
-                $$->trace_data_ptr = &driver.data;
-                 $$->param_map = driver.param_map;
-                 $$->signal_map = driver.signal_map;
+                $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
 
              }
              | BOX interval stl_formula %prec BOX
              {
                  $$ = new alw_transducer($2, $3);
-                 $$->trace_data_ptr = &driver.data;
-                 $$->param_map = driver.param_map;
-                 $$->signal_map = driver.signal_map;
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
 
              }
              | stl_formula UNTIL interval stl_formula %prec UNTIL
              {
                 $$ = new until_transducer($1, $3, $4);
-                $$->trace_data_ptr = &driver.data;
-                $$->param_map = driver.param_map;
-                $$->signal_map = driver.signal_map;
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
 
              }
              | LPAREN stl_formula RPAREN
@@ -463,7 +463,7 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
-                    driver.param_map[$1] = val;
+                    driver.worker.param_map[$1] = val;
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
                  }
@@ -472,7 +472,7 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     double val;
                     s_to_d( $4, val );
                     val = -val;
-                    driver.param_map[$1] = val;
+                    driver.worker.param_map[$1] = val;
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
                  }
@@ -480,7 +480,7 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
-                    driver.param_map[$1] = val;
+                    driver.worker.param_map[$1] = val;
                     if (driver.verbose_parser)
                         cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
                  }
@@ -489,7 +489,7 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     double val;
                     s_to_d( $4, val );
                     val = -val;
-                    driver.param_map[$1] = val;
+                    driver.worker.param_map[$1] = val;
                     if (driver.verbose_parser)
                         cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
                  }
@@ -540,10 +540,10 @@ param_assignements: PARAM_DECL param_assignement_list
 
 signal_new: NEW_ID
           {
-                short idx =  driver.signal_map.size();
-                driver.signal_map[$1] = idx;
+                short idx =  driver.data.signal_map.size();
+                driver.data.signal_map[$1] = idx;
                 Signal s;
-                driver.data.push_back(s);
+                driver.data.data_vector.push_back(s);
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }

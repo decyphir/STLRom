@@ -45,6 +45,67 @@ namespace STLRom
 		}
 	}
 
+	double STLMonitor::get_rob(double t0 = 0.)
+	{
+			
+		if (data->is_empty())
+		{
+			cout << "Empty data" << endl;
+			return 0.;
+		}
+
+		start_time = t0;
+		end_time = t0;
+		if (formula)
+		{
+			formula->set_trace_data_ptr(data->data_vector);
+			formula->set_param_map_ptr(param_map);
+			Signal::semantics = semantics;
+			formula->reset();
+			formula->set_horizon(t0, t0);
+			up_to_date = true;
+		}
+		return formula->compute_robustness();
+	}
+
+	double STLMonitor::get_rob()
+	{
+		return get_rob(0.);
+	}
+
+	vector<double> STLMonitor::get_online_rob(double t0 = 0.)
+	{
+		vector<double> out_rob;
+		if (data->is_empty())
+		{
+			cout << "Empty data" << endl;
+			return out_rob;
+		}
+
+		if(formula)
+		{
+			formula->set_trace_data_ptr(data->data_vector);
+			formula->set_param_map_ptr(param_map);
+			Signal::semantics = semantics;
+			formula->reset();
+			formula->set_horizon(t0, t0);
+			double rob = formula->compute_robustness();
+			double lower_rob = formula->compute_lower_rob();
+			double upper_rob = formula->compute_upper_rob();
+			out_rob = {rob, lower_rob, upper_rob};
+
+			return out_rob;
+		} else {
+			cerr << "Formula not defined." << endl;
+			return {};
+		}
+	}
+
+	vector<double> STLMonitor::get_online_rob()
+	{
+		return get_online_rob(0.);
+	}
+
 
 	Signal STLMonitor::get_rob_signal() {
         return get_rob_signal(start_time, end_time);

@@ -70,11 +70,20 @@ namespace STLRom
                 return *this;
             }
 
-            // add sample
+            /** append new sample to data, default linear interpolation */
             void add_sample(vector <double> sample);
 
+            /** append new sample to data */
             void add_sample(vector <double> sample, bool interp);
-            // add constant sample
+
+            /** append new sample to signal, default linear interpolation */
+            void add_signal_sample(string phi, double t, double v);
+
+            /** append new sample to signal, default linear interpolation */
+            void add_signal_sample(string phi, double t, double v, double d);
+
+            /** append new sample to signal */
+            void add_signal_sample(string phi, double t, double v, double d, bool interp);
 
 
             // get size (nb of signals)
