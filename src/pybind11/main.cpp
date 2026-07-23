@@ -74,9 +74,11 @@ PYBIND11_MODULE(_stlrom, m) {
             return oss.str();
         })	
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
-		.def("append_constant_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendConstantSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double, bool)) &STLRom::Signal::appendSample)
+		.def("append_constant_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendConstantSample)
+		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendLinearSample)
+		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendLinearSample)
 		.def("value_at", &STLRom::Signal::valueAt)
 		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("compute_not",&STLRom::Signal::compute_not)	
