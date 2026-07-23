@@ -355,7 +355,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
 		// .def_readwrite("signal_map",&STLRom::STLDriver::signal_map)
-		.def_readwrite("param_map",&STLRom::STLDriver::param_map)
+		// .def_readwrite("param_map",&STLRom::STLDriver::param_map)
 		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__deepcopy__", [](const STLRom::STLDriver &self, py::dict) { return STLRom::STLDriver(self); })
