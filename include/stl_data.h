@@ -17,13 +17,22 @@ namespace STLRom
             ~STLData() = default;
 
             // constructor with number of signals
-            explicit STLData(int nb_signals) : data_vector(nb_signals) {}
+            explicit STLData(int nb_signals) : data_vector(nb_signals) {
+                for (int i = 0; i < nb_signals; i++) {
+                    signal_map["x" + to_string(i)] = i;
+                }
+            }
 
             // constructor with vector of signals
-            explicit STLData(trace_data data_vector) : data_vector(std::move(data_vector)) {}
+            explicit STLData(trace_data data_vector) : data_vector(std::move(data_vector)) {
+                for (int i = 0; i < data_vector.size(); i++) {
+                    signal_map["x" + to_string(i)] = i;
+                }
+            }
 
             // constructor with vector of signals and signal map
-            explicit STLData(trace_data data_vector, map<string, int> signal_map) : data_vector(std::move(data_vector)),
+            explicit STLData(trace_data data_vector, map<string, int> signal_map) : 
+            data_vector(std::move(data_vector)),
             signal_map(std::move(signal_map)) {}
 
             // other necessary constructors
@@ -78,6 +87,14 @@ namespace STLRom
             bool is_empty() const;
 
             void set_data_vector(const trace_data &data_vector);
+
+            inline void display_signal_names() const
+            {
+                for (const auto &signal : signal_map)
+                {
+                    cout << signal.first << ": " << signal.second << endl;
+                }
+            }
 
             friend ostream &operator<<(ostream &out, const STLData &data)
             {

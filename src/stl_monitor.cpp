@@ -6,10 +6,6 @@
 
 namespace STLRom
 {
-    	string STLMonitor::get_signal_names() const
-	{
-		return signal_map_to_string(signal_map);
-	}
 
 	void STLMonitor::add_sample(vector<double> s)
 	{
@@ -19,17 +15,13 @@ namespace STLRom
 
 	void STLMonitor::set_signals(const std::vector<Signal>& signals)
 	{
-		if (signals.size() != signal_map.size()) {
-			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
-		}
-
 		data->set_data_vector(signals); // copy TODO: check if it's actually a copy
 	}
 
 	// TODO: better convert to STLData
 	void STLMonitor::load_csv(const vector<string>& files)
 	{
-		if (files.size() != signal_map.size()) {
+		if (files.size() != data->signal_map.size()) {
 			throw std::invalid_argument("Number of files does not match the number of declared signals.");
 		}
 
@@ -45,7 +37,7 @@ namespace STLRom
 		
 		if (dir.back() != '/') dir += '/';
 
-		for (const auto &signal : signal_map)
+		for (const auto &signal : data->signal_map)
 		{
 		    string filename = dir + signal.first + ".csv";
 
@@ -150,7 +142,7 @@ namespace STLRom
 
 	string STLMonitor::get_signals_names() const
 	{
-    	return signal_map_to_string(signal_map);
+		return signal_map_to_string(data->signal_map);
 	}
 	
 }

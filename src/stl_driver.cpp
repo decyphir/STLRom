@@ -446,7 +446,6 @@ STLMonitor STLDriver::get_monitor(const string &id) const
                 phi.owned_data = STLData(data, signal_map);
                 phi.data = &phi.owned_data;
                 phi.formula = (it->second)->clone();
-                phi.signal_map = signal_map;
                 phi.param_map = param_map;
                 phi.start_time = 0.;
                 phi.end_time = 0.;

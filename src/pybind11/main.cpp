@@ -223,7 +223,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
 		.def_readwrite("end_time",&STLRom::STLMonitor::end_time)
-		.def_readwrite("signal_map",&STLRom::STLMonitor::signal_map)
+		// .def_readwrite("signal_map",&STLRom::STLMonitor::signal_map)
 		.def_readwrite("param_map",&STLRom::STLMonitor::param_map)
 		;
 
@@ -354,7 +354,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
-		.def_readwrite("signal_map",&STLRom::STLDriver::signal_map)
+		// .def_readwrite("signal_map",&STLRom::STLDriver::signal_map)
 		.def_readwrite("param_map",&STLRom::STLDriver::param_map)
 		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })

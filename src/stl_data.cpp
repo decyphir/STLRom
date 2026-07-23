@@ -23,6 +23,9 @@ namespace STLRom
 
     void STLData::set_data_vector(const trace_data &data_vector)
     {
+        if (data_vector.size() != signal_map.size()) {
+			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
+		}
         this->data_vector = data_vector;
     }
 

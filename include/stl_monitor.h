@@ -16,10 +16,9 @@ namespace STLRom
     class STLMonitor
     {
     public:
-        STLData *data;
+        STLData *data; // TODO: do we need to delete data? is it on the heap?
         STLData owned_data;
         map<string, double> param_map;
-        map<string, int> signal_map;
 
         double rob;
         double lower_rob;
@@ -37,7 +36,6 @@ namespace STLRom
             : semantics(other.semantics),
               owned_data(other.owned_data),
               param_map(other.param_map),
-              signal_map(other.signal_map),
               rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
               up_to_date(other.up_to_date),
               start_time(other.start_time), end_time(other.end_time)
@@ -69,7 +67,6 @@ namespace STLRom
                 semantics = other.semantics;
                 owned_data = other.owned_data;
                 param_map = other.param_map;
-                signal_map = other.signal_map;
                 rob = other.rob;
                 lower_rob = other.lower_rob;
                 upper_rob = other.upper_rob;
@@ -106,7 +103,6 @@ namespace STLRom
             : semantics(other.semantics),
               owned_data(std::move(other.owned_data)),
               param_map(std::move(other.param_map)),
-              signal_map(std::move(other.signal_map)),
               rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
               up_to_date(other.up_to_date),
               start_time(other.start_time), end_time(other.end_time), formula(other.formula)
@@ -129,7 +125,6 @@ namespace STLRom
             {
                 owned_data = std::move(other.owned_data);
                 param_map = std::move(other.param_map);
-                signal_map = std::move(other.signal_map);
                 semantics = other.semantics;
                 rob = other.rob;
                 lower_rob = other.lower_rob;
@@ -281,15 +276,11 @@ namespace STLRom
         robustness_map_t get_online_robustness_map();
 
 
-        string get_signal_names() const;
     
         // display stuff
         inline void display_signal_names() const
         {
-            for (const auto &signal : signal_map)
-            {
-                cout << signal.first << ": " << signal.second << endl;
-            }
+            data->display_signal_names();
         }
 
         inline void display_formula() const
@@ -310,10 +301,10 @@ namespace STLRom
             out << "STL Monitor Object" << endl;
             out << "Signal Names: ";
             bool first = true;
-            for (const auto &signal : monitor.signal_map)
+            for (const auto &signal : monitor.data->signal_map)
             {
                 out << signal.first;
-                if (&signal != &(*std::prev(monitor.signal_map.end())))
+                if (&signal != &(*std::prev(monitor.data->signal_map.end())))
                 {
                     out << ", ";
                 }
