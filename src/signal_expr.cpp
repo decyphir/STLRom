@@ -56,7 +56,7 @@ double plus_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
-	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a + b;});
+	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a + b;}, [](double vL, double vR, double dL, double dR){return dL + dR;});
 
 	// auto iterL = childL->z.begin();
 	// auto iterR = childR->z.begin();
@@ -77,7 +77,7 @@ double minus_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
-	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a - b;});
+	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a - b;}, [](double vL, double vR, double dL, double dR){return dL - dR;});
 	
 	// auto iterL = childL->z.begin();
 	// auto iterR = childR->z.begin();
@@ -98,7 +98,7 @@ double mult_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
-	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a * b;});
+	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a * b;}, [](double vL, double vR, double dL, double dR){return dL*vR + dR*vL;});
 	// auto iterL = childL->z.begin();
 	// auto iterR = childR->z.begin();
 
