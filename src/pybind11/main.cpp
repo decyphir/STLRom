@@ -360,4 +360,16 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__deepcopy__", [](const STLRom::STLDriver &self, py::dict) { return STLRom::STLDriver(self); })
 		.def("__del__", [](STLRom::STLDriver *instance) {delete instance; }); // Bind the destructor
+
+	// Class STLData
+	py::class_<STLRom::STLData>(m, "STLData")
+		.def(py::init<>())				
+		.def("__str__", [](const STLData &dd) {
+            std::ostringstream oss;
+            oss << dd;
+            return oss.str();
+        })
+		.def("get_signal",(Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
+		.def("get_signal",(Signal (STLRom::STLData::*)(const std::string &) const) &STLRom::STLData::get_signal)		
+		;
 }
