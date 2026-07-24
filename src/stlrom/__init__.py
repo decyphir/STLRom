@@ -10,6 +10,7 @@ Signal.__repr__ = lambda self: (
 
 STLDriver.get_signal_idx = get_signal_idx
 STLDriver.get_signal = get_signal
+STLDriver.get_signame_from_idx = get_signame_from_idx
 STLDriver.plot_signal = plot_signal
 STLDriver.plot_signals = plot_signals
 

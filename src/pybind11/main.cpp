@@ -225,7 +225,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_readwrite("data",&STLRom::STLMonitor::data)
 		.def_readwrite("start_time",&STLRom::STLMonitor::start_time)
 		.def_readwrite("end_time",&STLRom::STLMonitor::end_time)
-		.def_readwrite("signal_map",&STLRom::STLMonitor::signal_map)
 		.def_readwrite("param_map",&STLRom::STLMonitor::param_map)
 		;
 
@@ -356,10 +355,24 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
 		.def_readwrite("data",&STLRom::STLDriver::data)
-		.def_readwrite("signal_map",&STLRom::STLDriver::signal_map)
-		.def_readwrite("param_map",&STLRom::STLDriver::param_map)
 		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__deepcopy__", [](const STLRom::STLDriver &self, py::dict) { return STLRom::STLDriver(self); })
 		.def("__del__", [](STLRom::STLDriver *instance) {delete instance; }); // Bind the destructor
+
+	// Class STLData
+	py::class_<STLRom::STLData>(m, "STLData")
+		.def(py::init<>())				
+		.def("__str__", [](const STLData &dd) {
+            std::ostringstream oss;
+            oss << dd;
+            return oss.str();
+        })
+		.def("get_signal",(Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
+		.def("get_signal",(Signal (STLRom::STLData::*)(const std::string &) const) &STLRom::STLData::get_signal)		
+		.def("get_signal_idx", &STLRom::STLData::get_signal_idx)
+		.def("get_signame_from_idx", &STLRom::STLData::get_signame_from_idx)
+		.def_readwrite("data_vector", &STLRom::STLData::data_vector)
+		.def_readwrite("signal_map", &STLRom::STLData::signal_map)
+		;
 }

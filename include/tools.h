@@ -54,8 +54,9 @@ void print(const trace_data&); // TODO that too, maybe
 bool read_trace(const string &trace_file_name, trace_data &data); // Yeah, we'll need a csv importer I guess
 bool write_trace(const std::string& filename, const trace_data& signals);
 
-template <typename BinaryOp>
-void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op)
+
+template <typename BinaryOp, typename QuartOp>
+void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d)
 {
     auto itL = zL.begin();
     auto itR = zR.begin();
@@ -79,10 +80,14 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
         if (t > endTime) break;
 
         double vL, vR;
+        double dL, dR;
 
         if (tL < tR) {
             vL = itL->value;
             vR = last_itR->valueAt(t);
+
+            dL = itL->derivative;
+            dR = last_itR->derivative;
 
             last_itL = itL;
             ++itL;
@@ -91,6 +96,9 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
             vL = last_itL->valueAt(t);
             vR = itR->value;
 
+            dL = last_itL->derivative;
+            dR = itR->derivative;
+
             last_itR = itR;
             ++itR;
 
@@ -98,11 +106,14 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
             vL = itL->value;
             vR = itR->value;
 
+            dL = itL->derivative;
+            dR = itR->derivative;
+
             last_itL = itL; last_itR = itR;
             ++itL; ++itR;
         }
 
-        out.appendSample(t, op(vL, vR));
+        out.appendSample(t, op_v(vL, vR), op_d(vL, vR, dL, dR));
     }
 }
 
