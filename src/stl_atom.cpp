@@ -88,12 +88,16 @@ namespace STLRom {
 
                 vL = (sL).value;
                 vR = (*last_itR).valueAt(t);
+
+                dR = last_itR->derivative;
             } else if (tL > tR) {
                 t = tR;
                 advance_R = true;
 
                 vL = (*last_itL).valueAt(t);
                 vR = (sR).value;
+
+                dL = last_itL->derivative;
             } else { // equality (might cause issues)
                 t = tL;
                 advance_L = true;
