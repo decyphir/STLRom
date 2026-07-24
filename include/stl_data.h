@@ -85,6 +85,14 @@ namespace STLRom
             /** append new sample to signal */
             void add_signal_sample(string phi, double t, double v, double d, bool interp);
 
+            /** get signal index */
+            int get_signal_idx(const string &sig) const;
+
+            /** get signal by index */
+            Signal get_signal(int idx) const;
+
+            /** get signal by name */
+            Signal get_signal(const string &sig) const;
 
             // get size (nb of signals)
             int get_size() const;

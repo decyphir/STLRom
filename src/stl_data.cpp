@@ -52,13 +52,42 @@ namespace STLRom
 
     void STLData::add_signal_sample(string sig, double t, double v, double d, bool interp)
     {
-        if (signal_map.find(sig) == signal_map.end())
+        int sig_idx = get_signal_idx(sig);
+        if (sig_idx != -1)
+            data_vector[sig_idx].appendSample(t,v,d,interp);   
+    }
+
+    int STLData::get_signal_idx(const string &sig) const
+    {
+        auto it = signal_map.find(sig);
+        if (it == signal_map.end())
         {
             cout << "Signal " << sig << " not found in signal_map." << endl;
-            return;
+            return -1;
         }
-        int sig_idx = signal_map[sig];
-        data_vector[sig_idx].appendSample(t,v,d,interp);   
+
+        return it->second;
+    }
+
+    Signal STLData::get_signal(int idx) const
+    {
+        if (idx >= 0 && idx < get_size())
+            return data_vector[idx];
+        else
+            cout << "Signal index " << idx << " out of bounds for " << get_size() << " defined signals." << endl;
+        
+        Signal signal;
+        return signal;
+    }
+
+    Signal STLData::get_signal(const string &sig) const
+    {
+        int idx = get_signal_idx(sig);
+        if (idx != -1)
+            return get_signal(idx);
+
+        Signal signal;
+        return signal;
     }
 
     void STLData::add_signal_sample(string sig, double t, double v)

@@ -26,6 +26,16 @@ int main(int argc, char** argv) {
 
     cout << data << endl << endl;
 
+    cout << "Testing get_signal by name." << endl;
+    Signal sig_x1 = data.get_signal("x1");
+    cout << sig_x1 << endl;
+    cout << endl;
+
+    cout << "Testing get_signal by idx." << endl;
+    Signal sig_0 = data.get_signal(0);
+    cout << sig_0 << endl;
+
+
     cout << "Resetting then printing." << endl;
 
     data.reset_signal_data();
