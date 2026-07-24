@@ -371,5 +371,7 @@ PYBIND11_MODULE(_stlrom, m) {
         })
 		.def("get_signal",(Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
 		.def("get_signal",(Signal (STLRom::STLData::*)(const std::string &) const) &STLRom::STLData::get_signal)		
+		.def("get_signal_idx", &STLRom::STLData::get_signal_idx)
+		.def("get_signame_from_idx", &STLRom::STLData::get_signame_from_idx)
 		;
 }

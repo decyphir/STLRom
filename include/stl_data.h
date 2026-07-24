@@ -88,6 +88,9 @@ namespace STLRom
             /** get signal index */
             int get_signal_idx(const string &sig) const;
 
+            /** get signame from index */
+            string get_signame_from_idx(int idx) const;
+
             /** get signal by index */
             Signal get_signal(int idx) const;
 

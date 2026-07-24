@@ -27,14 +27,22 @@ int main(int argc, char** argv) {
     cout << data << endl << endl;
 
     cout << "Testing get_signal by name." << endl;
-    Signal sig_x1 = data.get_signal("x1");
-    cout << sig_x1 << endl;
+    cout << data.get_signal("x1") << endl;
+    cout << data.get_signal("blabla") << endl;
     cout << endl;
 
     cout << "Testing get_signal by idx." << endl;
     Signal sig_0 = data.get_signal(0);
     cout << sig_0 << endl;
+    cout << data.get_signal(-1) << endl;
+    cout << data.get_signal(4) << endl;
+    cout << endl;
 
+    cout << "Testing get_signame_by_idx." << endl;
+    cout << data.get_signame_from_idx(0) << endl;
+    cout << data.get_signame_from_idx(-1) << endl;
+    cout << data.get_signame_from_idx(4) << endl;
+    cout << endl;
 
     cout << "Resetting then printing." << endl;
 

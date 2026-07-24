@@ -69,6 +69,24 @@ namespace STLRom
         return it->second;
     }
 
+    string STLData::get_signame_from_idx(int idx) const
+    {
+        if (idx >= 0 && idx < get_size())
+        {
+            for (const auto &it : signal_map)
+            {
+                if (it.second == idx)
+                    return it.first;
+            }
+            // Shouldn't happen if signal_map and data_vector are kept in sync
+            cout << "Signal index " << idx << " has no matching name in signal_map." << endl;
+            return "";
+        } else {
+            cout << "Signal index " << idx << " out of bounds for " << get_size() << " defined signals." << endl;
+            return "";
+        }
+    }
+
     Signal STLData::get_signal(int idx) const
     {
         if (idx >= 0 && idx < get_size())
