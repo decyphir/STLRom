@@ -19,7 +19,7 @@ def plot_signal(self, sig, label=None, ax=None, draw_samples=False):
     
 def plot_signals(self, sig_names=None, same_ax=True, ax=None, draw_samples=False):
     if sig_names is None:
-        sig_names= list(self.signal_map.keys())
+        sig_names= list(self.data.signal_map.keys())
 
     if len(sig_names)>0:    
         if ax is None:
