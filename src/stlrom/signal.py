@@ -98,22 +98,27 @@ def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_fi
     if to_plot not in {"robustness", "lower", "upper"}:
         raise ValueError(f"Invalid to_plot value: {to_plot}. Must be one of 'robustness', 'lower', or 'upper'.")
     
-    if to_plot == "robustness":
-        to_plot = "z"
-    elif to_plot == "lower":
-        to_plot = "z_low"
-        title = "Lower Robustness Map" if title == 'Robustness Map' else title
-    elif to_plot == "upper":
-        to_plot = "z_up"
-        title = "Upper Robustness Map" if title == 'Robustness Map' else title
-
     first_formula = next(iter(rob_map[keys[0]]))
-    ax = rob_map[keys[0]][first_formula][to_plot].plot(label=f"{first_formula} [depth {keys[0]}]", ax=ax, title=title, draw_canvas=False)
+    signal = rob_map[keys[0]][first_formula]
+    if to_plot == "robustness":
+        signal = signal["z"]
+    elif to_plot == "lower":
+        title = "Lower Robustness Map" if title == 'Robustness Map' else title
+        signal = signal["z_tube"].lower_signal
+    elif to_plot == "upper":
+        title = "Upper Robustness Map" if title == 'Robustness Map' else title
+        signal = signal["z_tube"].upper_signal
+    ax = signal.plot(label=f"{first_formula} [depth {keys[0]}]", ax=ax, title=title, draw_canvas=False)
     for key in keys[1:]:
         for formula, info in rob_map[key].items():
             if not same_figure:
                 ax.figure.canvas.draw()
-            ax = info[to_plot].plot(label=f"{formula} [depth {key}]", ax=ax if same_figure else None, title=title, draw_canvas=False)
+            if to_plot == "robustness":
+                ax = info["z"].plot(label=f"{formula} [depth {key}]", ax=ax if same_figure else None, title=title, draw_canvas=False)
+            elif to_plot == "lower":
+                ax = info["z_tube"].lower_signal.plot(label=f"{formula} [depth {key}]", ax=ax if same_figure else None, title=title, draw_canvas=False)
+            elif to_plot == "upper":
+                ax = info["z_tube"].upper_signal.plot(label=f"{formula} [depth {key}]", ax=ax if same_figure else None, title=title, draw_canvas=False)
     ax.figure.canvas.draw()
 
     return ax
