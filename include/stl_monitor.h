@@ -218,6 +218,7 @@ namespace STLRom
                 if (value != prev_value)
                 {
                     it->second = value;
+                    up_to_date = false;
                 }
             }
             else
