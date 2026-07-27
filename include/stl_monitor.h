@@ -29,7 +29,7 @@ namespace STLRom
         transducer *formula;
         Semantics semantics;
 
-        STLMonitor() : semantics(Semantics::SPACE), formula(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), up_to_date(false), start_time(0.0), end_time(0.0) {}
+        STLMonitor() : semantics(Semantics::SPACE), formula(nullptr), data(nullptr), rob(0.0), lower_rob(0.0), upper_rob(0.0), up_to_date(false), start_time(0.0), end_time(0.0) {}
 
         STLMonitor(STLData* dataptr) : STLMonitor()
         {
@@ -319,17 +319,24 @@ namespace STLRom
         {
             // TODO harmonize with STLDriver's ?
             out << "STL Monitor Object" << endl;
-            out << "Signal Names: ";
+            
             bool first = true;
-            for (const auto &signal : monitor.data->signal_map)
+            
+            if (monitor.data)
             {
-                out << signal.first;
-                if (&signal != &(*std::prev(monitor.data->signal_map.end())))
+                out << "Signal Names: ";
+                for (const auto &signal : monitor.data->signal_map)
                 {
-                    out << ", ";
+                    out << signal.first;
+                    if (&signal != &(*std::prev(monitor.data->signal_map.end())))
+                    {
+                        out << ", ";
+                    }
                 }
             }
+
             out << endl;
+
             out << "Parameters: ";
             for (const auto &param : monitor.param_map)
             {
@@ -339,8 +346,11 @@ namespace STLRom
                     out << ", ";
                 }
             }
+            if (monitor.param_map.size() == 0)
+                out << "No parameters set.";
             out << endl;
-            out << "Formula: ";
+            
+            out << "\nFormula: ";
             if (monitor.formula)
             {
                 out << *monitor.formula;
@@ -352,8 +362,15 @@ namespace STLRom
             out << endl;
 
             out << "\nData: ";
-            out << *monitor.data;
-            
+
+            if (monitor.data)
+            {
+                out << *monitor.data;
+            } else {
+                out << "No data set." << endl;
+            }
+            out << endl;
+
             out << "Robustness on [" << monitor.start_time << "," << monitor.end_time << "]:";
             if (monitor.up_to_date)
                 out << endl << "at t=" << monitor.start_time << ":    lower_rob=" << monitor.lower_rob << "   <=    estimate=" << monitor.rob << "   <=    upper_rob= " << monitor.upper_rob <<  endl; 
