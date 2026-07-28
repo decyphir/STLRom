@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <limits>
+#include "stl_data.h"
 #include "stl_driver.h"
 #include "signal.h"
 #include "tube.h"
@@ -106,6 +107,7 @@ PYBIND11_MODULE(_stlrom, m) {
 	//Class Tube
 	py::class_<STLRom::Tube>(m, "Tube")
 		.def(py::init<>())
+		.def(py::init<Signal &,Signal &>())
 		.def("__str__", [](const Tube &tube) {
             std::ostringstream oss;
             oss << tube;
@@ -150,6 +152,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("add_sample", (void (STLRom::STLMonitor::*)(vector <double>)) &STLRom::STLMonitor::add_sample)
 		.def("add_sample", (void (STLRom::STLMonitor::*)(vector <double>, bool)) &STLRom::STLMonitor::add_sample)
 		.def("set_signals",&STLRom::STLMonitor::set_signals)
+		.def("set_tubes",&STLRom::STLMonitor::set_tubes)
 		.def("load_csv",&STLRom::STLMonitor::load_csv)
 		.def("write_csv",&STLRom::STLMonitor::write_csv)
 		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
@@ -261,6 +264,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("add_sample", (void (STLRom::STLDriver::*)(vector <double>)) &STLRom::STLDriver::add_sample)
 		.def("add_sample", (void (STLRom::STLDriver::*)(vector <double>, bool)) &STLRom::STLDriver::add_sample)
 		.def("set_signals",&STLRom::STLDriver::set_signals)
+		.def("set_tubes",&STLRom::STLDriver::set_tubes)
 		.def("load_csv",&STLRom::STLDriver::load_csv)
 		.def("write_csv",&STLRom::STLDriver::write_csv)
 		.def("get_monitor",&STLRom::STLDriver::get_monitor)
@@ -376,7 +380,11 @@ PYBIND11_MODULE(_stlrom, m) {
 	py::class_<STLRom::STLData>(m, "STLData")
 		.def(py::init<>())
 		.def(py::init<int>())
-		.def(py::init<trace_data>())				
+		.def(py::init<int, bool>())
+		.def(py::init<trace_data>())		
+		.def(py::init<tube_data>())
+		.def(py::init<trace_data,tube_data>())
+		.def(py::init<trace_data,double>())
 		.def("__str__", [](const STLData &dd) {
             std::ostringstream oss;
             oss << dd;
@@ -396,6 +404,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_signal", (Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)
 		.def("get_signal", (Signal (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal)
 		.def_readwrite("data_vector", &STLRom::STLData::data_vector)
+		.def_readwrite("tube_vector", &STLRom::STLData::tube_vector)
 		.def_readwrite("signal_map", &STLRom::STLData::signal_map)
 		;
 }

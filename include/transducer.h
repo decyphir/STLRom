@@ -17,6 +17,7 @@ using namespace std;
 namespace STLRom {
 
     typedef vector<Signal> trace_data;
+    typedef vector<Tube> tube_data;
 
     struct robustness_info
     {
@@ -35,6 +36,7 @@ namespace STLRom {
     public:
 
         const trace_data *trace_data_ptr; // signal data to monitor: vector of Signal
+        const tube_data *tube_data_ptr; // tube data to monitor: vector of Tube
         const map<string, double> *param_map_ptr;   //  parameter values    
         
         map<string, double> param_map;   //  parameter values
@@ -44,11 +46,11 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
-        // z is estimated robustness signal, z_tube.upper_signal is upper bound, z_tube.lower_signal lower bound
+        // z is estimated robustness signal, z_tube.upper_signal is upper bound, z_tube.-> lower bound
         Signal z;
         Tube z_tube;
 
-        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL) {};
+        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), tube_data_ptr(NULL), param_map_ptr(NULL) {};
         
         virtual transducer * clone() const {return NULL;};
         virtual transducer * get_child()  const {return NULL;};
@@ -69,11 +71,19 @@ namespace STLRom {
             init_horizon();
         }
 
+        inline bool use_tube() {
+            return !tube_data_ptr->empty();
+        }
+
         // set trace data 
         // TODO should be done at the constructor, parser and cloning level...
         virtual void set_trace_data_ptr(const trace_data &trace) 
         {
             trace_data_ptr= &trace;
+        }
+        virtual void set_tube_data_ptr(const tube_data &tube) 
+        {
+            tube_data_ptr= &tube;
         }
         virtual void set_param_map_ptr(const map<string, double> &map)
         {
@@ -82,8 +92,12 @@ namespace STLRom {
         
         inline double get_last_data_time() const 
         {
-            if (trace_data_ptr->empty())
-                return 0.; // reasonable default ? 
+            if (trace_data_ptr->empty()) {
+                if (!tube_data_ptr->empty())
+                    return (tube_data_ptr->back()).lower_signal->back().time; // TODO: last time of last signal only, really ?
+                else
+                    return 0.; // reasonable default ?
+            }
             else
                 return (trace_data_ptr->back()).back().time; // TODO: last time of last signal only, really ?
         }

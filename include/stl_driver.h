@@ -105,6 +105,9 @@ public:
     /** set signals data */
     void set_signals(const std::vector<Signal>& signals);
 
+    /** set tubes data */
+    void set_tubes(const std::vector<Tube>& tubes);
+
     /** load signals from csv file */
     void load_csv(const vector<string>& files);
 

@@ -437,6 +437,11 @@ void STLDriver::set_signals(const std::vector<Signal>& signals)
     data.set_data_vector(signals);
 }
 
+void STLDriver::set_tubes(const std::vector<Tube>& tubes)
+{
+    data.set_tube_vector(tubes);
+}
+
 // TODO manage with STLData
 void STLDriver::load_csv(const vector<string>& files)
 {
