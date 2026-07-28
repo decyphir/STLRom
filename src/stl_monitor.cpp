@@ -25,6 +25,11 @@ namespace STLRom
 		up_to_date = false;
 	}
 
+	void STLMonitor::set_tubes(const std::vector<Tube>& tubes)
+	{
+		data->set_tube_vector(tubes); // copy TODO: check if it's actually a copy
+	}
+
 	// TODO: better convert to STLData
 	void STLMonitor::load_csv(const vector<string>& files)
 	{
@@ -176,7 +181,7 @@ namespace STLRom
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
 		}			
-        return {formula->z, formula->z_tube.lower_signal, formula->z_tube.upper_signal};
+        return {formula->z, *formula->z_tube.lower_signal, *formula->z_tube.upper_signal};
     }
 	
 

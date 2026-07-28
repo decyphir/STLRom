@@ -13,6 +13,10 @@ namespace STLRom
             {
                 signal.clear();
             }
+        for (auto &tube : tube_vector)
+            {
+                tube.clear();
+            }
     }
 
     bool STLData::is_empty() const
@@ -27,6 +31,14 @@ namespace STLRom
 			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
 		}
         this->data_vector = data_vector;
+    }
+    
+    void STLData::set_tube_vector(const tube_data &tube_vector)
+    {
+        if (tube_vector.size() != signal_map.size()) {
+			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
+		}
+        this->tube_vector = tube_vector;
     }
 
     void STLData::add_sample(vector <double> sample, bool interp)

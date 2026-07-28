@@ -71,23 +71,23 @@ namespace STLRom {
     /* reset */
     void transducer::reset() {        
         z.clear();z.beginTime=0.; z.endTime=0.;
-        z_tube.lower_signal.clear();z_tube.lower_signal.beginTime=0.; z_tube.lower_signal.endTime=0.;
-        z_tube.upper_signal.clear();z_tube.upper_signal.beginTime=0.; z_tube.upper_signal.endTime=0.;
+        z_tube.lower_signal->clear();z_tube.lower_signal->beginTime=0.; z_tube.lower_signal->endTime=0.;
+        z_tube.upper_signal->clear();z_tube.upper_signal->beginTime=0.; z_tube.upper_signal->endTime=0.;
         
     }
 
     void unary_transducer::reset() {        
         z.clear();z.beginTime=0.; z.endTime=0.;
-        z_tube.lower_signal.clear();z_tube.lower_signal.beginTime=0.; z_tube.lower_signal.endTime=0.;
-        z_tube.upper_signal.clear();z_tube.upper_signal.beginTime=0.; z_tube.upper_signal.endTime=0.;
+        z_tube.lower_signal->clear();z_tube.lower_signal->beginTime=0.; z_tube.lower_signal->endTime=0.;
+        z_tube.upper_signal->clear();z_tube.upper_signal->beginTime=0.; z_tube.upper_signal->endTime=0.;
         
         child->reset();
     }
 
     void binary_transducer::reset() {        
         z.clear();z.beginTime=0.; z.endTime=0.;
-        z_tube.lower_signal.clear();z_tube.lower_signal.beginTime=0.; z_tube.lower_signal.endTime=0.;
-        z_tube.upper_signal.clear();z_tube.upper_signal.beginTime=0.; z_tube.upper_signal.endTime=0.;
+        z_tube.lower_signal->clear();z_tube.lower_signal->beginTime=0.; z_tube.lower_signal->endTime=0.;
+        z_tube.upper_signal->clear();z_tube.upper_signal->beginTime=0.; z_tube.upper_signal->endTime=0.;
         
         childL->reset();
         childR->reset();
@@ -114,10 +114,10 @@ namespace STLRom {
         return z.endTime;
     }
     double transducer::get_end_complete_low() {
-        return z_tube.lower_signal.endTime;
+        return z_tube.lower_signal->endTime;
     }
     double transducer::get_end_complete_up() {
-        return z_tube.upper_signal.endTime;
+        return z_tube.upper_signal->endTime;
     }
 
     // get end time complete for timed transducers
@@ -130,13 +130,13 @@ namespace STLRom {
     double timed_unary_transducer::get_end_complete_low() {
         double b;
         if (!get_param(I->end_str,b)) b = I->end;	
-        return child->z_tube.lower_signal.endTime-b;
+        return child->z_tube.lower_signal->endTime-b;
     }
 
     double timed_unary_transducer::get_end_complete_up() {
         double b;
         if (!get_param(I->end_str,b)) b = I->end;
-        return child->z_tube.upper_signal.endTime-b;
+        return child->z_tube.upper_signal->endTime-b;
     }
 
 

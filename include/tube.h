@@ -10,11 +10,14 @@ namespace STLRom {
 
 class Tube {
 public:
-    Signal lower_signal;
-    Signal upper_signal;
+    Signal *lower_signal;
+    Signal *upper_signal;
 
 	Tube();
-    Tube(Signal lower_s, Signal upper_s);
+    Tube(Signal& lower_s, Signal& upper_s);
+    ~Tube();
+    
+    void clear();
 
     void inflate(double r);
 
