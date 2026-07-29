@@ -88,6 +88,7 @@ STLDriver::STLDriver(const STLDriver &other) :
     {
         formula_map[pair.first] = pair.second->clone();
     }
+    worker.data = &data;
 }
 
 STLDriver &STLDriver::operator=(const STLDriver &other)
@@ -114,6 +115,8 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         {
             formula_map[pair.first] = pair.second->clone();
         }
+
+        worker.data = &data;
     }
     return *this;
 }
@@ -132,6 +135,9 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
  
 {
     other.formula_map.clear();
+
+    worker.data = &data;
+    other.worker.data = nullptr;
 }
 
 STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
@@ -154,6 +160,9 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         formula_map = std::move(other.formula_map);
  
         other.formula_map.clear();
+
+        worker.data = &data;
+        other.worker.data = nullptr;
     }
     return *this;
 }
