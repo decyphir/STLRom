@@ -13,9 +13,16 @@ namespace STLRom
 		up_to_date = false;
 	}
 
+	void STLMonitor::add_sample(vector<double> s, bool interp)
+	{
+		data->add_sample(s, interp);
+		up_to_date = false;
+	}
+
 	void STLMonitor::set_signals(const std::vector<Signal>& signals)
 	{
 		data->set_data_vector(signals); // copy TODO: check if it's actually a copy
+		up_to_date = false;
 	}
 
 	// TODO: better convert to STLData

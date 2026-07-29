@@ -132,7 +132,8 @@ PYBIND11_MODULE(_stlrom, m) {
             oss << monitor;
             return oss.str();
         })
-		.def("add_sample",&STLRom::STLMonitor::add_sample)
+		.def("add_sample", (void (STLRom::STLMonitor::*)(vector <double>)) &STLRom::STLMonitor::add_sample)
+		.def("add_sample", (void (STLRom::STLMonitor::*)(vector <double>, bool)) &STLRom::STLMonitor::add_sample)
 		.def("set_signals",&STLRom::STLMonitor::set_signals)
 		.def("load_csv",&STLRom::STLMonitor::load_csv)
 		.def("write_csv",&STLRom::STLMonitor::write_csv)
