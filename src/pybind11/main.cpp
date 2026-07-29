@@ -362,7 +362,9 @@ PYBIND11_MODULE(_stlrom, m) {
 
 	// Class STLData
 	py::class_<STLRom::STLData>(m, "STLData")
-		.def(py::init<>())				
+		.def(py::init<>())
+		.def(py::init<int>())
+		.def(py::init<trace_data>())				
 		.def("__str__", [](const STLData &dd) {
             std::ostringstream oss;
             oss << dd;

@@ -25,7 +25,7 @@ namespace STLRom
 
             // constructor with vector of signals
             explicit STLData(trace_data data_vector) : data_vector(std::move(data_vector)) {
-                for (int i = 0; i < data_vector.size(); i++) {
+                for (int i = 0; i < this->data_vector.size(); i++) {
                     signal_map["x" + to_string(i)] = i;
                 }
             }
