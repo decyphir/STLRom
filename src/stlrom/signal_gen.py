@@ -11,9 +11,8 @@ class SignalGen:
         self.interp =  'LINEAR' # 'PREVIOUS' or 'LINEAR'
         self.param_map={}
 
-    def _update_fun():
-        pass
-
+    def _update_fun(self):
+       pass
     def _add_pwl_sample(self, t, v):
         self.sig.append_sample(t,v,0.,True)
     
@@ -28,14 +27,14 @@ class SignalGen:
 
     def get_signal(self, time=None, t0=0, tf=10, dt=.1,**kargs):
         self.set_param(**kargs)
-        sig = Signal()
-        #sig.set_interpol(self.interp)
+        self.sig = Signal()
+            
         if time is None:
             time = get_time(t0, tf, dt)
         for t in time:
-            sig.append_sample(t, self.fun(t))
-        sig.end_time = tf            
-        return sig
+            self.add_sample(t, self.fun(t))
+        self.sig.end_time = tf            
+        return self.sig
 
 class OscillSignalGen(SignalGen):
     def __init__(self, t0=0, tf=0, period=1, amplitude=1, base=0, damp=0):        
@@ -49,7 +48,11 @@ class OscillSignalGen(SignalGen):
         d = self.param_map['damp']
         base =  self.param_map['base']
         self.fun = lambda t: np.exp(d*t)*A*np.sin(2*np.pi*t/T)+base
-
+        if self.interp=='LINEAR':
+            self.add_sample= self._add_pwl_sample
+        else:
+            self.add_sample= self._add_pwc_sample
+ 
 
 class PWCSignalGen(SignalGen):
     def __init__(self, t0=0, tf=0,times=[0, 1.], values=[0., 1.]):        
