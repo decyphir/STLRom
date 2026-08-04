@@ -120,7 +120,7 @@ namespace STLRom
             {
                 if (data.is_empty())
                 {
-                    out << "No data yet.";                  
+                    out << "# No data yet.";                  
                 }
                 else
                 {
@@ -129,11 +129,11 @@ namespace STLRom
                         out << "# Signal " << signal.first << ":"<< endl;
                         if (data.data_vector[signal.second].empty())
                         {
-                            out << "No data yet." << endl;
+                            out << "# No data yet." << endl;
                         }
                         else
                         {
-                            out << data.data_vector[signal.second].size() << " samples from t0=" << data.data_vector[signal.second].beginTime << " to t_end=" << data.data_vector[signal.second].endTime << endl;
+                            out << "# " << data.data_vector[signal.second].size() << " samples from t0=" << data.data_vector[signal.second].beginTime << " to t_end=" << data.data_vector[signal.second].endTime << endl;
                         }
                     }
                 } 

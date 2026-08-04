@@ -64,9 +64,7 @@ class transducer;
  */
 class STLDriver
 {
-public:
-
-    Semantics semantics;  /**< semantics to use */
+public:    
 
     /** enable debug output in the flex scanner */
     bool trace_scanning;
@@ -139,43 +137,12 @@ public:
 
     inline void set_semantics(const std::string &sem)
     {
-        if (sem == "SPACE")
-        {
-            semantics = Semantics::SPACE;
-        }
-        else if (sem == "LEFT_TIME")
-        {
-            semantics = Semantics::LEFT_TIME;
-        }
-        else if (sem == "RIGHT_TIME")
-        {
-            semantics = Semantics::RIGHT_TIME;
-        }
-        else if (sem == "BOOLEAN")
-        {
-            semantics = Semantics::BOOLEAN;
-        }
-        else
-        {
-            throw std::invalid_argument("Invalid semantics string");
-        };
+        worker.set_semantics(sem);   
     };
 
     inline std::string get_semantics() const
     {
-        switch (semantics)
-        {
-        case Semantics::SPACE:
-            return "SPACE";
-        case Semantics::LEFT_TIME:
-            return "LEFT_TIME";
-        case Semantics::RIGHT_TIME:
-            return "RIGHT_TIME";
-        case Semantics::BOOLEAN:
-            return "BOOLEAN";
-        default:
-            throw std::invalid_argument("Invalid semantics value");
-        }
+        return worker.get_semantics();
     }
 
     /// PARSER

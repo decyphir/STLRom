@@ -1,14 +1,14 @@
 from ._stlrom import Signal
 import numpy as np
 
-def get_time(t0=0, tf=10, dt=0.1):
+def get_time_array(t0=0, tf=10, dt=0.1):
     return np.arange(t0, tf+dt, dt) # added +dt to include tf
 
 # WIP SignalGen should probably be interface only, below it interpolates a function fun
 class SignalGen:
-    def __init__(self, t0=0, tf=0, fun = lambda t:t):
+    def __init__(self, fun = lambda t:t):
         self.fun =  fun        
-        self.interp =  'LINEAR' # 'PREVIOUS' or 'LINEAR'
+        self.interp = 'LINEAR' # 'PREVIOUS' or 'LINEAR'
         self.param_map={}
 
     def _update_fun(self):
@@ -30,7 +30,7 @@ class SignalGen:
         self.sig = Signal()
             
         if time is None:
-            time = get_time(t0, tf, dt)
+            time = get_time_array(t0, tf, dt)
         for t in time:
             self.add_sample(t, self.fun(t))
         self.sig.end_time = tf            
@@ -68,7 +68,7 @@ class PWCSignalGen(SignalGen):
         self.sig = s
         self.fun = lambda t: s.value_at(t)
 
-    def get_signal(self, t0=0, tf=0):        
+    def get_signal(self, t0, tf):        
         s = self.sig
         s.resize(t0, tf)
         return s
@@ -84,11 +84,11 @@ class PWLSignalGen(SignalGen):
     def _update_fun(self):
         s = Signal()
         for t,v in zip(self.param_map['times'], self.param_map['values']):            
-            s.append_sample(t,v)
+            s.append_linear_sample(t,v)
         self.sig = s
         self.fun = lambda t: s.value_at(t)
 
-    def get_signal(self, t0=0, tf=10):        
+    def get_signal(self, t0, tf):                
         s = self.sig
         s.resize(t0, tf)
         return s
@@ -136,7 +136,7 @@ class RandSignalGen(SignalGen):
         self.last_v = v
         self.add_sample(0.,v)
 
-    def get_signal(self, t0=0, tf=10):        
+    def get_signal(self, t0, tf):        
         self._fun(tf)
         s = self.sig
         s.resize(t0, tf)

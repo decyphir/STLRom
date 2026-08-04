@@ -41,7 +41,6 @@ constexpr const char* RESET = "\033[0m";
 STLDriver::STLDriver() :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    semantics(Semantics::SPACE),
     worker(&data),
     trace_scanning(false),
     trace_parsing(false),
@@ -55,7 +54,6 @@ STLDriver::STLDriver(trace_data _trace) :
     m_parser(m_scanner, *this),
     data(std::move(_trace)),
     worker(&data),
-    semantics(Semantics::SPACE),
     trace_scanning(false),
     trace_parsing(false),
     verbose_parser(false)
@@ -75,7 +73,6 @@ STLDriver::~STLDriver()
 STLDriver::STLDriver(const STLDriver &other) :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    semantics(other.semantics),
     trace_scanning(other.trace_scanning),
     trace_parsing(other.trace_parsing),
     verbose_parser(other.verbose_parser),
@@ -102,7 +99,6 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         }
         formula_map.clear();
 
-        semantics = other.semantics;
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
         verbose_parser = other.verbose_parser;
@@ -124,7 +120,6 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
 STLDriver::STLDriver(STLDriver &&other) noexcept :
     m_scanner(*this),
     m_parser(m_scanner, *this),
-    semantics(other.semantics),
     trace_scanning(other.trace_scanning),
     trace_parsing(other.trace_parsing),
     verbose_parser(other.verbose_parser),
@@ -150,7 +145,6 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
             delete pair.second;
         }
 
-        semantics = other.semantics;
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
         verbose_parser = other.verbose_parser;
@@ -385,7 +379,7 @@ STLMonitor STLDriver::get_monitor(const string &id) const
         {
             try
             {
-                phi.semantics = semantics;
+                phi.semantics = worker.semantics;
                 phi.owned_data = STLData(data);
                 phi.data = &phi.owned_data;
                 phi.formula = (it->second)->clone();
@@ -556,13 +550,17 @@ void STLDriver::print(ostream &out) const
     }
     
     
-    out << "\n# With formulas" << endl;
+    out << "\n# With formulas:" << endl;
 
-    for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
+    if (formula_map.empty())
+        out <<  "# No formula yet." << endl;
+    else 
     {
-        out << formula->first << ":= " << *(formula->second) << endl;
+        for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
+        {
+            out << formula->first << ":= " << *(formula->second) << endl;
+        }
     }
-    
     out << "\n# Data:" << endl;
     
     out << data << endl;
