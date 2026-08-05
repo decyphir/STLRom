@@ -25,12 +25,13 @@ class SignalGen:
         self._update_fun()
         return self
 
-    def get_signal(self, time=None, t0=0, tf=10, dt=.1,**kargs):
+    def get_signal(self, t0, tf, dt=.1,time=None,**kargs):
         self.set_param(**kargs)
         self.sig = Signal()
             
         if time is None:
             time = get_time_array(t0, tf, dt)
+           
         for t in time:
             self.add_sample(t, self.fun(t))
         self.sig.end_time = tf            
@@ -49,9 +50,9 @@ class OscillSignalGen(SignalGen):
         base =  self.param_map['base']
         self.fun = lambda t: np.exp(d*t)*A*np.sin(2*np.pi*t/T)+base
         if self.interp=='LINEAR':
-            self.add_sample= self._add_pwl_sample
+            self.add_sample = self._add_pwl_sample
         else:
-            self.add_sample= self._add_pwc_sample
+            self.add_sample = self._add_pwc_sample
  
 
 class PWCSignalGen(SignalGen):
