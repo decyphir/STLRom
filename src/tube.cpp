@@ -11,8 +11,8 @@ namespace STLRom {
 	}
 
 	Tube::Tube(Signal& lower_s, Signal& upper_s) {
-		lower_signal = new Signal(*lower_signal);
-		upper_signal = new Signal(*upper_signal);
+		lower_signal = new Signal(lower_s);
+		upper_signal = new Signal(upper_s);
 	} // TODO assert lower_s <= upper_s? // TODO assert same time domains?
 
 	Tube::~Tube() {
@@ -83,7 +83,7 @@ namespace STLRom {
 
 	std::ostream & operator<<(std::ostream & out, const Tube & T) {
 		return out << "lower_signal: " << std::endl << *T.lower_signal << std::endl << \
-		"upper_signal: " << std::endl << *T.lower_signal << std::endl;
+		"upper_signal: " << std::endl << *T.upper_signal << std::endl;
 	}
 
 } // namespace STLRom

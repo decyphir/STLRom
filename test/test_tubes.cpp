@@ -19,18 +19,22 @@ int main(int argc, char **argv)
     cout << tube << endl;
     tube.inflate(0.2);
     cout << tube << endl;
-    return 0;
 
     static volatile double fmin = 1e-307;
-    Signal low_epsilon = Signal(0., fmin, 1);
-    low_epsilon.appendSample(3., 1.);
+    Signal low_epsilon = Signal(0., -fmin, 1);
+    low_epsilon.appendSample(3., -fmin);
     Signal up_epsilon = Signal(0., fmin, 1);
-    up_epsilon.appendSample(3., 1.);
+    up_epsilon.appendSample(3., fmin);
     Tube eps_tube = Tube(low_epsilon, up_epsilon);
 
-    Tube result = tube + eps_tube;
-    cout << result.lower_signal << endl;
-    cout << result.upper_signal << endl;
+    Signal low_sig2 = Signal(0., 1., 1);
+    low_sig2.appendSample(3., 1.);
+    Signal up_sig2 = Signal(0., 1., 1);
+    up_sig2.appendSample(3., 1.);
+    Tube tube2 = Tube(low_sig2, up_sig2);
+
+    Tube result = tube2 + eps_tube;
+    cout << result << endl;
     
     return int(result.lower_signal == result.upper_signal);
 }
