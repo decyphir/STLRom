@@ -1,3 +1,7 @@
+#include "stl_data.h"
+#include "tools.h"
+#include "transducer.h"
+#include "stl_driver.h"
 #include "tube.h"
 
 using namespace std;
@@ -35,6 +39,16 @@ int main(int argc, char **argv)
 
     Tube result = tube2 + eps_tube;
     cout << result << endl;
+
+    // Other test file?
+    STLDriver stl_driver = STLDriver();
+    tube_data tube_v;
+    tube_v.push_back(tube);
+    stl_driver.data = STLData(tube_v);
+    cout << stl_driver << endl;
+    cout << stl_driver.data.tube_vector.back() << endl;
+    cout << stl_driver.data.data_vector.back() << endl;
+
     
     return int(result.lower_signal == result.upper_signal);
 }
