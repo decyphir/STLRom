@@ -1,4 +1,5 @@
 #include "stl_data.h"
+#include "stl_monitor.h"
 #include "tools.h"
 #include "transducer.h"
 #include "stl_driver.h"
@@ -41,14 +42,13 @@ int main(int argc, char **argv)
     cout << result << endl;
 
     // Other test file?
-    STLDriver stl_driver = STLDriver();
-    tube_data tube_v;
-    tube_v.push_back(tube);
-    stl_driver.data = STLData(tube_v);
+    STLData data = STLData({tube});
+    STLDriver stl_driver;
+    stl_driver.data = data;
     cout << stl_driver << endl;
     cout << stl_driver.data.tube_vector.back() << endl;
     cout << stl_driver.data.data_vector.back() << endl;
 
-    
+
     return int(result.lower_signal == result.upper_signal);
 }

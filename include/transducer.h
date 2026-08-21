@@ -94,7 +94,7 @@ namespace STLRom {
         {
             if (trace_data_ptr->empty()) {
                 if (!tube_data_ptr->empty())
-                    return (tube_data_ptr->back()).lower_signal->back().time; // TODO: last time of last signal only, really ?
+                    return (tube_data_ptr->back()).lower_signal.back().time; // TODO: last time of last signal only, really ?
                 else
                     return 0.; // reasonable default ?
             }
