@@ -18,9 +18,8 @@ namespace STLRom
             ~STLData() = default;
 
             // constructor with number of signals
-            explicit STLData(int nb_signals) {
-                STLData(nb_signals, false);
-            }
+            explicit STLData(int nb_signals) : STLData(nb_signals, false) {}
+
             // constructor with number of signals and tubes
             explicit STLData(int nb_signals, bool use_tube) : data_vector(nb_signals) {
                 if (use_tube) {
@@ -40,7 +39,7 @@ namespace STLRom
             // constructor with vector of tubes
             explicit STLData(tube_data tube_vector) : data_vector(tube_vector.size()), tube_vector(std::move(tube_vector)) {
                 for (int i = 0; i < this->tube_vector.size(); i++) {
-                    data_vector[i] = (*this->tube_vector[i].lower_signal + *this->tube_vector[i].upper_signal) / 2;
+                    data_vector[i] = (this->tube_vector[i].lower_signal + this->tube_vector[i].upper_signal) / 2;
                     signal_map["x" + to_string(i)] = i;
                 }
             }
@@ -171,11 +170,11 @@ namespace STLRom
                     {
                         if (data.data_vector[signal.second].empty())
                         {
-                            if (data.tube_vector[signal.second].lower_signal->empty()) {
+                            if (data.tube_vector[signal.second].lower_signal.empty()) {
                                 out << "# No data yet for " << signal.first << "." << endl;
                             } else {
                                 out << "# Tube " << signal.first << ":"<< endl;
-                                out << data.tube_vector[signal.second].lower_signal->size() << " samples from t0=" << data.tube_vector[signal.second].lower_signal->beginTime << " to t_end=" << data.tube_vector[signal.second].lower_signal->endTime << endl;
+                                out << data.tube_vector[signal.second].lower_signal.size() << " samples from t0=" << data.tube_vector[signal.second].lower_signal.beginTime << " to t_end=" << data.tube_vector[signal.second].lower_signal.endTime << endl;
                             }
                         } else {
                             out << "# Signal " << signal.first << ":"<< endl;
