@@ -150,6 +150,40 @@ namespace STLRom
     }	
 
 
+	Tube STLMonitor::get_rob_tube() {
+        return get_rob_tube(start_time, end_time);
+    }
+
+    Tube STLMonitor::get_rob_tube(double t) {        
+		return get_rob_tube(t,t);
+    }
+
+	Tube STLMonitor::get_rob_tube(double t_start, double t_end)
+    {
+		if (data->is_empty())
+		{
+			cout << "Empty data" << endl;
+			return Tube();
+		}
+		start_time = t_start;
+		end_time  = t_end;
+		if (formula)
+        {
+			// Ensure formula reads the right data
+			formula->set_tube_data_ptr(data->tube_vector); // TODO: convert to STLData
+			formula->set_param_map_ptr(param_map);
+			Signal::semantics=semantics;
+			formula->reset();				
+			formula->set_horizon(t_start, t_end);
+			rob = formula->compute_robustness();
+            lower_rob = formula->compute_lower_rob();
+            upper_rob = formula->compute_upper_rob();
+			up_to_date = true;
+		}			
+        return formula->z_tube;
+    }	
+
+
 
     vector<Signal> STLMonitor::get_online_rob_signal() {
         return get_online_rob_signal(start_time, end_time);

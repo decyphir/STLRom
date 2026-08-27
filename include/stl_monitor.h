@@ -9,6 +9,7 @@
 #include "tools.h"
 #include "signal.h"
 #include "stl_data.h"
+#include "tube.h"
 
 namespace STLRom
 {
@@ -292,6 +293,10 @@ namespace STLRom
         Signal get_rob_signal();
         Signal get_rob_signal(double);
         Signal get_rob_signal(double, double);
+
+        Tube get_rob_tube();
+        Tube get_rob_tube(double);
+        Tube get_rob_tube(double, double);
 
         vector<Signal> get_online_rob_signal();
         vector<Signal> get_online_rob_signal(double);
