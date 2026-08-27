@@ -120,6 +120,44 @@ namespace STLRom
         return signal;
     }
 
+    Tube STLData::get_tube(int idx) const
+    {
+        if (idx >= 0 && idx < get_size() && !tube_vector.empty())
+            return tube_vector[idx];
+        else
+            cout << "Tube index " << idx << " out of bounds for " << get_size() << " defined tubes (or tube_vector is empty)." << endl;
+        
+        Tube tube;
+        return tube;
+    }
+
+    Tube STLData::get_tube(const string &tub) const
+    {
+        int idx = get_tube_idx(tub);
+        if (idx != -1)
+            return get_tube(idx);
+
+        Tube tube;
+        return tube;
+    }
+
+    int STLData::get_tube_idx(const string &tub) const
+    {
+        auto it = signal_map.find(tub);
+        if (it == signal_map.end())
+        {
+            cout << "Tube " << tub << " not found in signal_map." << endl;
+            return -1;
+        }
+
+        return it->second;
+    }
+
+    string STLData::get_tubename_from_idx(int idx) const
+    {
+        return get_signame_from_idx(idx);
+    }
+
     void STLData::add_signal_sample(string sig, double t, double v)
     {
         add_signal_sample(sig, t,v,0., 1);

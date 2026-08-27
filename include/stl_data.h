@@ -137,6 +137,18 @@ namespace STLRom
             /** get signal by name */
             Signal get_signal(const string &sig) const;
 
+            /** get tube index */
+            int get_tube_idx(const string &sig) const;
+
+            /** get tubename from index */
+            string get_tubename_from_idx(int idx) const;
+
+            /** get tube by index */
+            Tube get_tube(int idx) const;
+
+            /** get tube by name */
+            Tube get_tube(const string &sig) const;
+
             // get size (nb of signals)
             int get_size() const;
 
