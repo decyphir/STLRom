@@ -4,6 +4,7 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
     draw_canvas = kwargs.pop('draw_canvas', True)
     draw_samples = kwargs.pop('draw_samples', False)
     plot_sat = kwargs.pop('plot_sat', False)
+    plot_rob = kwargs.pop('plot_rob', True)
     legend = kwargs.pop('legend', True)
 
     samples_list = self.get_samples_list()
@@ -49,23 +50,24 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     samples_times += [sn.time, self.end_time, np.nan]
     samples_values += [sn.value, sn_v, np.nan]
-        
-    if draw_samples:
-        l_line, = ax.plot(samples_times, samples_values, **kwargs)    
-        c = l_line.get_color()
-        ax.plot(times, values, linestyle='--', color=c)    
-        
-        ax.plot(
-            [s.time for s in samples_list],
-            [s.value for s in samples_list],
-            linestyle='None',
-            marker='o',
-            color=c
-        )
-    else:
-        l_line, = ax.plot(times, values, **kwargs)    
-        
-    l_line.set_label(label)
+
+    if plot_rob:    
+        if draw_samples:
+            l_line, = ax.plot(samples_times, samples_values, **kwargs)    
+            c = l_line.get_color()
+            ax.plot(times, values, linestyle='--', color=c)    
+            
+            ax.plot(
+                [s.time for s in samples_list],
+                [s.value for s in samples_list],
+                linestyle='None',
+                marker='o',
+                color=c
+            )
+        else:
+            l_line, = ax.plot(times, values, **kwargs)    
+            
+        l_line.set_label(label)
 
     if draw_canvas:
         ax.figure.canvas.draw()
