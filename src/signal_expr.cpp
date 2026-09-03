@@ -26,7 +26,9 @@ double abs_transducer::compute_robustness() {
 			iter++) {
 		double t= (*iter).time;
 		double v = (*iter).value;
-		z.appendSample(t, fabs(v));
+		double d = (*iter).derivative;
+		double abs_d = (v > 0) ? d : (v < 0) ? -d : fabs(d);
+		z.appendSample(t, fabs(v), abs_d);
 	}
 	return z.front().value;
 }
@@ -42,7 +44,8 @@ double unary_minus_transducer::compute_robustness() {
 			iter++) {
 		double t= (*iter).time;
 		double v = (*iter).value;
-		z.appendSample(t, -v);
+		double d = (*iter).derivative;
+		z.appendSample(t, -v, -d);
 	}
 	return z.front().value;
 }
