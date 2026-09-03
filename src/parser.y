@@ -160,7 +160,7 @@
 
 
 
-%type <STLRom::transducer*> signal stl_atom
+%type <STLRom::transducer*> signal formula_signal stl_atom
 %type <STLRom::transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryexpr
 %type <STLRom::transducer*> constant_signal
 %type <STLRom::transducer*> stl_formula
@@ -228,7 +228,29 @@ signal: SIGNAL_ID LINT TIME RINT
         }
         ;
 
+formula_signal: PHI_ID LINT TIME RINT
+        {
+            transducer * ref = driver.formula_map[$1];
+
+            if (ref==nullptr) {
+                cout << "Parsing error: unknown identifier " << $1 << endl;
+                $$ = nullptr;
+                YYERROR;
+            }
+            else {
+                transducer * clone = ref->clone();
+                $$ = new formula_signal_transducer(clone, $1);
+                // TODO: copy variables (should be done in clone() no?)
+            }
+
+        };
+
 signal_atom : signal
+        {
+            $$ = $1;
+        }
+        ;
+        | formula_signal
         {
             $$ = $1;
         }

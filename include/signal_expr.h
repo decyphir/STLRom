@@ -78,6 +78,40 @@ namespace STLRom
         };
     };
 
+    
+    class formula_signal_transducer : public unary_transducer
+    {
+        public:
+            string formula;
+
+            explicit formula_signal_transducer(transducer *_child, string form) : transducer(), unary_transducer(_child), formula(form)
+            {
+            }
+
+            virtual formula_signal_transducer *clone() const
+            {
+                transducer *child_clone = child->clone();
+                return new formula_signal_transducer(child_clone, formula);
+            }
+
+            virtual ~formula_signal_transducer()
+            {
+            }
+
+            double compute_robustness();
+
+            void print() const
+            {
+                print(cout);
+            };
+
+            virtual void print(ostream &os) const
+            {
+                os << formula;
+                os << "[t]";
+            };
+    };
+    
     class constant_transducer : public transducer
     {
     public:

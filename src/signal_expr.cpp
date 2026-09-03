@@ -15,6 +15,22 @@ namespace STLRom {
 
 /* Unary operators on signals */
 
+double formula_signal_transducer::compute_robustness() {
+	child->compute_robustness();
+
+	auto iter = child->z.begin();
+	
+	for (; iter != child->z.end();
+			iter++) {
+		double t= (*iter).time;
+		double v = (*iter).value;
+		double d = (*iter).derivative;
+		z.appendSample(t, v, d);
+	}
+
+	return z.front().value;
+}
+
 double abs_transducer::compute_robustness() {
 
 	// update child robustness
