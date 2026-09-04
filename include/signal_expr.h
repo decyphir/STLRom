@@ -83,15 +83,16 @@ namespace STLRom
     {
         public:
             string formula;
+            bool isFunction;
 
-            explicit formula_signal_transducer(transducer *_child, string form) : transducer(), unary_transducer(_child), formula(form)
+            explicit formula_signal_transducer(transducer *_child, string form, bool isFun) : transducer(), unary_transducer(_child), formula(form), isFunction(isFun)
             {
             }
 
             virtual formula_signal_transducer *clone() const
             {
                 transducer *child_clone = child->clone();
-                return new formula_signal_transducer(child_clone, formula);
+                return new formula_signal_transducer(child_clone, formula, isFunction);
             }
 
             virtual ~formula_signal_transducer()
@@ -107,8 +108,12 @@ namespace STLRom
 
             virtual void print(ostream &os) const
             {
-                os << formula;
-                os << "[t]";
+                if (isFunction) {
+                    child->print(os);
+                } else {
+                    os << formula;
+                    os << "[t]";
+                }
             };
     };
     

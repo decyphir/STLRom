@@ -81,6 +81,9 @@ public:
     /** formulas defined by the driver */
     map<string, transducer*> formula_map;
 
+    /** functions defined by the driver */
+    map<string, transducer*> function_map;
+
     /** data object */
     STLData data;
 

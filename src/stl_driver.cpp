@@ -67,6 +67,10 @@ STLDriver::~STLDriver()
     {
         delete pair.second;
     }
+    for (auto &pair : function_map)
+    {
+        delete pair.second;
+    }
     worker.formula = nullptr; // FIXME: a better solution with smart pointers?
 }
 
@@ -85,6 +89,11 @@ STLDriver::STLDriver(const STLDriver &other) :
     {
         formula_map[pair.first] = pair.second->clone();
     }
+    // Deep copy of function_map
+    for (const auto &pair : other.function_map)
+    {
+        function_map[pair.first] = pair.second->clone();
+    }
     worker.data = &data;
 }
 
@@ -98,6 +107,12 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
             delete pair.second;
         }
         formula_map.clear();
+        // Clean up existing function_map
+        for (auto &pair : function_map)
+        {
+            delete pair.second;
+        }
+        function_map.clear();
 
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
@@ -111,7 +126,13 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         {
             formula_map[pair.first] = pair.second->clone();
         }
-
+        
+        // Deep copy of function_map
+        for (const auto &pair : other.function_map)
+        {
+            function_map[pair.first] = pair.second->clone();
+        }
+        
         worker.data = &data;
     }
     return *this;
@@ -126,10 +147,12 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
     streamname(std::move(other.streamname)),
     worker(std::move(other.worker)),
     data(std::move(other.data)),
-    formula_map(std::move(other.formula_map))
+    formula_map(std::move(other.formula_map)),
+    function_map(std::move(other.function_map))
  
 {
     other.formula_map.clear();
+    other.function_map.clear();
 
     worker.data = &data;
     other.worker.data = nullptr;
@@ -144,6 +167,12 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         {
             delete pair.second;
         }
+        
+        // Clean up existing function_map
+        for (auto &pair : function_map)
+        {
+            delete pair.second;
+        }
 
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
@@ -152,8 +181,10 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         worker = std::move(other.worker);
         data = std::move(other.data);
         formula_map = std::move(other.formula_map);
+        function_map = std::move(other.function_map);
  
         other.formula_map.clear();
+        other.function_map.clear();
 
         worker.data = &data;
         other.worker.data = nullptr;
@@ -213,6 +244,16 @@ void STLDriver::clear() {
 		}
 
 		formula_map.clear();
+    for (auto formula = function_map.begin(); formula != function_map.end(); formula++)
+		{
+			if (formula->second != 0)
+			{
+				delete formula->second;
+				formula->second = 0;
+			}
+		}
+
+		function_map.clear();
         // TODO : clear worker
 }
 
@@ -561,6 +602,17 @@ void STLDriver::print(ostream &out) const
             out << formula->first << ":= " << *(formula->second) << endl;
         }
     }
+    
+    if (!function_map.empty()) 
+    {
+        out << "\n# With functions:" << endl;
+        for (auto formula = function_map.begin(); formula != function_map.end(); formula++)
+        {
+            out << formula->first << ":= " << *(formula->second) << endl;
+        }
+    }
+
+    
     out << "\n# Data:" << endl;
     
     out << data << endl;

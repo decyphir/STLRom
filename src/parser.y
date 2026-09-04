@@ -230,16 +230,31 @@ signal: SIGNAL_ID LINT TIME RINT
 
 formula_signal: PHI_ID LINT TIME RINT
         {
-            transducer * ref = driver.formula_map[$1];
+            auto formula_it = driver.formula_map.find($1);
 
-            if (ref==nullptr) {
+            bool isFunction = false;
+            transducer *ref = nullptr;
+
+            if (formula_it != driver.formula_map.end()) {
+                ref = formula_it->second;
+            }
+            else {
+                auto function_it = driver.function_map.find($1);
+
+                if (function_it != driver.function_map.end()) {
+                    ref = function_it->second;
+                    isFunction = true;
+                }
+            }
+
+            if (ref == nullptr) {
                 cout << "Parsing error: unknown identifier " << $1 << endl;
                 $$ = nullptr;
                 YYERROR;
             }
             else {
                 transducer * clone = ref->clone();
-                $$ = new formula_signal_transducer(clone, $1);
+                $$ = new formula_signal_transducer(clone, $1, isFunction);
                 // TODO: copy variables (should be done in clone() no?)
             }
 
@@ -452,6 +467,12 @@ assignement : NEW_ID ASSIGN stl_formula
                 driver.formula_map[$1] = $3;
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined formula " << $1 << " = " << *$3 << RESET << endl;
+            }
+            | NEW_ID ASSIGN signal_expr
+            {
+                driver.formula_map[$1] = $3;
+                if (driver.verbose_parser)
+                    cout << CYAN << "Defined function " << $1 << " = " << *$3 << RESET << endl;
             }
 
 /* trace_env: TEST NEW_ID ':' STRING

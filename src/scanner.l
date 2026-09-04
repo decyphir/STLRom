@@ -117,6 +117,10 @@
     if (m_driver.formula_map.find(yytext) != m_driver.formula_map.end()) {
         return STLRom::Parser::make_PHI_ID(yytext, yylloc);
     }
+    else
+    if (m_driver.function_map.find(yytext) != m_driver.function_map.end()) {
+        return STLRom::Parser::make_PHI_ID(yytext, yylloc);
+    }
     else        
     if (m_driver.worker.param_map.find(yytext) != m_driver.worker.param_map.end()) {
         return STLRom::Parser::make_PARAM_ID(yytext, yylloc);
