@@ -208,7 +208,7 @@ namespace STLRom {
                             }
                         } else if (comp == comparator::LESSTHAN) { 
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, -d_prev_neq);
+                                z.appendSample(e.t, -Signal::Eps, -d_prev_neq);
                             } else { // entering epsilon region
                                 z.appendSample(e.t, -Signal::Eps, 0.);
                             }
@@ -224,7 +224,7 @@ namespace STLRom {
                             if (e.isAscending) { // entering epsilon region
                                 z.appendSample(e.t, -Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, d_prev_neq);
+                                z.appendSample(e.t, -Signal::Eps, d_prev_neq);
                             }
                         } else if (comp == comparator::LESSTHAN) { 
                             if (e.isAscending) { // entering epsilon region
