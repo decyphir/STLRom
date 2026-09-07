@@ -50,12 +50,9 @@ namespace STLRom {
 
         // Iterate over both simultaneously
         bool first_pass = true;
-        double t_prev, v_prev, d_prev, v_prev_neq, d_prev_neq;
+        double t_prev, v_prev_neq, d_prev_neq;
 
-        bool previous_was_equal = false;
-
-
-        double tL = -1, tR = -1;
+        double tL = -std::numeric_limits<double>::infinity(), tR = -std::numeric_limits<double>::infinity();
 
         auto last_itL = itL;
         auto last_itR = itR;
@@ -74,11 +71,10 @@ namespace STLRom {
 
             bool advance_L = false;
             bool advance_R = false;
-            bool equals = false;
-            bool first_eq_ineq = false; // first point in a subseries of equality points or inequality points (for comp::equal)
 
             auto& sL = (itL != childL->z.end()) ? *itL : *(last_itL);
             auto& sR = (itR != childR->z.end()) ? *itR : *(last_itR);
+
             double dL = (sL).derivative;
             double dR = (sR).derivative;
 
@@ -142,17 +138,11 @@ namespace STLRom {
                     dt = dL - dR;
                 }
                 
-                equals = false;
 
                 if ((v_neq < Signal::Eps && v_neq > -Signal::Eps) || (v_neq == Signal::Eps && d_neq < 0) || (v_neq == -Signal::Eps && d_neq > 0)) {
                     vt = Signal::Eps;
                     dt = 0;   
-                    equals = true;
                 }
-
-                if(first_pass || equals != previous_was_equal) first_eq_ineq = true; // first point in a consecutive subseries at which the or inequality holds (change of state)                
-                
-                previous_was_equal = equals;
                 
                 break;
             }
@@ -243,8 +233,7 @@ namespace STLRom {
 
 
             t_prev = t;
-            v_prev = vt;
-            d_prev = dt;
+ 
             d_prev_neq = d_neq;
             v_prev_neq = v_neq;
 
