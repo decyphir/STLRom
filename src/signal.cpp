@@ -110,7 +110,13 @@ namespace STLRom {
         pop_front();
         
         while (front().time != first_time) {
-            if( fabs(back().valueAt(front().time) - front().value) > ZERO_POS || fabs(back().derivative - front().derivative) > ZERO_POS) {
+            // FIXME : temporary fix for unexplained double time problem in eventually
+            // the temporary keeps the last sample with the same time stamp
+            if (fabs(back().time - front().time) < ZERO_POS ) {
+                pop_back();
+                push_back(front());
+            }
+            else if( (fabs(back().valueAt(front().time) - front().value) > ZERO_POS || fabs(back().derivative - front().derivative) > ZERO_POS)) {
                 push_back(front());
             }
             pop_front();
