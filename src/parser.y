@@ -470,7 +470,7 @@ assignement : NEW_ID ASSIGN stl_formula
             }
             | NEW_ID ASSIGN signal_expr
             {
-                driver.formula_map[$1] = $3;
+                driver.function_map[$1] = $3;
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined function " << $1 << " = " << *$3 << RESET << endl;
             }
