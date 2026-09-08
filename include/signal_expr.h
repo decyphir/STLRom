@@ -116,6 +116,40 @@ namespace STLRom
                 }
             };
     };
+
+    class shifted_transducer: public unary_transducer {
+
+        public:
+            string _name;
+            double _shift;
+
+            explicit shifted_transducer(transducer *_child, string name, double shift):
+                transducer(), unary_transducer(_child), _name(name), _shift(shift) {
+            };
+
+            virtual shifted_transducer* clone() const {
+                transducer * child_clone= child->clone();
+                return new shifted_transducer(child_clone, _name, _shift);
+            }
+
+            virtual ~shifted_transducer() {};
+
+            double compute_robustness();
+
+            void print() const{
+                print(cout);
+            };
+
+            void print(ostream &os) const {
+                os << _name;
+                os << "[t";
+                if (_shift >= 0) os << "+";
+                os << _shift;
+                os << "]";
+            }
+            ;
+
+    };
     
     class constant_transducer : public transducer
     {

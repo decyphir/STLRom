@@ -167,6 +167,7 @@
 %type <STLRom::interval*>   interval
 %type <std::string>            op op_eq
 %type <std::string>            constant
+%type <double>              shift_expr
 /* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
 
@@ -201,15 +202,35 @@ constant_signal : CONSTANT
            $$->signal_map = driver.data.signal_map;
         };
 
-signal: SIGNAL_ID LINT TIME RINT
+shift_expr : 
+        { $$ = 0; }
+        | PLUS CONSTANT
         {
-            $$ = new signal_transducer($1);
+            double val;
+            s_to_d( $2, val );
+            $$ = val;
+        }
+        | MINUS CONSTANT
+        {
+            double val;
+            s_to_d( $2, val );
+            $$ = val;
+            $$ = -val;
+        };
 
-            $$->trace_data_ptr = &driver.data.data_vector;
-            $$->param_map = driver.worker.param_map;
-            $$->signal_map = driver.data.signal_map;
+signal: SIGNAL_ID LINT TIME shift_expr RINT
+        {
+            transducer *ref = new signal_transducer($1);
 
+            ref->trace_data_ptr = &driver.data.data_vector;
+            ref->param_map = driver.worker.param_map;
+            ref->signal_map = driver.data.signal_map;
 
+            if ($4 == 0) {
+                $$ = ref;
+            } else {
+                $$ = new shifted_transducer(ref, $1, $4);
+            }
             // WARNING TODO:
             // this will never be called because if signal is not defined,
             // scanner will not return SIGNAL_ID token but rather a NEW_ID token
@@ -228,7 +249,7 @@ signal: SIGNAL_ID LINT TIME RINT
         }
         ;
 
-formula_signal: PHI_ID LINT TIME RINT
+formula_signal: PHI_ID LINT TIME shift_expr RINT
         {
             auto formula_it = driver.formula_map.find($1);
 
@@ -254,7 +275,12 @@ formula_signal: PHI_ID LINT TIME RINT
             }
             else {
                 transducer * clone = ref->clone();
-                $$ = new formula_signal_transducer(clone, $1, isFunction);
+                transducer * base = new formula_signal_transducer(clone, $1, isFunction);
+                if ($4 == 0) {
+                    $$ = base;
+                } else {
+                    $$ = new shifted_transducer(base, $1, $4);
+                } 
                 // TODO: copy variables (should be done in clone() no?)
             }
 
