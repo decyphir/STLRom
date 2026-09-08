@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(STLRom VERSION 0.4.0 LANGUAGES CXX)
+option(DEBUG "Enable debug code" OFF)
 
 # assumes bison and flex installed with brew
 if(APPLE)
@@ -70,7 +71,9 @@ if (BUILD_PYTHON_EXTENSION)
      ${SOURCE_FILES}
      ${BISON_MyParser_OUTPUTS}
      ${FLEX_MyScanner_OUTPUTS})
-
+  if(DEBUG)
+    target_compile_definitions(_stlrom PRIVATE DEBUG___ DEBUG__)
+  endif()
   install (
     TARGETS _stlrom
    DESTINATION stlrom

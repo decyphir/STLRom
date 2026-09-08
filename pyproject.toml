@@ -29,7 +29,8 @@ dev = [
 [tool.scikit-build]
 minimum-version = "build-system.requires"
 cmake.args = [
-    "-DBUILD_PYTHON_EXTENSION=ON" 
+    "-DBUILD_PYTHON_EXTENSION=ON",
+    "-DDEBUG=OFF"
 ]
 
 [tool.cibuildwheel]
