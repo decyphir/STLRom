@@ -1,10 +1,12 @@
-def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
+def plot(self, label=None, ax=None, **kwargs):
     import matplotlib.pyplot as plt
 
     draw_canvas = kwargs.pop('draw_canvas', True)
     draw_samples = kwargs.pop('draw_samples', False)
     plot_sat = kwargs.pop('plot_sat', False)
+    plot_rob = kwargs.pop('plot_rob', True)
     legend = kwargs.pop('legend', True)
+    title = kwargs.pop('title', None)
 
     samples_list = self.get_samples_list()
 
@@ -16,7 +18,8 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Value')
-    ax.set_title(title)
+    if title is not None:
+        ax.set_title(title)
     ax.grid(True)
         
     import numpy as np
@@ -49,23 +52,24 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
     samples_times += [sn.time, self.end_time, np.nan]
     samples_values += [sn.value, sn_v, np.nan]
+
+    if plot_rob:        
+        if draw_samples:
+            l_line, = ax.plot(samples_times, samples_values, **kwargs)    
+            c = l_line.get_color()
+            ax.plot(times, values, linestyle='--', color=c)    
+
+            ax.plot(
+                [s.time for s in samples_list],
+                [s.value for s in samples_list],
+                linestyle='None',
+                marker='o',
+                color=c
+            )
+        else:
+            l_line, = ax.plot(times, values, **kwargs)    
         
-    if draw_samples:
-        l_line, = ax.plot(samples_times, samples_values, **kwargs)    
-        c = l_line.get_color()
-        ax.plot(times, values, linestyle='--', color=c)    
-        
-        ax.plot(
-            [s.time for s in samples_list],
-            [s.value for s in samples_list],
-            linestyle='None',
-            marker='o',
-            color=c
-        )
-    else:
-        l_line, = ax.plot(times, values, **kwargs)    
-        
-    l_line.set_label(label)
+        l_line.set_label(label)
 
     if draw_canvas:
         ax.figure.canvas.draw()
