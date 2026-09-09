@@ -43,6 +43,8 @@ double shifted_transducer::compute_robustness() {
 		double d = (*iter).derivative;
 		z.appendSample(t-_shift, v, d);
 	}
+	
+	z.resize(start_time, end_time);
 
 	return z.front().value;
 }
