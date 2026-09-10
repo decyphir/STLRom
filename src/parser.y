@@ -142,6 +142,7 @@
 %token <std::string>   CONSTANT        "constant"
 %token <std::string>   PARAM_ID        "param_id"
 %token <std::string>   PHI_ID          "phi_id"
+%token <std::string>   FUNC_ID          "func_id"
 %token <std::string>   NEW_ID          "new_id"
 %token <std::string>   SIGNAL_ID       "signal_id"
 %token <std::string>   STL_TEST_ID     "stl_test_id"
@@ -253,35 +254,43 @@ formula_signal: PHI_ID LINT TIME shift_expr RINT
         {
             auto formula_it = driver.formula_map.find($1);
 
-            bool isFunction = false;
-            transducer *ref = nullptr;
 
-            if (formula_it != driver.formula_map.end()) {
-                ref = formula_it->second;
-            }
-            else {
-                auto function_it = driver.function_map.find($1);
-
-                if (function_it != driver.function_map.end()) {
-                    ref = function_it->second;
-                    isFunction = true;
-                }
-            }
-
-            if (ref == nullptr) {
+            if (formula_it == driver.formula_map.end()) {
                 cout << "Parsing error: unknown identifier " << $1 << endl;
                 $$ = nullptr;
                 YYERROR;
             }
+
             else {
-                transducer * clone = ref->clone();
-                transducer * base = new formula_signal_transducer(clone, $1, isFunction);
+                transducer * clone = formula_it->second->clone();
+                transducer * base = new formula_signal_transducer(clone, $1, false);
                 if ($4 == 0) {
                     $$ = base;
                 } else {
                     $$ = new shifted_transducer(base, $1, $4);
                 } 
-                // TODO: copy variables (should be done in clone() no?)
+            }
+
+        };
+        | FUNC_ID LINT TIME shift_expr RINT
+        {
+            auto formula_it = driver.function_map.find($1);
+
+
+            if (formula_it == driver.function_map.end()) {
+                cout << "Parsing error: unknown identifier " << $1 << endl;
+                $$ = nullptr;
+                YYERROR;
+            }
+
+            else {
+                transducer * clone = formula_it->second->clone();
+                transducer * base = new formula_signal_transducer(clone, $1, false);
+                if ($4 == 0) {
+                    $$ = base;
+                } else {
+                    $$ = new shifted_transducer(base, $1, $4);
+                } 
             }
 
         };
