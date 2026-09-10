@@ -249,9 +249,9 @@ namespace STLRom
 
         virtual void print(ostream &os) const
         {
-            os << "abs( ";
+            os << "abs(";
             child->print(os);
-            os << " )";
+            os << ")";
         };
     };
 
@@ -321,7 +321,7 @@ namespace STLRom
         virtual void print(ostream &os) const
         {
             childL->print(os);
-            os << "+";
+            os << " + ";
             childR->print(os);
         };
     };
@@ -351,7 +351,7 @@ namespace STLRom
         virtual void print(ostream &os) const
         {
             childL->print(os);
-            os << "-";
+            os << " - ";
             if (dynamic_cast<binary_transducer *>(childR) || dynamic_cast<unary_minus_transducer *>(childR)) {
                 os << "(";
                 childR->print(os);
@@ -394,7 +394,7 @@ namespace STLRom
             } else {
                 childL->print(os);                
             }
-            os << "*";
+            os << " * ";
             if (dynamic_cast<binary_transducer *>(childR) || dynamic_cast<unary_minus_transducer *>(childR)) {
                 os << "(";
                 childR->print(os);
