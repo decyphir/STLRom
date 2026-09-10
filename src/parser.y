@@ -205,17 +205,20 @@ constant_signal : CONSTANT
 
 shift_expr : 
         { $$ = 0; }
-        | PLUS CONSTANT
+        | PLUS constant
         {
             double val;
-            s_to_d( $2, val );
+            if (!s_to_d($2, val)) {
+                val = driver.worker.get_param($2);
+            }
             $$ = val;
         }
-        | MINUS CONSTANT
+        | MINUS constant
         {
             double val;
-            s_to_d( $2, val );
-            $$ = val;
+            if (!s_to_d($2, val)) {
+                val = driver.worker.get_param($2);
+            }
             $$ = -val;
         };
 
