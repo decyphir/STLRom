@@ -234,6 +234,10 @@ signal: SIGNAL_ID LINT TIME shift_expr RINT
                 $$ = ref;
             } else {
                 $$ = new shifted_transducer(ref, $1, $4);
+
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
             }
             // WARNING TODO:
             // this will never be called because if signal is not defined,
@@ -251,6 +255,20 @@ signal: SIGNAL_ID LINT TIME shift_expr RINT
             //    YYERROR;
             //}
         }
+        | SIGNAL_ID LINT MINUS TIME RINT
+        {
+            transducer *ref = new signal_transducer($1);
+
+            ref->trace_data_ptr = &driver.data.data_vector;
+            ref->param_map = driver.worker.param_map;
+            ref->signal_map = driver.data.signal_map;
+
+            $$ = new past_transducer(ref, $1);
+
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
+        }
         ;
 
 formula_signal: PHI_ID LINT TIME shift_expr RINT
@@ -267,10 +285,19 @@ formula_signal: PHI_ID LINT TIME shift_expr RINT
             else {
                 transducer * clone = formula_it->second->clone();
                 transducer * base = new formula_signal_transducer(clone, $1, false);
+
+                base->trace_data_ptr = &driver.data.data_vector;
+                base->param_map = driver.worker.param_map;
+                base->signal_map = driver.data.signal_map;
+
                 if ($4 == 0) {
                     $$ = base;
                 } else {
                     $$ = new shifted_transducer(base, $1, $4);
+
+                    $$->trace_data_ptr = &driver.data.data_vector;
+                    $$->param_map = driver.worker.param_map;
+                    $$->signal_map = driver.data.signal_map;
                 } 
             }
 
@@ -289,10 +316,17 @@ formula_signal: PHI_ID LINT TIME shift_expr RINT
             else {
                 transducer * clone = formula_it->second->clone();
                 transducer * base = new formula_signal_transducer(clone, $1, false);
+                base->trace_data_ptr = &driver.data.data_vector;
+                base->param_map = driver.worker.param_map;
+                base->signal_map = driver.data.signal_map;
                 if ($4 == 0) {
                     $$ = base;
                 } else {
                     $$ = new shifted_transducer(base, $1, $4);
+
+                    $$->trace_data_ptr = &driver.data.data_vector;
+                    $$->param_map = driver.worker.param_map;
+                    $$->signal_map = driver.data.signal_map;
                 } 
             }
 
