@@ -253,14 +253,7 @@ public:
         driver.print(os);
         return os;
     }
-    /** Read a trace file */
-    //inline bool read_trace_file(string trace_file_name)
-    //{
-    //    data.clear();
-    //    return read_trace(trace_file_name, data);
-    //}
-
-
+    
     /** dump all assigned formulas satisfaction function to a file */
     void dump();
     void dump_trace_file(const string &);
@@ -268,7 +261,6 @@ public:
     void print_trace(ostream &os);
     void print_trace();
     
-
 
 private:
     Scanner m_scanner;

@@ -33,5 +33,19 @@ def plot_signals(self, sig_names=None, same_ax=True, ax=None, draw_samples=False
             for sig in sig_names[1:]:
                 self.plot_signal(sig, draw_samples=draw_samples)
     return ax
-            
+
+def plot_rob(self, phi, t0, tf, label=None, ax=None, **kwargs):
+    S = self.get_rob_signal(phi, t0, tf)
+    
+    if S is not None and label is None: 
+        label = str(phi)
+    return plot(S, label=label, ax=ax, **kwargs)
+
+def plot_sat(self, phi, t0, tf, label=None, ax=None, **kwargs):
+    S = self.get_rob_signal(phi, t0, tf)
+    
+    if S is not None and label is None: 
+        label = str(phi)
+    return plot(S, label=label, ax=ax, plot_rob=False, plot_sat=True, **kwargs)
+
     
