@@ -94,6 +94,11 @@
 "alw"     { return STLRom::Parser::make_BOX(yylloc); }
 "alw_"    { return STLRom::Parser::make_BOX(yylloc); }
 
+"H"       { return STLRom::Parser::make_HIST(yylloc); }
+"H_"      { return STLRom::Parser::make_HIST(yylloc); }
+"hist"     { return STLRom::Parser::make_HIST(yylloc); }
+"hist_"    { return STLRom::Parser::make_HIST(yylloc); }
+
 "U"       { return STLRom::Parser::make_UNTIL(yylloc); }
 "U_"      { return STLRom::Parser::make_UNTIL(yylloc); }
 "until"   { return STLRom::Parser::make_UNTIL(yylloc); }

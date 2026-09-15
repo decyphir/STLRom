@@ -116,6 +116,7 @@
 %token                 IMPLIES         "=>"
 %token                 PARAM_EQ        "="
 %token                 BOX             "alw"
+%token                 HIST            "hist"
 %token                 DIAMOND         "ev"
 %token                 UNTIL           "until"
 %token                 TIME            "time"
@@ -263,7 +264,7 @@ signal: SIGNAL_ID LINT TIME shift_expr RINT
             ref->param_map = driver.worker.param_map;
             ref->signal_map = driver.data.signal_map;
 
-            $$ = new past_transducer(ref, $1);
+            $$ = new past_transducer(ref);
 
             $$->trace_data_ptr = &driver.data.data_vector;
             $$->param_map = driver.worker.param_map;
@@ -502,6 +503,32 @@ stl_formula :
                  $$->trace_data_ptr = &driver.data.data_vector;
                  $$->param_map = driver.worker.param_map;
                  $$->signal_map = driver.data.signal_map;
+
+             }
+             | HIST interval stl_formula %prec HIST
+             {
+                transducer *inv = new past_transducer($3);
+                inv->trace_data_ptr = &driver.data.data_vector;
+                inv->param_map = driver.worker.param_map;
+                inv->signal_map = driver.data.signal_map;
+
+                transducer *alw = new alw_transducer($2, inv);
+                alw->trace_data_ptr = &driver.data.data_vector;
+                alw->param_map = driver.worker.param_map;
+                alw->signal_map = driver.data.signal_map;
+
+                transducer *shift = new shifted_transducer(alw, "bla", -$2->begin+$2->end);
+                shift->trace_data_ptr = &driver.data.data_vector;
+                shift->param_map = driver.worker.param_map;
+                shift->signal_map = driver.data.signal_map;
+
+                transducer* out_inv = new past_transducer(shift);
+                out_inv->trace_data_ptr = &driver.data.data_vector;
+                out_inv->param_map = driver.worker.param_map;
+                out_inv->signal_map = driver.data.signal_map;
+
+                
+                $$ = out_inv;
 
              }
              | stl_formula UNTIL interval stl_formula %prec UNTIL
