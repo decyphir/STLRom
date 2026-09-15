@@ -120,15 +120,14 @@ namespace STLRom
     class past_transducer: public unary_transducer {
 
         public:
-            string _name;
 
-            explicit past_transducer(transducer *_child, string name):
-                transducer(), unary_transducer(_child), _name(name) {
+            explicit past_transducer(transducer *_child):
+                transducer(), unary_transducer(_child) {
             };
 
             virtual past_transducer* clone() const {
                 transducer * child_clone= child->clone();
-                return new past_transducer(child_clone, _name);
+                return new past_transducer(child_clone);
             }
 
             virtual ~past_transducer() {};
@@ -140,8 +139,9 @@ namespace STLRom
             };
 
             void print(ostream &os) const {
-                os << _name;
-                os << "[-t]";
+                os << "inv(";
+                child->print(os);
+                os << ")";
             }
             ;
 
