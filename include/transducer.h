@@ -482,7 +482,7 @@ namespace STLRom {
             I->print(os);
             os << " (";
             child->print(os);
-            os << ") ";
+            os << ")";
         }
         ;
 
@@ -521,7 +521,7 @@ namespace STLRom {
             I->print(os);
             os << " (";
             child->print(os);
-            os << ") ";
+            os << ")";
         }
 
     };

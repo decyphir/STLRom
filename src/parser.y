@@ -44,6 +44,7 @@
 {
     #include <iostream>
     #include <string>
+    #include <sstream>
     #include <vector>
     #include <stdint.h>
     #include "transducer.h"
@@ -520,7 +521,11 @@ stl_formula :
                 alw->param_map = driver.worker.param_map;
                 alw->signal_map = driver.data.signal_map;
 
-                transducer *shift = new shifted_transducer(alw, "bla", -$2->begin+$2->end);
+                ostringstream oss;
+                oss << "(" << *alw << ")";
+                string shifted_name = oss.str();
+
+                transducer *shift = new shifted_transducer(alw, shifted_name, -$2->begin+$2->end);
                 shift->trace_data_ptr = &driver.data.data_vector;
                 shift->param_map = driver.worker.param_map;
                 shift->signal_map = driver.data.signal_map;
