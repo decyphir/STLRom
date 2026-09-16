@@ -167,7 +167,7 @@
 
 
 %type <STLRom::transducer*> signal formula_signal stl_atom
-%type <STLRom::transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryexpr
+%type <STLRom::transducer*> signal_expr signal_atom signal_addexpr signal_multexpr signal_unaryoperand signal_unaryexpr
 %type <STLRom::transducer*> constant_signal
 %type <STLRom::transducer*> stl_formula
 %type <STLRom::interval*>   interval
@@ -343,7 +343,7 @@ signal_atom : signal
 	       $$ = $2;
 	    }
 
-signal_unaryexpr : signal_atom
+signal_unaryoperand : signal_atom
         {
 	      $$ = $1;
 	    }
@@ -362,14 +362,19 @@ signal_unaryexpr : signal_atom
             $$->param_map = driver.worker.param_map;
             $$->signal_map = driver.data.signal_map;
         }
-        | MINUS signal_unaryexpr %prec UNARY_OPERATOR /* unary operators only work with abs, constants, and parenthesized stuff, so not signal_expr */
+
+signal_unaryexpr : signal_unaryoperand
+        {
+            $$ = $1;
+        }
+        | MINUS signal_unaryoperand %prec UNARY_OPERATOR /* unary operators only work with abs, constants, and parenthesized stuff, so not signal_expr */
         {
             $$ = new unary_minus_transducer($2);
             $$->trace_data_ptr = &driver.data.data_vector;
             $$->param_map = driver.worker.param_map;
             $$->signal_map = driver.data.signal_map;
         }
-        | PLUS signal_unaryexpr %prec UNARY_OPERATOR
+        | PLUS signal_unaryoperand %prec UNARY_OPERATOR
         {
             $$ = $2;
         }
