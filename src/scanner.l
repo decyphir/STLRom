@@ -106,11 +106,12 @@
 "true"    { return STLRom::Parser::make_BOOL_TRUE(true, yylloc); }
 "false"   { return STLRom::Parser::make_BOOL_FALSE(false, yylloc); }
 
-"t"       { return STLRom::Parser::make_TIME(yylloc); }
-"abs"     { return STLRom::Parser::make_ABS(yylloc); }
-"param"   { return STLRom::Parser::make_PARAM_DECL(yylloc); }
-"test"    { return STLRom::Parser::make_TEST(yylloc); }
-"signal"  { return STLRom::Parser::make_SIGNAL_DECL(yylloc); }
+"t"        { return STLRom::Parser::make_TIME(yylloc); }
+"abs"      { return STLRom::Parser::make_ABS(yylloc); }
+"param"    { return STLRom::Parser::make_PARAM_DECL(yylloc); }
+"interval" { return STLRom::Parser::make_INTERVAL_DECL(yylloc); }
+"test"     { return STLRom::Parser::make_TEST(yylloc); }
+"signal"   { return STLRom::Parser::make_SIGNAL_DECL(yylloc); }
 
 [a-zA-Z][A-Za-z0-9_]*     { 
 
@@ -130,7 +131,7 @@
        
 }
 
-[0-9]*\.[0-9]+     { 
+-?[0-9]*\.[0-9]+   { 
     //yylval->stringVal = new std::string(yytext, yyleng);
     //cout <<  *yylval->stringVal  << " is a CONSTANT "<< endl; 
  
@@ -139,11 +140,11 @@
 
 }
 
-[0-9]*\. {
+-?[0-9]+\. {
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 
-[0-9]+             { 
+-?[0-9]+             { 
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 

@@ -32,6 +32,7 @@
 #include <vector>
 #include <map>
 
+#include "interval.h"
 #include "scanner.h"
 #include "transducer.h"
 #include "stl_monitor.h"
@@ -80,6 +81,9 @@ public:
 
     /** formulas defined by the driver */
     map<string, transducer*> formula_map;
+
+    /** intervals defined by the driver */
+    map<string, interval*> interval_map;
 
     /** data object */
     STLData data;
