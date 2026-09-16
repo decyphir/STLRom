@@ -109,6 +109,11 @@
 "once"      { return STLRom::Parser::make_ONCE(yylloc); }
 "once_"     { return STLRom::Parser::make_ONCE(yylloc); }
 
+"S"          { return STLRom::Parser::make_SINCE(yylloc); }
+"S_"         { return STLRom::Parser::make_SINCE(yylloc); }
+"since"      { return STLRom::Parser::make_SINCE(yylloc); }
+"since_"     { return STLRom::Parser::make_SINCE(yylloc); }
+
 "inv"     { return STLRom::Parser::make_INV(yylloc); }
 
 "and"     { return STLRom::Parser::make_AND(yylloc); }

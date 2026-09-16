@@ -119,6 +119,7 @@
 %token                 BOX             "alw"
 %token                 HIST            "hist"
 %token                 ONCE            "once"
+%token                 SINCE           "since"
 %token                 DIAMOND         "ev"
 %token                 UNTIL           "until"
 %token                 TIME            "time"
@@ -577,6 +578,45 @@ stl_formula :
                 out_inv->signal_map = driver.data.signal_map;
 
                 
+                $$ = out_inv;
+
+             }
+             | stl_formula SINCE interval stl_formula %prec SINCE
+             {
+                transducer *inv1 = new past_transducer($1);
+                inv1->trace_data_ptr = &driver.data.data_vector;
+                inv1->param_map = driver.worker.param_map;
+                inv1->signal_map = driver.data.signal_map;
+
+                transducer *inv2 = new past_transducer($4);
+                inv2->trace_data_ptr = &driver.data.data_vector;
+                inv2->param_map = driver.worker.param_map;
+                inv2->signal_map = driver.data.signal_map;
+
+                transducer* unt = new until_transducer(inv1, $3, inv2);
+                unt->trace_data_ptr = &driver.data.data_vector;
+                unt->param_map = driver.worker.param_map;
+                unt->signal_map = driver.data.signal_map;
+
+                ostringstream oss;
+                oss << "(" << *unt << ")";
+                string shifted_name = oss.str();
+
+                unt->param_map_ptr = &driver.worker.param_map; // TODO: is this problematic?
+                double a,b;
+                if (!unt->get_param($3->begin_str,a)) a = $3->begin;
+                if (!unt->get_param($3->end_str,b)) b = $3->end;
+
+                transducer *shift = new shifted_transducer(unt, shifted_name, b-a);
+                shift->trace_data_ptr = &driver.data.data_vector;
+                shift->param_map = driver.worker.param_map;
+                shift->signal_map = driver.data.signal_map;
+
+                transducer* out_inv = new past_transducer(shift);
+                out_inv->trace_data_ptr = &driver.data.data_vector;
+                out_inv->param_map = driver.worker.param_map;
+                out_inv->signal_map = driver.data.signal_map;
+
                 $$ = out_inv;
 
              }
