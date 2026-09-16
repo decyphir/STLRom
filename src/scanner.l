@@ -94,15 +94,20 @@
 "alw"     { return STLRom::Parser::make_BOX(yylloc); }
 "alw_"    { return STLRom::Parser::make_BOX(yylloc); }
 
+"U"       { return STLRom::Parser::make_UNTIL(yylloc); }
+"U_"      { return STLRom::Parser::make_UNTIL(yylloc); }
+"until"   { return STLRom::Parser::make_UNTIL(yylloc); }
+"until_"  { return STLRom::Parser::make_UNTIL(yylloc); }
+
 "H"       { return STLRom::Parser::make_HIST(yylloc); }
 "H_"      { return STLRom::Parser::make_HIST(yylloc); }
 "hist"     { return STLRom::Parser::make_HIST(yylloc); }
 "hist_"    { return STLRom::Parser::make_HIST(yylloc); }
 
-"U"       { return STLRom::Parser::make_UNTIL(yylloc); }
-"U_"      { return STLRom::Parser::make_UNTIL(yylloc); }
-"until"   { return STLRom::Parser::make_UNTIL(yylloc); }
-"until_"  { return STLRom::Parser::make_UNTIL(yylloc); }
+"O"         { return STLRom::Parser::make_ONCE(yylloc); }
+"O_"        { return STLRom::Parser::make_ONCE(yylloc); }
+"once"      { return STLRom::Parser::make_ONCE(yylloc); }
+"once_"     { return STLRom::Parser::make_ONCE(yylloc); }
 
 "inv"     { return STLRom::Parser::make_INV(yylloc); }
 

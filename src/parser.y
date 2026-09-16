@@ -118,6 +118,7 @@
 %token                 PARAM_EQ        "="
 %token                 BOX             "alw"
 %token                 HIST            "hist"
+%token                 ONCE            "once"
 %token                 DIAMOND         "ev"
 %token                 UNTIL           "until"
 %token                 TIME            "time"
@@ -525,7 +526,47 @@ stl_formula :
                 oss << "(" << *alw << ")";
                 string shifted_name = oss.str();
 
-                transducer *shift = new shifted_transducer(alw, shifted_name, -$2->begin+$2->end);
+                alw->param_map_ptr = &driver.worker.param_map; // TODO: is this problematic?
+                double a,b;
+                if (!alw->get_param($2->begin_str,a)) a = $2->begin;
+                if (!alw->get_param($2->end_str,b)) b = $2->end;
+
+                transducer *shift = new shifted_transducer(alw, shifted_name, b-a);
+                shift->trace_data_ptr = &driver.data.data_vector;
+                shift->param_map = driver.worker.param_map;
+                shift->signal_map = driver.data.signal_map;
+
+                transducer* out_inv = new past_transducer(shift);
+                out_inv->trace_data_ptr = &driver.data.data_vector;
+                out_inv->param_map = driver.worker.param_map;
+                out_inv->signal_map = driver.data.signal_map;
+
+                
+                $$ = out_inv;
+
+             }
+             | ONCE interval stl_formula %prec ONCE
+             {
+                transducer *inv = new past_transducer($3);
+                inv->trace_data_ptr = &driver.data.data_vector;
+                inv->param_map = driver.worker.param_map;
+                inv->signal_map = driver.data.signal_map;
+
+                transducer *ev = new ev_transducer($2, inv);
+                ev->trace_data_ptr = &driver.data.data_vector;
+                ev->param_map = driver.worker.param_map;
+                ev->signal_map = driver.data.signal_map;
+
+                ostringstream oss;
+                oss << "(" << *ev << ")";
+                string shifted_name = oss.str();
+
+                ev->param_map_ptr = &driver.worker.param_map; // TODO: is this problematic?
+                double a,b;
+                if (!ev->get_param($2->begin_str,a)) a = $2->begin;
+                if (!ev->get_param($2->end_str,b)) b = $2->end;
+
+                transducer *shift = new shifted_transducer(ev, shifted_name, b-a);
                 shift->trace_data_ptr = &driver.data.data_vector;
                 shift->param_map = driver.worker.param_map;
                 shift->signal_map = driver.data.signal_map;
