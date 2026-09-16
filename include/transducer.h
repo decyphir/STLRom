@@ -637,6 +637,45 @@ namespace STLRom {
         ;
     };
 
+    class past_transducer: public unary_transducer {
+
+        public:
+
+            explicit past_transducer(transducer *_child):
+                transducer(), unary_transducer(_child) {
+            };
+
+            virtual past_transducer* clone() const {
+                transducer * child_clone= child->clone();
+                return new past_transducer(child_clone);
+            }
+
+            virtual ~past_transducer() {};
+
+            double compute_robustness();
+
+            // TODO
+            // double compute_lower_rob();
+            // double compute_upper_rob();
+
+            // void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+            // void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
+
+            void print() const{
+                print(cout);
+            };
+
+            void print(ostream &os) const {
+                os << "inv(";
+                child->print(os);
+                os << ")";
+            }
+            ;
+
+    };
+
     std::ostream& operator<<(std::ostream& os, const transducer& T);
 
 }

@@ -133,6 +133,7 @@
 %token                 TEST            "test"
 %token                 LE              "<="
 %token                 GE              ">="
+%token                 INV             "inv"
 
 %token                 CONSTANT_IDENTIFIER "constant_identifier"
 
@@ -256,20 +257,6 @@ signal: SIGNAL_ID LINT TIME shift_expr RINT
             //    YYERROR;
             //}
         }
-        | SIGNAL_ID LINT MINUS TIME RINT
-        {
-            transducer *ref = new signal_transducer($1);
-
-            ref->trace_data_ptr = &driver.data.data_vector;
-            ref->param_map = driver.worker.param_map;
-            ref->signal_map = driver.data.signal_map;
-
-            $$ = new past_transducer(ref);
-
-            $$->trace_data_ptr = &driver.data.data_vector;
-            $$->param_map = driver.worker.param_map;
-            $$->signal_map = driver.data.signal_map;
-        }
         ;
 
 formula_signal: PHI_ID LINT TIME shift_expr RINT
@@ -360,6 +347,14 @@ signal_unaryexpr : signal_atom
         | ABS LPAREN signal_expr RPAREN
         {
             $$ = new abs_transducer($3);
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
+        }
+        | INV LPAREN signal_expr RPAREN
+        {
+            $$ = new past_transducer($3);
+
             $$->trace_data_ptr = &driver.data.data_vector;
             $$->param_map = driver.worker.param_map;
             $$->signal_map = driver.data.signal_map;
@@ -459,6 +454,14 @@ stl_formula :
              {
                  $$ = $1;
              }
+             | INV LPAREN stl_formula RPAREN %prec INV
+            {
+                $$ = new past_transducer($3);
+
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
+            }
              | NOT stl_formula %prec NOT
              {
                  $$ = new not_transducer($2);

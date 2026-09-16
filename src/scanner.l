@@ -104,6 +104,8 @@
 "until"   { return STLRom::Parser::make_UNTIL(yylloc); }
 "until_"  { return STLRom::Parser::make_UNTIL(yylloc); }
 
+"inv"     { return STLRom::Parser::make_INV(yylloc); }
+
 "and"     { return STLRom::Parser::make_AND(yylloc); }
 "or"      { return STLRom::Parser::make_OR(yylloc); }
 "not"     { return STLRom::Parser::make_NOT(yylloc); }

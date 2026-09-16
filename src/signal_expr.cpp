@@ -15,33 +15,6 @@ namespace STLRom {
 
 /* Unary operators on signals */
 
-double past_transducer::compute_robustness() {
-	child-> compute_robustness();
-
-	double T = child->z.beginTime + child->z.endTime;
-	
-	auto iter = child->z.rbegin();
-	
-	double d;
-	
-	if (iter != child->z.rend())
-	{
-		if (fabs(child->z.endTime - iter->time) < ZERO_POS) {
-			z.appendSample(-child->z.endTime + T, (*iter).valueAt(child->z.endTime), -(*iter).derivative);	
-		}
-
-		for (; (iter+1) != child->z.rend(); iter++) {
-			double t = (*iter).time;
-			double v = (*iter).value;
-			d = (iter+1)->derivative;
-			z.appendSample(-t+T, v, -d);
-		}
-	}
-
-	z.resize(start_time, end_time);
-	return z.front().value;
-}
-
 double formula_signal_transducer::compute_robustness() {
 	child->compute_robustness();
 

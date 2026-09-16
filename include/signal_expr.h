@@ -117,36 +117,6 @@ namespace STLRom
             };
     };
 
-    class past_transducer: public unary_transducer {
-
-        public:
-
-            explicit past_transducer(transducer *_child):
-                transducer(), unary_transducer(_child) {
-            };
-
-            virtual past_transducer* clone() const {
-                transducer * child_clone= child->clone();
-                return new past_transducer(child_clone);
-            }
-
-            virtual ~past_transducer() {};
-
-            double compute_robustness();
-
-            void print() const{
-                print(cout);
-            };
-
-            void print(ostream &os) const {
-                os << "inv(";
-                child->print(os);
-                os << ")";
-            }
-            ;
-
-    };
-
     class shifted_transducer: public unary_transducer {
 
         public:

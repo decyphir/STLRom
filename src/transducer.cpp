@@ -369,6 +369,36 @@ namespace STLRom {
         rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
     }
 
+    double past_transducer::compute_robustness() {
+        child-> compute_robustness();
+
+        double T = child->z.beginTime + child->z.endTime;
+        
+        auto iter = child->z.rbegin();
+        
+        double d;
+        
+        if (iter != child->z.rend())
+        {
+            if (fabs(child->z.endTime - iter->time) < ZERO_POS) {
+                z.appendSample(-child->z.endTime + T, (*iter).valueAt(child->z.endTime), -(*iter).derivative);	
+            }
+
+            for (; (iter+1) != child->z.rend(); iter++) {
+                double t = (*iter).time;
+                double v = (*iter).value;
+                d = (iter+1)->derivative;
+                z.appendSample(-t+T, v, -d);
+            }
+
+            if (iter != child->z.rend())
+                z.appendSample(-iter->time+T, iter->value, -iter->derivative);
+        }
+
+        // z.resize(start_time, end_time);
+        return z.front().value;
+    }
+
     /* Utility functions */
 
     bool transducer::get_param(const string & param, double & val) {
