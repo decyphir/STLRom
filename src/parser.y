@@ -369,10 +369,15 @@ signal_unaryexpr : signal_unaryoperand
         }
         | MINUS signal_unaryoperand %prec UNARY_OPERATOR /* unary operators only work with abs, constants, and parenthesized stuff, so not signal_expr */
         {
+            if (unary_minus_transducer * operand = dynamic_cast<unary_minus_transducer*> ($2)) {
+                // if we have double minus, remove the minuses for efficiency
+                $$ = operand->child;
+            } else {
             $$ = new unary_minus_transducer($2);
             $$->trace_data_ptr = &driver.data.data_vector;
             $$->param_map = driver.worker.param_map;
             $$->signal_map = driver.data.signal_map;
+            }
         }
         | PLUS signal_unaryoperand %prec UNARY_OPERATOR
         {
