@@ -322,7 +322,13 @@ namespace STLRom
         {
             childL->print(os);
             os << " + ";
-            childR->print(os);
+            if (dynamic_cast<unary_minus_transducer *>(childR)) {
+                os << "(";
+                childR->print(os);
+                os << ")";
+            } else {
+                childR->print(os);
+            }
         };
     };
 
