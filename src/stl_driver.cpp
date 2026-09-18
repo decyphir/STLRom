@@ -68,10 +68,6 @@ STLDriver::~STLDriver()
     {
         delete pair.second;
     }
-    for (auto &pair : interval_map)
-    {
-        delete pair.second;
-    }
     worker.formula = nullptr; // FIXME: a better solution with smart pointers?
 }
 
@@ -85,14 +81,10 @@ STLDriver::STLDriver(const STLDriver &other) :
     worker(other.worker),
     data(other.data)
 {
-    // Deep copy of formula_map and interval_map
+    // Deep copy of formula_map
     for (const auto &pair : other.formula_map)
     {
         formula_map[pair.first] = pair.second->clone();
-    }
-    for (const auto &pair : other.interval_map)
-    {
-        interval_map[pair.first] = new interval(*pair.second);
     }
     worker.data = &data;
 }
@@ -101,17 +93,12 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
 {
     if (this != &other)
     {
-        // Clean up existing formula_map and interval_map
+        // Clean up existing formula_map
         for (auto &pair : formula_map)
         {
             delete pair.second;
         }
         formula_map.clear();
-        for (auto &pair : interval_map)
-        {
-            delete pair.second;
-        }
-        interval_map.clear();
 
         trace_scanning = other.trace_scanning;
         trace_parsing = other.trace_parsing;
@@ -120,14 +107,10 @@ STLDriver &STLDriver::operator=(const STLDriver &other)
         worker = other.worker;
         data = other.data;
  
-        // Deep copy of formula_map and interval_map
+        // Deep copy of formula_map
         for (const auto &pair : other.formula_map)
         {
             formula_map[pair.first] = pair.second->clone();
-        }
-        for (const auto &pair : other.interval_map)
-        {
-            interval_map[pair.first] = new interval(*pair.second);
         }
 
         worker.data = &data;
@@ -144,12 +127,10 @@ STLDriver::STLDriver(STLDriver &&other) noexcept :
     streamname(std::move(other.streamname)),
     worker(std::move(other.worker)),
     data(std::move(other.data)),
-    formula_map(std::move(other.formula_map)),
-    interval_map(std::move(other.interval_map))
+    formula_map(std::move(other.formula_map))
  
 {
     other.formula_map.clear();
-    other.interval_map.clear();
 
     worker.data = &data;
     other.worker.data = nullptr;
@@ -159,12 +140,8 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
 {
     if (this != &other)
     {
-        // Clean up existing formula_map and interval_map
+        // Clean up existing formula_map
         for (auto &pair : formula_map)
-        {
-            delete pair.second;
-        }
-        for (auto &pair : interval_map)
         {
             delete pair.second;
         }
@@ -176,10 +153,8 @@ STLDriver &STLDriver::operator=(STLDriver &&other) noexcept
         worker = std::move(other.worker);
         data = std::move(other.data);
         formula_map = std::move(other.formula_map);
-        interval_map = std::move(other.interval_map);
  
         other.formula_map.clear();
-        other.interval_map.clear();
 
         worker.data = &data;
         other.worker.data = nullptr;
@@ -239,16 +214,6 @@ void STLDriver::clear() {
     }
 
     formula_map.clear();
-    for (auto interval = interval_map.begin(); interval != interval_map.end(); interval++)
-    {
-        if (interval->second != 0)
-        {
-            delete interval->second;
-            interval->second = 0;
-        }
-    }
-
-    interval_map.clear();
     // TODO : clear worker
 }
 
@@ -279,7 +244,7 @@ void STLDriver::error(const std::string &m)
 }
 
 
-double STLDriver::get_param(const string &param)
+double STLDriver::get_param(const string &param) const
 {
     return worker.get_param(param);
 }
@@ -287,6 +252,16 @@ double STLDriver::get_param(const string &param)
 void STLDriver::set_param(const string &param, double n)
 {
     worker.set_param(param, n);
+}
+
+interval STLDriver::get_interval(const string &itv) const
+{
+    return worker.get_interval(itv);
+}
+
+void STLDriver::set_interval(const string &itv, interval i)
+{
+    worker.set_interval(itv, i);
 }
 
 double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
@@ -589,7 +564,19 @@ void STLDriver::print(ostream &out) const
         }
         out << endl;
     }
-    
+
+    if (!worker.interval_map.empty()) {
+        out << "interval ";        
+        for (const auto &interval : worker.interval_map)
+        {
+            out << interval.first<< "=" << interval.second;            
+            if (&interval != &(*std::prev(worker.interval_map.end())))
+            {
+                out << ", ";
+            }
+        }
+        out << endl;
+    }    
     
     out << "\n# With formulas:" << endl;
 

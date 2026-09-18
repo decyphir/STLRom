@@ -38,6 +38,7 @@ namespace STLRom {
         const trace_data *trace_data_ptr; // signal data to monitor: vector of Signal
         const tube_data *tube_data_ptr; // tube data to monitor: vector of Tube
         const map<string, double> *param_map_ptr;   //  parameter values    
+        const map<string, interval> *interval_map_ptr; //  interval values    
         
         map<string, double> param_map;   //  parameter values
         
@@ -46,11 +47,11 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
-        // z is estimated robustness signal, z_tube.upper_signal is upper bound, z_tube.-> lower bound
+        // z is estimated robustness signal, z_tube.upper_signal is upper bound, z_tube.lower_signal is lower bound
         Signal z;
         Tube z_tube;
 
-        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), tube_data_ptr(NULL), param_map_ptr(NULL) {};
+        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), tube_data_ptr(NULL), param_map_ptr(NULL), interval_map_ptr(NULL) {};
         
         virtual transducer * clone() const {return NULL;};
         virtual transducer * get_child()  const {return NULL;};
@@ -88,6 +89,10 @@ namespace STLRom {
         virtual void set_param_map_ptr(const map<string, double> &map)
         {
             param_map_ptr= &map;
+        }
+        virtual void set_interval_map_ptr(const map<string, interval> &map)
+        {
+            interval_map_ptr= &map;
         }
         
         inline double get_last_data_time() const 
@@ -140,8 +145,11 @@ namespace STLRom {
         //void print_trace(); 
 
         // looks into param_map for a parameter value - returns success
-        bool get_param(const string&, double &);
+        bool get_param(const string&, double &) const;
         virtual void set_param(const string&, double); 
+        // same for interval_map
+        bool get_interval(const string&, interval &) const;
+        // virtual void set_interval(const string&, interval &);  // TO FIX
 
     };
 
@@ -159,15 +167,24 @@ namespace STLRom {
 
         void init_horizon();
         void set_param(const string&, double); 
+        // void set_interval(const string&, interval &);  // TO FIX
         void reset();
 
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;
             child->set_trace_data_ptr(trace);
         }
+        virtual void set_tube_data_ptr(const tube_data &tube) {
+            tube_data_ptr= &tube;
+            child->set_tube_data_ptr(tube);
+        }
         virtual void set_param_map_ptr(const map<string, double> &map) {
             param_map_ptr= &map;
             child->set_param_map_ptr(map);            
+        }
+        virtual void set_interval_map_ptr(const map<string, interval> &map) {
+            interval_map_ptr= &map;
+            child->set_interval_map_ptr(map);            
         }
 
         virtual transducer * get_child()  const {return child;};
@@ -204,6 +221,7 @@ namespace STLRom {
 
         void init_horizon();
         void set_param(const string&, double); 
+        // void set_interval(const string&, interval &);  // TO FIX
         void reset();
         
         virtual void set_trace_data_ptr(const trace_data &trace) {
@@ -212,10 +230,21 @@ namespace STLRom {
             childR->set_trace_data_ptr(trace);
         }
 
+        virtual void set_tube_data_ptr(const tube_data &tube) {
+            tube_data_ptr= &tube;            
+            childL->set_tube_data_ptr(tube);
+            childR->set_tube_data_ptr(tube);
+        }
+
         virtual void set_param_map_ptr(const map<string, double> &map) {
             param_map_ptr= &map;
             childL->set_param_map_ptr(map);
             childR->set_param_map_ptr(map);
+        }
+        virtual void set_interval_map_ptr(const map<string, interval> &map) {
+            interval_map_ptr= &map;
+            childL->set_interval_map_ptr(map);
+            childR->set_interval_map_ptr(map);
         }
 
         virtual transducer * get_childL()  const {return childL;};
@@ -255,6 +284,7 @@ namespace STLRom {
 
         void init_horizon();
         void set_param(const string&, double); 
+        // void set_interval(const string&, interval &);  // TO FIX
         
         virtual double get_end_complete();
         virtual double get_end_complete_low();
@@ -288,6 +318,7 @@ namespace STLRom {
 
         void init_horizon();
         void set_param(const string&, double); 
+        // void set_interval(const string&, interval &);  // TO FIX
         
         // TODO
         //virtual double get_end_time_complete();

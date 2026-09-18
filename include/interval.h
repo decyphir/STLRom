@@ -25,6 +25,11 @@ public:
 	interval(string b, string e);
 	interval(double b, double e): begin(b), end(e) {};
 
+	double mid();
+
+	bool operator==(const interval& that);
+	bool operator!=(const interval& that);
+
 	string to_string() const;
 
 	void print() const {

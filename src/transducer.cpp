@@ -48,25 +48,46 @@ namespace STLRom {
     /* set param */
     void transducer::set_param(const string &param, double val) {
     	if (param_map.find(param)!=param_map.end()){
-		param_map[param]=val;
-	}
-    
+            param_map[param]=val;
+        }
     }
 
     void unary_transducer::set_param(const string &param, double val) {        
     	if (param_map.find(param)!=param_map.end()){
-		param_map[param]=val;
-	}
+            param_map[param]=val;
+        }
         child->set_param(param, val);
     }
 
     void binary_transducer::set_param(const string &param, double val) {        
     	if (param_map.find(param)!=param_map.end()){
-		param_map[param]=val;
-	}
+            param_map[param]=val;
+        }
         childL->set_param(param, val);
         childR->set_param(param, val);
     }
+
+    /* set interval */ // TOFIX
+    // void transducer::set_interval(const string &param, interval &itv) {
+    // 	if (interval_map_ptr->find(param)!=interval_map_ptr->end()){
+    //         *interval_map_ptr[param]=itv;
+    //     }
+    // }
+
+    // void unary_transducer::set_interval(const string &param, interval &itv) {        
+    // 	if (interval_map_ptr->find(param)!=interval_map_ptr->end()){
+    //         *interval_map_ptr[param]=itv;
+    //     }
+    //     child->set_interval(param, itv);
+    // }
+
+    // void binary_transducer::set_interval(const string &param, interval &itv) {        
+    // 	if (interval_map_ptr->find(param)!=interval_map_ptr->end()){
+    //         *interval_map_ptr[param]=itv;
+    //     }
+    //     childL->set_interval(param, itv);
+    //     childR->set_interval(param, itv);
+    // }
 
     /* reset */
     void transducer::reset() {        
@@ -108,6 +129,22 @@ namespace STLRom {
         childL->set_param(param, val);
         childR->set_param(param, val);
     }
+
+    // TO FIX
+    // void timed_unary_transducer::set_interval(const string &param, interval &itv) {
+    // 	if (interval_map_ptr->find(param)!=interval_map_ptr->end()){
+    //         *interval_map_ptr[param]=itv;
+    //     }
+    //     child->set_interval(param, itv);
+    // }
+
+    // void timed_binary_transducer::set_interval(const string &param, interval &itv) {
+    // 	if (interval_map_ptr->find(param)!=interval_map_ptr->end()){
+    //         *interval_map_ptr[param]=itv;
+    //     }
+    //     childL->set_interval(param, itv);
+    //     childR->set_interval(param, itv);
+    // }
 
     // get end time complete for transducers
     double transducer::get_end_complete() {
@@ -371,7 +408,7 @@ namespace STLRom {
 
     /* Utility functions */
 
-    bool transducer::get_param(const string & param, double & val) {
+    bool transducer::get_param(const string & param, double & val) const {
         
         map<string, double>::const_iterator it;            
         if ((param_map_ptr!=NULL)&&( (it= param_map_ptr->find(param)) != param_map_ptr->end())) {            
@@ -380,6 +417,19 @@ namespace STLRom {
         }
         else{
             val = 0.;
+            return false;
+        }
+    }
+
+    bool transducer::get_interval(const string & param, interval & itv) const {
+        
+        map<string, interval>::const_iterator it;            
+        if ((interval_map_ptr!=NULL)&&( (it= interval_map_ptr->find(param)) != interval_map_ptr->end())) {            
+            itv = it->second;
+            return true;
+        }
+        else{
+            itv = interval();
             return false;
         }
     }

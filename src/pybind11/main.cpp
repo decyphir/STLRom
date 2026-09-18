@@ -373,6 +373,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		)
 		.def("get_param",&STLRom::STLDriver::get_param)
 		.def("set_param",&STLRom::STLDriver::set_param)
+		.def("get_interval_bounds", [](const STLRom::STLDriver &self, const string &itv) { interval i = self.get_interval(itv); return vector<double>{i.begin, i.end}; })
+		.def("set_interval",&STLRom::STLDriver::set_interval)
 		.def_readwrite("data",&STLRom::STLDriver::data)
 		.def("copy", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })
 		.def("__copy__", [](const STLRom::STLDriver &self) { return STLRom::STLDriver(self); })

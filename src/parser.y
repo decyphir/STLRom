@@ -175,14 +175,7 @@
 
 %%
 
-constant : CONSTANT
-        {
-            $$ = $1;
-        }
-        | PARAM_ID
-        {
-            $$ = $1;
-        }
+constant : CONSTANT | PARAM_ID
 
 constant_signal : constant
         {
@@ -505,11 +498,15 @@ param_assignements: PARAM_DECL param_assignement_list
 
 interval_assignement: PARAM_ID PARAM_EQ interval
                     {
-                        driver.interval_map[$1] = $3;
+                        driver.worker.interval_map[$1] = *$3;
+                        if (driver.verbose_parser)
+                            cout << CYAN << "Interval " << $1 << " re-assigned value " << *$3 << RESET << endl;
                     }
                     | NEW_ID PARAM_EQ interval
                     {
-                        driver.interval_map[$1] = $3;
+                        driver.worker.interval_map[$1] = *$3;
+                        if (driver.verbose_parser)
+                            cout << CYAN << "Interval " << $1 << " assigned value " << *$3 << RESET << endl;
                     }
 
 interval_assignement_list : interval_assignement
@@ -526,6 +523,8 @@ signal_new: NEW_ID
                 driver.data.signal_map[$1] = idx;
                 Signal s;
                 driver.data.data_vector.push_back(s);
+                Tube t;
+                driver.data.tube_vector.push_back(t);
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }

@@ -24,7 +24,16 @@ namespace STLRom {
     constant_transducer::constant_transducer(const string &p) {
 
         value = 0.;
-        if (!s_to_d(p, value))  param = p;
+        itv = interval();
+        if (!s_to_d(p, value))  param = p; else  itv = interval(value,value);
+
+    }
+
+    constant_transducer::constant_transducer(const string &low, const string &up) {
+
+        itv = interval();
+        if (!s_to_d(low, itv.begin) || !s_to_d(up, itv.end))  param = low; // TODO what should we do?
+        value = itv.mid();
 
     }
        
@@ -309,14 +318,27 @@ namespace STLRom {
         // TODO exception if parameter not found for some reason ? For now, we get 0. as a default silent value.
         if (!param.empty())
         {
-            if (!get_param(param,value)) // should not be necessary
-                cout << "Parameter " << param << " not found (?)." << endl;                
+            if (!get_param(param,value)) {
+                if (!get_interval(param,itv)) {
+                    cout << "Parameter " << param << " not found (?)." << endl;
+                } else {
+                    value = itv.mid();
+                }
+            } else {
+                itv = interval(value, value);
+            }
         }
 
         z.clear();
         z.appendSample(start_time,value,0.);
         z.appendSample(end_time,value,0.);
         z.endTime = end_time;
+
+        z_tube.clear();
+        z_tube.lower_signal.appendSample(start_time,itv.begin,0.);
+        z_tube.upper_signal.appendSample(end_time,itv.end,0.);
+        z_tube.lower_signal.endTime = end_time;
+        z_tube.upper_signal.endTime = end_time;
         
 #ifdef DEBUG__
         printf("<< constant_transducer::compute_robustness OUT.\n");

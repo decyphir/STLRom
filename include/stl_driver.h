@@ -82,9 +82,6 @@ public:
     /** formulas defined by the driver */
     map<string, transducer*> formula_map;
 
-    /** intervals defined by the driver */
-    map<string, interval*> interval_map;
-
     /** data object */
     STLData data;
 
@@ -127,6 +124,7 @@ public:
 
     /** construct a parser driver with data */
     STLDriver(trace_data _trace);
+    // TODO same with tube_data
 
     ~STLDriver();
 
@@ -214,8 +212,13 @@ public:
     void error(const std::string &m);
     
     /** returns value of parameter param */
-    double get_param(const string &param);
+    double get_param(const string &param) const;
     void set_param(const string &param, double n);
+    
+    /** returns interval of parameter param */
+    interval get_interval(const string &itv) const;
+    void set_interval(const string &itv, interval i);
+
 
     /** monitor a single formula requires data is not empty */
     double get_rob(const string &phi_in);

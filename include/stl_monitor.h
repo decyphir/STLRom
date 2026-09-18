@@ -20,6 +20,7 @@ namespace STLRom
         STLData *data; // TODO: do we need to delete data? is it on the heap?
         STLData owned_data;
         map<string, double> param_map;
+        map<string, interval> interval_map;
 
         double rob;
         double lower_rob;
@@ -42,6 +43,7 @@ namespace STLRom
             : semantics(other.semantics),
               owned_data(other.owned_data),
               param_map(other.param_map),
+              interval_map(other.interval_map),
               rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
               up_to_date(other.up_to_date),
               start_time(other.start_time), end_time(other.end_time)
@@ -73,6 +75,7 @@ namespace STLRom
                 semantics = other.semantics;
                 owned_data = other.owned_data;
                 param_map = other.param_map;
+                interval_map = other.interval_map;
                 rob = other.rob;
                 lower_rob = other.lower_rob;
                 upper_rob = other.upper_rob;
@@ -109,6 +112,7 @@ namespace STLRom
             : semantics(other.semantics),
               owned_data(std::move(other.owned_data)),
               param_map(std::move(other.param_map)),
+              interval_map(std::move(other.interval_map)),
               rob(other.rob), lower_rob(other.lower_rob), upper_rob(other.upper_rob), 
               up_to_date(other.up_to_date),
               start_time(other.start_time), end_time(other.end_time), formula(other.formula)
@@ -131,6 +135,7 @@ namespace STLRom
             {
                 owned_data = std::move(other.owned_data);
                 param_map = std::move(other.param_map);
+                interval_map = std::move(other.interval_map);
                 semantics = other.semantics;
                 rob = other.rob;
                 lower_rob = other.lower_rob;
@@ -238,6 +243,39 @@ namespace STLRom
             else
             {
                 throw std::invalid_argument("Parameter does not exist in param_map");
+            }
+        };
+
+        // Change interval value and update robustness
+        // Maybe add an option to reset rather than update ?
+        inline void set_interval(const std::string &param, interval itv)
+        {
+            auto it = interval_map.find(param);
+            if (it != interval_map.end())
+            {
+                interval prev_value = it->second;
+                if (itv != prev_value)
+                {
+                    it->second = itv;
+                    up_to_date = false;
+                }
+            }
+            else
+            {
+                throw std::invalid_argument("Parameter does not exist in interval_map");
+            }
+        };
+
+        inline interval get_interval(const std::string &param) const
+        {
+            auto it = interval_map.find(param);
+            if (it != interval_map.end())
+            {
+                return it->second;
+            }
+            else
+            {
+                throw std::invalid_argument("Parameter does not exist in interval_map");
             }
         };
 
@@ -358,6 +396,19 @@ namespace STLRom
             }
             if (monitor.param_map.size() == 0)
                 out << "No parameters set.";
+            out << endl;
+            
+            out << "Intervals: ";
+            for (const auto &itv : monitor.interval_map)
+            {
+                out << itv.first << ": " << itv.second;
+                if (&itv != &(*std::prev(monitor.interval_map.end())))
+                {
+                    out << ", ";
+                }
+            }
+            if (monitor.interval_map.size() == 0)
+                out << "No intervals set.";
             out << endl;
             
             out << "\nFormula: ";

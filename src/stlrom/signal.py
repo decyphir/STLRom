@@ -92,6 +92,14 @@ def plot(self, label=None, ax=None, **kwargs):
     return ax
 
 
+def plot_tube(tube, label=None, ax=None, draw_samples=False, **kwargs):
+    ax = plot(tube.lower_signal, ax=ax, draw_samples=draw_samples, **kwargs)
+    ax.lines[-1].set_label(None)
+    if label is None:
+        label = f'Tube {len(ax.get_lines())}' # TOFIX: plot_tube increases x.get_lines by 2, and increases signal number as well.
+    # TODO: pop color from kwargs?
+    return plot(tube.upper_signal, label=label, ax=ax, draw_samples=draw_samples, color=ax.lines[-1].get_color(), **kwargs)
+
 
 def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_figure=False, title='Robustness Map'):
     keys = sorted(rob_map)

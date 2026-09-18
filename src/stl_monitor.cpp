@@ -71,7 +71,9 @@ namespace STLRom
 		if (formula)
 		{
 			formula->set_trace_data_ptr(data->data_vector);
+			formula->set_tube_data_ptr(data->tube_vector);
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -97,7 +99,9 @@ namespace STLRom
 		if(formula)
 		{
 			formula->set_trace_data_ptr(data->data_vector);
+			formula->set_tube_data_ptr(data->tube_vector);
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -139,7 +143,9 @@ namespace STLRom
         {
 			// Ensure formula reads the right data
 			formula->set_trace_data_ptr(data->data_vector); // TODO: convert to STLData
+			formula->set_tube_data_ptr(data->tube_vector); // TODO: convert to STLData
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
@@ -172,6 +178,7 @@ namespace STLRom
 			// Ensure formula reads the right data
 			formula->set_tube_data_ptr(data->tube_vector); // TODO: convert to STLData
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
@@ -206,7 +213,9 @@ namespace STLRom
         {
 			// Ensure formula reads the right data
 			formula->set_trace_data_ptr(data->data_vector); // TODO : convert to STLData
+			formula->set_tube_data_ptr(data->tube_vector); // TODO : convert to STLData
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);

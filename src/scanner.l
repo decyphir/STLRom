@@ -119,7 +119,8 @@
         return STLRom::Parser::make_PHI_ID(yytext, yylloc);
     }
     else        
-    if (m_driver.worker.param_map.find(yytext) != m_driver.worker.param_map.end()) {
+    if (m_driver.worker.param_map.find(yytext) != m_driver.worker.param_map.end()
+        || m_driver.worker.interval_map.find(yytext) != m_driver.worker.interval_map.end()) {
         return STLRom::Parser::make_PARAM_ID(yytext, yylloc);
     }
     else 
