@@ -117,14 +117,14 @@ namespace STLRom
             };
     };
 
-    class shifted_transducer: public unary_transducer {
+    class shifted_transducer: public timed_unary_transducer {
 
         public:
             string _name;
             double _shift;
 
             explicit shifted_transducer(transducer *_child, string name, double shift):
-                transducer(), unary_transducer(_child), _name(name), _shift(shift) {
+                transducer(), unary_transducer(_child), timed_unary_transducer(new interval(shift, shift), _child), _name(name), _shift(shift) {
             };
 
             virtual shifted_transducer* clone() const {

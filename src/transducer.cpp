@@ -27,7 +27,7 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         // update start_time and end_time of child
-        child->set_horizon(start_time+a,end_time+b);
+        child->set_horizon(fmax(0, start_time+a),end_time+b);
         child->init_horizon();
 
     }
@@ -40,7 +40,7 @@ namespace STLRom {
 
         // update start_time and end_time of children
         childL->set_horizon(start_time, end_time+b);
-        childR->set_horizon(start_time+a, end_time+b);
+        childR->set_horizon(fmax(0, start_time+a), end_time+b);
         childL->init_horizon();
         childR->init_horizon();
     }

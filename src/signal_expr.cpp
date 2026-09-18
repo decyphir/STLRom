@@ -44,7 +44,10 @@ double shifted_transducer::compute_robustness() {
 		z.appendSample(t-_shift, v, d);
 	}
 	
-	z.resize(start_time, end_time);
+	// FIXME
+	// z.resize(start_time, end_time);
+	// start_time = z.beginTime;
+	// end_time = z.endTime;
 
 	return z.front().value;
 }
