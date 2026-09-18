@@ -1,6 +1,6 @@
 # STLRom
 
-STLRom is a C++ library with python bindings for Robust online monitoring of Signal Temporal Logic. It computes interval robustness as defined in 'Robust online monitoring of signal temporal logic' by Deshmuk et al, although the algorithm is not exactly the one described in this paper.
+STLRom is a C++ library with python bindings for Robust Online Monitoring of Signal Temporal Logic. It computes interval robustness loosely as defined in 'Robust online monitoring of signal temporal logic' by Deshmuk et al, although the algorithm is not exactly the one described in this paper.
 
 ## Install
 
@@ -11,7 +11,7 @@ STLRom depends on "recent" versions of Flex and Bison. To install them on Linux,
 ```
 brew install bison flex 
 ``` 
-
+If you don't like Homebrew, it is probably not *required*, provided you like messing with `CMakeList.txt` files. As long as the thing can find the required Bison and Flex libraries, that should work.
 
 ### Install from pypi
 
@@ -41,7 +41,7 @@ From the `stlrom` folder, install with
 pip install -e .
 ```
 
-#### Using `uv`
+#### Using `uv` (Recommended)
 
 A python interface for stlrom is implemented with pybind11. To build and install it in a local virtual environment we recommend using [uv](https://docs.astral.sh/uv/getting-started/installation/).
 To create a virtual environment, build and install stlrom, run:
@@ -102,7 +102,12 @@ to run C++ test files in the `test` folder.
 
 ### Tutorial Notebook
 
-The following [notebook](test/notebook_test.ipynb) is formated as a tutorial for stlrom. It can also be accessed on [colab](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing).
+The following notebooks are hopefully good resources to get started. 
+
+- [test/tutorial_notebook1.ipynb](test/tutorial_notebook1.ipynb) is formated as a quick tutorial for stlrom.
+- [test/tutorial_notebook2.ipynb](test/tutorial_notebook2.ipynb) is longer and has plots. 
+
+Of course, at least `ipykernel` is required for the notebooks execution. 
 
 ###  A Complete Example
 
@@ -133,12 +138,12 @@ stl_driver.add_sample([0,  2 , 1 ])  # must be of the format [t, x_val, y_val]
 stl_driver.add_sample([0.5, -3, 2])  # i.e., contain signal value with same order as declared
 stl_driver.add_sample([2.1, 10, 20])
 
-
-# create monitor for phi 
-phi1 = stl_driver.get_monitor("phi1")
-
-print('Robustness of phi1 at time 0.: ', phi1.get_rob_signal())
-print('Robustness of phi1 from time 1.: ', phi1.get_rob_signal(1.))
+print(stl_driver)
+print('Robustness of phi1 at time 0.: ', phi1.get_rob())
+print('Robustness of phi1 from time 1.: ', phi1.get_rob(1.))
 ```
 
+### Test folder
+
+In you don't mind the mess, the `test` folder contains several examples and test programs and scripts which may be useful. 
 
