@@ -25,6 +25,11 @@ namespace STLRom
 		up_to_date = false;
 	}
 
+	void STLMonitor::set_tubes(const std::vector<Tube>& tubes)
+	{
+		data->set_tube_vector(tubes); // copy TODO: check if it's actually a copy
+	}
+
 	// TODO: better convert to STLData
 	void STLMonitor::load_csv(const vector<string>& files)
 	{
@@ -66,7 +71,9 @@ namespace STLRom
 		if (formula)
 		{
 			formula->set_trace_data_ptr(data->data_vector);
+			formula->set_tube_data_ptr(data->tube_vector);
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -92,7 +99,9 @@ namespace STLRom
 		if(formula)
 		{
 			formula->set_trace_data_ptr(data->data_vector);
+			formula->set_tube_data_ptr(data->tube_vector);
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -134,7 +143,9 @@ namespace STLRom
         {
 			// Ensure formula reads the right data
 			formula->set_trace_data_ptr(data->data_vector); // TODO: convert to STLData
+			formula->set_tube_data_ptr(data->tube_vector); // TODO: convert to STLData
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
@@ -142,6 +153,41 @@ namespace STLRom
     		up_to_date = true;
 		}			
         return formula->z;
+    }	
+
+
+	Tube STLMonitor::get_rob_tube() {
+        return get_rob_tube(start_time, end_time);
+    }
+
+    Tube STLMonitor::get_rob_tube(double t) {        
+		return get_rob_tube(t,t);
+    }
+
+	Tube STLMonitor::get_rob_tube(double t_start, double t_end)
+    {
+		if (data->is_empty())
+		{
+			cout << "Empty data" << endl;
+			return Tube();
+		}
+		start_time = t_start;
+		end_time  = t_end;
+		if (formula)
+        {
+			// Ensure formula reads the right data
+			formula->set_tube_data_ptr(data->tube_vector); // TODO: convert to STLData
+			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
+			Signal::semantics=semantics;
+			formula->reset();				
+			formula->set_horizon(t_start, t_end);
+			rob = formula->compute_robustness();
+            lower_rob = formula->compute_lower_rob();
+            upper_rob = formula->compute_upper_rob();
+			up_to_date = true;
+		}			
+        return formula->z_tube;
     }	
 
 
@@ -167,7 +213,9 @@ namespace STLRom
         {
 			// Ensure formula reads the right data
 			formula->set_trace_data_ptr(data->data_vector); // TODO : convert to STLData
+			formula->set_tube_data_ptr(data->tube_vector); // TODO : convert to STLData
 			formula->set_param_map_ptr(param_map);
+			formula->set_interval_map_ptr(interval_map);
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
@@ -176,7 +224,7 @@ namespace STLRom
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
 		}			
-        return {formula->z, formula->z_low, formula->z_up};
+        return {formula->z, formula->z_tube.lower_signal, formula->z_tube.upper_signal};
     }
 	
 

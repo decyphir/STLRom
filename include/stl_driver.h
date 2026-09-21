@@ -32,6 +32,7 @@
 #include <vector>
 #include <map>
 
+#include "interval.h"
 #include "scanner.h"
 #include "transducer.h"
 #include "stl_monitor.h"
@@ -105,6 +106,9 @@ public:
     /** set signals data */
     void set_signals(const std::vector<Signal>& signals);
 
+    /** set tubes data */
+    void set_tubes(const std::vector<Tube>& tubes);
+
     /** load signals from csv file */
     void load_csv(const vector<string>& files);
 
@@ -120,6 +124,7 @@ public:
 
     /** construct a parser driver with data */
     STLDriver(trace_data _trace);
+    // TODO same with tube_data
 
     ~STLDriver();
 
@@ -207,8 +212,13 @@ public:
     void error(const std::string &m);
     
     /** returns value of parameter param */
-    double get_param(const string &param);
+    double get_param(const string &param) const;
     void set_param(const string &param, double n);
+    
+    /** returns interval of parameter param */
+    interval get_interval(const string &itv) const;
+    void set_interval(const string &itv, interval i);
+
 
     /** monitor a single formula requires data is not empty */
     double get_rob(const string &phi_in);

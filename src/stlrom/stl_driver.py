@@ -1,5 +1,5 @@
-from ._stlrom import Signal
-from .signal import plot
+from ._stlrom import Signal, Tube
+from .signal import plot, plot_tube
 
 def get_signal_idx(self, sig):    
     return self.data.get_signal_idx(sig)
@@ -10,11 +10,14 @@ def get_signame_from_idx(self,idx):
 def get_signal(self, sig):
     return self.data.get_signal(sig)
 
+def get_tube(self, tube):
+    return self.data.get_tube(tube)
+
 def plot_signal(self, sig, label=None, ax=None, draw_samples=False):
     S = self.get_signal(sig)
     
     if S is not None and label is None: 
-        label = str(sig) #FIXME: dummy if sig is integer
+        label = "Signal " + str(sig) #FIXME: dummy if sig is integer
     return plot(S, label=label, ax=ax, draw_samples=draw_samples)
     
 def plot_signals(self, sig_names=None, same_ax=True, ax=None, draw_samples=False):
@@ -48,4 +51,11 @@ def plot_sat(self, phi, t0, tf, label=None, ax=None, **kwargs):
         label = str(phi)
     return plot(S, label=label, ax=ax, plot_rob=False, plot_sat=True, **kwargs)
 
-    
+
+def plot_tube_sig(self, tube, label=None, ax=None, draw_samples=False, **kwargs):
+    T = tube if type(tube) is Tube else self.get_tube(tube)
+    # TODO: also accept list of sigs? (output of get_online_rob_signal)
+
+    if T is not None and label is None and type(tube) is not Tube: 
+        label = "Tube " + str(tube)
+    return plot_tube(T, label=label, ax=ax, draw_samples=draw_samples, **kwargs)

@@ -27,6 +27,7 @@
  */
 
 #include "stl_driver.h"
+#include "interval.h"
 #include "transducer.h"
 #include "parser.hpp" // this is needed for symbol_type
 
@@ -204,16 +205,16 @@ int STLDriver::parse() {
 
 void STLDriver::clear() {
     for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
-		{
-			if (formula->second != 0)
-			{
-				delete formula->second;
-				formula->second = 0;
-			}
-		}
+    {
+        if (formula->second != 0)
+        {
+            delete formula->second;
+            formula->second = 0;
+        }
+    }
 
-		formula_map.clear();
-        // TODO : clear worker
+    formula_map.clear();
+    // TODO : clear worker
 }
 
 std::string STLDriver::str() const {
@@ -243,7 +244,7 @@ void STLDriver::error(const std::string &m)
 }
 
 
-double STLDriver::get_param(const string &param)
+double STLDriver::get_param(const string &param) const
 {
     return worker.get_param(param);
 }
@@ -251,6 +252,16 @@ double STLDriver::get_param(const string &param)
 void STLDriver::set_param(const string &param, double n)
 {
     worker.set_param(param, n);
+}
+
+interval STLDriver::get_interval(const string &itv) const
+{
+    return worker.get_interval(itv);
+}
+
+void STLDriver::set_interval(const string &itv, interval i)
+{
+    worker.set_interval(itv, i);
 }
 
 double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
@@ -437,6 +448,11 @@ void STLDriver::set_signals(const std::vector<Signal>& signals)
     data.set_data_vector(signals);
 }
 
+void STLDriver::set_tubes(const std::vector<Tube>& tubes)
+{
+    data.set_tube_vector(tubes);
+}
+
 // TODO manage with STLData
 void STLDriver::load_csv(const vector<string>& files)
 {
@@ -545,7 +561,19 @@ void STLDriver::print(ostream &out) const
         }
         out << endl;
     }
-    
+
+    if (!worker.interval_map.empty()) {
+        out << "interval ";        
+        for (const auto &interval : worker.interval_map)
+        {
+            out << interval.first<< "=" << interval.second;            
+            if (&interval != &(*std::prev(worker.interval_map.end())))
+            {
+                out << ", ";
+            }
+        }
+        out << endl;
+    }    
     
     out << "\n# With formulas:" << endl;
 

@@ -128,6 +128,7 @@
 %token                 MULT            "*"
 %token                 ABS             "abs"
 %token                 PARAM_DECL      "param_decl"
+%token                 INTERVAL_DECL   "interval_decl"
 %token                 SIGNAL_DECL     "signal_decl"
 %token                 TEST            "test"
 %token                 LE              "<="
@@ -165,8 +166,8 @@
 %type <STLRom::transducer*> constant_signal
 %type <STLRom::transducer*> stl_formula
 %type <STLRom::interval*>   interval
-%type <std::string>            op op_eq
-%type <std::string>            constant
+%type <std::string>         op op_eq
+%type <std::string>         constant
 /* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
 
@@ -174,30 +175,14 @@
 
 %%
 
-constant : CONSTANT
-        {
-            $$ = $1;
-        }
-        ;
-        | PARAM_ID
-        {
-           $$ = $1;
-        };
+constant : CONSTANT | PARAM_ID
 
-
-constant_signal : CONSTANT
+constant_signal : constant
         {
             $$ = new constant_transducer($1);
             $$->trace_data_ptr = &driver.data.data_vector;
             $$->signal_map = driver.data.signal_map;
         }
-        ;
-        | PARAM_ID
-        {
-           $$ = new constant_transducer($1);
-           $$->trace_data_ptr = &driver.data.data_vector;
-           $$->signal_map = driver.data.signal_map;
-        };
 
 signal: SIGNAL_ID LINT TIME RINT
         {
@@ -223,18 +208,15 @@ signal: SIGNAL_ID LINT TIME RINT
             //    YYERROR;
             //}
         }
-        ;
 
 signal_atom : signal
         {
             $$ = $1;
         }
-        ;
         | constant_signal
         {
             $$ = $1;
         }
-        ;
         | LPAREN signal_expr RPAREN
         {
 	       $$ = $2;
@@ -301,23 +283,19 @@ stl_atom : signal_expr op signal_expr
               $$->trace_data_ptr = &driver.data.data_vector;
               $$->signal_map = driver.data.signal_map;
           }
-          ;
 
 op        : LT { $$ = "<"; }
           | GT { $$ = ">"; }
           | PARAM_EQ PARAM_EQ { $$ = "="; }
-          ;
 
 op_eq     : 
             LE { $$ = ">"; } // a <= b <=> !(a > b)
           | GE { $$ = "<"; } // a >= b <=> !(a < b)
-          ;
 
 interval : LINT constant COMMA constant RINT
          {
              $$ = new interval($2, $4);
          }
-         ;
          | LINT constant constant RINT
          {
              $$ = new interval($2, $3);
@@ -404,7 +382,6 @@ stl_formula :
                      // TODO: copy variables (should be done in clone() no?)
                  }
              }
-;
 
 
 assignement : NEW_ID ASSIGN stl_formula
@@ -449,28 +426,10 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
                  }
-                 | PARAM_ID PARAM_EQ MINUS CONSTANT
-                 {
-                    double val;
-                    s_to_d( $4, val );
-                    val = -val;
-                    driver.worker.param_map[$1] = val;
-                    if (driver.verbose_parser)
-                        cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
-                 }
                  | NEW_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
-                    driver.worker.param_map[$1] = val;
-                    if (driver.verbose_parser)
-                        cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
-                 }
-                 | NEW_ID PARAM_EQ MINUS CONSTANT
-                 {
-                    double val;
-                    s_to_d( $4, val );
-                    val = -val;
                     driver.worker.param_map[$1] = val;
                     if (driver.verbose_parser)
                         cout << CYAN << "New parameter " << $1 << " assigned value " << val << RESET << endl;
@@ -518,6 +477,27 @@ param_assignements: PARAM_DECL param_assignement_list
 *                           $$ = $2;
 *                       } */
 
+// Intervals
+
+interval_assignement: PARAM_ID PARAM_EQ interval
+                    {
+                        driver.worker.interval_map[$1] = *$3;
+                        if (driver.verbose_parser)
+                            cout << CYAN << "Interval " << $1 << " re-assigned value " << *$3 << RESET << endl;
+                    }
+                    | NEW_ID PARAM_EQ interval
+                    {
+                        driver.worker.interval_map[$1] = *$3;
+                        if (driver.verbose_parser)
+                            cout << CYAN << "Interval " << $1 << " assigned value " << *$3 << RESET << endl;
+                    }
+
+interval_assignement_list : interval_assignement
+                      | interval_assignement_list COMMA interval_assignement
+
+intervals_assignement: INTERVAL_DECL interval_assignement_list
+
+
 // Signals
 
 signal_new: NEW_ID
@@ -526,6 +506,8 @@ signal_new: NEW_ID
                 driver.data.signal_map[$1] = idx;
                 Signal s;
                 driver.data.data_vector.push_back(s);
+                Tube t;
+                driver.data.tube_vector.push_back(t);
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }
@@ -542,9 +524,11 @@ signal_decl: SIGNAL_DECL signal_new_list
 
 start : assignement
       | param_assignements
+      | intervals_assignement
       | signal_decl
       | start assignement
       | start param_assignements
+      | start intervals_assignement
       | start END
       | END
 

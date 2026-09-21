@@ -8,6 +8,7 @@
 #ifndef SIGNAL_EXPR_H_
 #define SIGNAL_EXPR_H_
 
+#include "interval.h"
 #include "signal.h"
 #include "transducer.h"
 
@@ -61,6 +62,9 @@ namespace STLRom
         virtual void set_param_map_ptr(const map<string, double> &map) {
             param_map_ptr= &map;            
         }
+        virtual void set_interval_map_ptr(const map<string, interval> &map) {
+            interval_map_ptr= &map;            
+        }
 
 
 
@@ -82,17 +86,26 @@ namespace STLRom
     public:
         string param;
         double value;
+        interval itv;
         long int td_idx;
 
         constant_transducer()
         {
             value = 0.;
+            itv = interval();
         };
         constant_transducer(double val)
         {
             value = val;
+            itv = interval(val, val);
+        };
+        constant_transducer(double low, double up)
+        {
+            itv = interval(low, up);
+            value = itv.mid();
         };
         constant_transducer(const string &p);
+        constant_transducer(const string &low, const string &up);
 
         void init_horizon(){};
 
@@ -103,6 +116,7 @@ namespace STLRom
             T->trace_data_ptr = trace_data_ptr;
             T->param = param;
             T->value = value;
+            T->itv = itv;
             return T;
         }
 
@@ -118,6 +132,16 @@ namespace STLRom
             if (it != map.end())
             {
                 value = (*it).second;
+                itv = interval(value,value);
+            }            
+        }
+        virtual void set_interval_map_ptr(const map<string, interval> &map) {
+            interval_map_ptr= &map;
+            auto it = map.find(param);
+            if (it != map.end())
+            {
+                itv = (*it).second;
+                value = itv.mid();
             }            
         }
 

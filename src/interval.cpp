@@ -35,6 +35,18 @@ interval interval::operator=(const interval& that) {
 	return *this;
 }
 
+double interval::mid() {
+	return (this->begin + this->end) / 2;
+}
+
+bool interval::operator==(const interval &that) {
+	return this->begin == that.begin && this->end == that.end;
+}
+
+bool interval::operator!=(const interval &that) {
+	return !this->interval::operator==(that);
+}
+
 string interval::to_string() const {
 	ostringstream o;
 	o << "[";

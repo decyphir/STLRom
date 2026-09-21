@@ -1,5 +1,6 @@
 #include "signal.h"
 #include "iomanip"
+#include "tools.h"
 #include <vector>
 #include <sstream>
 
@@ -303,6 +304,62 @@ namespace STLRom {
 
         file << endTime << "," << back().valueAt(endTime) << ",0\n"; // FIXME: is 0 derivative correct here ?
     }
+    
+    
+	bool Signal::operator==(const Signal& that) const {
+        if (beginTime != that.beginTime || endTime != that.endTime) {
+            return false;
+        }
+        auto it = this->getSamplesDeque().cbegin();
+        for (auto s : that.getSamplesDeque()) {
+            if (it == this->getSamplesDeque().cend() || s != *it) {
+                return false;
+            }
+            it++;
+        }
+        return true;
+    }
+
+
+	bool Signal::operator!=(const Signal& that) const {
+        if (beginTime != that.beginTime || endTime != that.endTime) {
+            return true;
+        }
+        auto it = this->getSamplesDeque().cbegin();
+        for (auto s : that.getSamplesDeque()) {
+            if (it == this->getSamplesDeque().cend() || s != *it) {
+                return true;
+            }
+            it++;
+        }
+        return false;
+    }
+
+    Signal Signal::operator+(const Signal& that) const {
+        // Addition of two signals defined on the intersection of time domains.
+        // TODO Compute on the union of time domains?
+        Signal result = Signal();
+    	merge_signals_with_op(result, *this, that, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
+        result.simplify();
+        return result;
+    }
+
+    Signal Signal::operator-(const Signal& that) const {
+        return *this + (that * -1.);
+    }
+
+	Signal Signal::operator*(double p) const {
+        Signal result = Signal();
+        for (Sample s : this->getSamplesDeque()) {
+            result.appendSample(s.time, p*s.value, p*s.derivative);
+        }
+        return result;
+    }
+
+	Signal Signal::operator/(double p) const {
+        return *this * (1/p);
+    }
+
 
     /*
      * friend functions
