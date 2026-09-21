@@ -510,9 +510,6 @@ string STLDriver::get_signals_names() const
 /** compute robustness for all formulas defined in the driver and write results in files */
 void STLDriver::dump()
 {
-
-    // transducer::param_map = param_map; FIXME fix what ??
-
     for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
     {
         formula->second->trace_data_ptr = &data.data_vector;

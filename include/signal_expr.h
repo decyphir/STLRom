@@ -42,7 +42,6 @@ namespace STLRom
             new_clone->td_idx = td_idx;
             new_clone->trace_data_ptr = trace_data_ptr;
             new_clone->signal_map = signal_map;
-            new_clone->param_map = param_map;
             return new_clone;
         };
 
@@ -96,16 +95,6 @@ namespace STLRom
         constant_transducer(const string &p);
 
         void init_horizon(){};
-
-        void set_param(const string &some_param, double val)
-        {
-            if (param_map.find(param) != param_map.end())
-            {
-                param_map[param] = val;
-            }
-            if (some_param==param)
-                value = val;
-        }
 
         virtual constant_transducer *clone() const
         {

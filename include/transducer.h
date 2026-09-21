@@ -37,8 +37,6 @@ namespace STLRom {
         const trace_data *trace_data_ptr; // signal data to monitor: vector of Signal
         const map<string, double> *param_map_ptr;   //  parameter values    
         
-        map<string, double> param_map;   //  parameter values
-        
         map<string, int>  signal_map;    //  maps signal name to index in trace data 
 
         // interval of time for which the transducer needs to provide values
@@ -126,7 +124,6 @@ namespace STLRom {
 
         // looks into param_map for a parameter value - returns success
         bool get_param(const string&, double &);
-        virtual void set_param(const string&, double); 
 
     };
 
