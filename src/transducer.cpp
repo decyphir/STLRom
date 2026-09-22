@@ -216,6 +216,18 @@ namespace STLRom {
         rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
     }
 
+    void once_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        child->fill_robustness_map(rob_map, depth+1);
+
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+    }
+
+    void once_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        child->fill_online_robustness_map(rob_map, depth+1);
+
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+    }
+
     double once_transducer::compute_robustness() {
 
         #ifdef DEBUG__
@@ -300,6 +312,18 @@ namespace STLRom {
     }
 
     void alw_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        child->fill_online_robustness_map(rob_map, depth+1);
+
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+    }
+
+    void hist_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        child->fill_robustness_map(rob_map, depth+1);
+
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+    }
+
+    void hist_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
         child->fill_online_robustness_map(rob_map, depth+1);
 
         rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};

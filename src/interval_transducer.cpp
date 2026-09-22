@@ -247,6 +247,89 @@ namespace STLRom {
         return z_up.front().value;
     }
 
+    // ONCE
+    double once_transducer::compute_lower_rob() {
+        // lower robustness for a max operator. Partial information gives a lower bound for max, so we keep it. 
+
+#ifdef DEBUG__
+        printf( ">  once_transducer:computer_lower_rob           IN.\n");
+        cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
+        cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
+#endif
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        child->compute_lower_rob(); // 
+
+        // Maybe there was/is a good reason for, feels like I'll regret it        
+//      if (child->z_low.endTime < a) {
+//         z_low.appendSample(start_time, BOTTOM); 
+//          return BOTTOM;
+//      }
+    
+        Signal child_z_low = child->z_low; // is this a copy?
+        child_z_low.reverse();
+        child_z_low.shift(b);
+
+        z_low.compute_timed_eventually(child_z_low, a, b);        
+        
+        double et =min(z_low.endTime,end_time);
+        z_low.resize(start_time,max(start_time,et), BOTTOM);
+        z_low.reverse();
+
+        if (z_low.empty()) // why not, but can this really happen ?
+            z_low.appendSample(start_time, BOTTOM); 
+
+#ifdef DEBUG__
+        cout << "OUT: z_low:"<< z_low << endl;
+        printf( "<  once_transducer:computer_lower_rob           OUT.\n");
+#endif
+        return z_low.front().value;
+    }
+
+    double once_transducer::compute_upper_rob() {
+        // upper bound on max. Partial info can always be beaten by new samples, so can't say anything. 
+
+#ifdef DEBUG__
+        printf( ">  once_transducer:computer_upper_rob           IN.\n");
+        cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
+        cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
+#endif
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        child->compute_upper_rob();
+    
+//        if (child->z_up.endTime < a) {
+//            z_up.appendSample(start_time, TOP); 
+//            return TOP;
+//        }
+
+        Signal child_z_up = child->z_up; // is this a copy?
+        child_z_up.reverse();
+        child_z_up.shift(b);
+
+        z_up.compute_timed_eventually(child_z_up, a, b);
+
+        // Here we remove values computed with partial data 
+        double et =min(z_up.endTime-b+a,end_time);
+        z_up.resize(start_time,et, 0.);
+        z_up.reverse();
+
+        if (z_up.empty()) 
+            z_up.appendSample(start_time, TOP); 
+
+#ifdef DEBUG__
+        cout << "OUT: z_up:"<< z_up << endl;
+        printf( "<  once_transducer:computer_upper_rob           OUT.\n");
+#endif
+        return z_up.front().value;
+    }
+
     // ALWAYS
     double alw_transducer::compute_lower_rob() {
         // lower bound on a min operator. Partial info cannot help here. 
@@ -313,6 +396,91 @@ namespace STLRom {
 #ifdef DEBUG__
         cout << "OUT: z_up:"<< z_up << endl;
         printf( "<  alw_transducer:computer_upper_rob          OUT.\n");
+#endif
+        return z_up.front().value;
+
+    }
+
+
+    // HISTORICALLY
+    double hist_transducer::compute_lower_rob() {
+        // lower bound on a min operator. Partial info cannot help here. 
+
+#ifdef DEBUG__
+        printf( ">  hist_transducer:computer_lower_rob          IN.\n");
+        cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
+        cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
+#endif
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+
+        child->compute_lower_rob();
+
+//        if (child->z_low.endTime < a) {
+//            z_low.appendSample(start_time,BOTTOM);        
+//            return BOTTOM;
+//        }
+
+        Signal child_z_low = child->z_low; // is this a copy?
+        child_z_low.reverse();
+        child_z_low.shift(b);
+
+        z_low.compute_timed_globally(child_z_low, a, b);
+
+        // Here we remove values computed with partial data 
+        double et =min(z_low.endTime-b+a,end_time);
+        z_low.resize(start_time,et, 0.);
+
+        z_low.reverse();
+	
+        if (z_low.empty()) 
+            z_low.appendSample(start_time,BOTTOM);        
+
+#ifdef DEBUG__
+        printf( "OUT: z_low:");
+        cout << "<  hist_transducer:computer_lower_rob           OUT."<< endl;
+#endif
+
+        return z_low.front().value;
+    }
+
+    double hist_transducer::compute_upper_rob() {
+#ifdef DEBUG__
+        printf( ">  hist_transducer:computer_upper_rob          IN.\n");
+        cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
+        cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
+#endif
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        Signal child_z_up = child->z_up; // is this a copy?
+        child_z_up.reverse();
+        child_z_up.shift(b);
+
+        child->compute_upper_rob();
+//        if (child->z_up.endTime < a) {
+//            z_up.appendSample(start_time, TOP); 
+//            return TOP;
+//        }
+
+        //    cout << "child->z_up:" << child->z_up << endl;
+        z_up.compute_timed_globally(child_z_up, a, b);
+        double et =min(z_up.endTime,end_time);
+        z_up.resize(start_time,max(start_time,et), 0.);
+
+        z_up.reverse();
+
+        if (z_up.empty()) 
+            z_up.appendSample(start_time, TOP); 
+
+#ifdef DEBUG__
+        cout << "OUT: z_up:"<< z_up << endl;
+        printf( "<  hist_transducer:computer_upper_rob          OUT.\n");
 #endif
         return z_up.front().value;
 

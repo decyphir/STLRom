@@ -570,12 +570,12 @@ namespace STLRom {
         }
 
         double compute_robustness();
-        // double compute_lower_rob();
-        // double compute_upper_rob();
+        double compute_lower_rob();
+        double compute_upper_rob();
 
-        // void fill_robustness_map(robustness_map_t &rob_map, int depth);
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
 
-        // void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
 
 
         void print() const{
@@ -610,12 +610,12 @@ namespace STLRom {
         }
 
         double compute_robustness();
-        // double compute_lower_rob();
-        // double compute_upper_rob();
+        double compute_lower_rob();
+        double compute_upper_rob();
 
-        // void fill_robustness_map(robustness_map_t &rob_map, int depth);
+        void fill_robustness_map(robustness_map_t &rob_map, int depth);
 
-        // void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+        void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
 
 
         void print() const{
