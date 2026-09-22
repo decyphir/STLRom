@@ -524,121 +524,19 @@ stl_formula :
              | HIST interval stl_formula %prec HIST
              {
 
-                $3->param_map_ptr = &driver.worker.param_map; // TODO: is this problematic?
-                double a,b;
-                if (!$3->get_param($2->begin_str,a)) a = $2->begin;
-                if (!$3->get_param($2->end_str,b)) b = $2->end;
+                $$ = new hist_transducer($2, $3);
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
 
-                ostringstream oss;
-                oss << "(" << *$3 << ")";
-                string shifted_name = oss.str();
-                
-                transducer *shift = new shifted_transducer($3, shifted_name, -b+a);
-                shift->trace_data_ptr = &driver.data.data_vector;
-                shift->param_map = driver.worker.param_map;
-                shift->signal_map = driver.data.signal_map;
-
-                transducer *inv = new past_transducer(shift);
-                inv->trace_data_ptr = &driver.data.data_vector;
-                inv->param_map = driver.worker.param_map;
-                inv->signal_map = driver.data.signal_map;
-
-                transducer *alw = new alw_transducer($2, inv);
-                alw->trace_data_ptr = &driver.data.data_vector;
-                alw->param_map = driver.worker.param_map;
-                alw->signal_map = driver.data.signal_map;                
-
-                transducer* out_inv = new past_transducer(alw);
-                out_inv->trace_data_ptr = &driver.data.data_vector;
-                out_inv->param_map = driver.worker.param_map;
-                out_inv->signal_map = driver.data.signal_map;
-
-                
-                $$ = out_inv;
 
              }
              | ONCE interval stl_formula %prec ONCE
              {
-                $3->param_map_ptr = &driver.worker.param_map; // TODO: is this problematic?
-                double a,b;
-                if (!$3->get_param($2->begin_str,a)) a = $2->begin;
-                if (!$3->get_param($2->end_str,b)) b = $2->end;
-
-                ostringstream oss;
-                oss << "(" << *$3 << ")";
-                string shifted_name = oss.str();
-
-                transducer *shift = new shifted_transducer($3, shifted_name, -b+a);
-                shift->trace_data_ptr = &driver.data.data_vector;
-                shift->param_map = driver.worker.param_map;
-                shift->signal_map = driver.data.signal_map;
-
-                transducer *inv = new past_transducer(shift);
-                inv->trace_data_ptr = &driver.data.data_vector;
-                inv->param_map = driver.worker.param_map;
-                inv->signal_map = driver.data.signal_map;
-
-                transducer *ev = new ev_transducer($2, inv);
-                ev->trace_data_ptr = &driver.data.data_vector;
-                ev->param_map = driver.worker.param_map;
-                ev->signal_map = driver.data.signal_map;                
-
-                transducer* out_inv = new past_transducer(ev);
-                out_inv->trace_data_ptr = &driver.data.data_vector;
-                out_inv->param_map = driver.worker.param_map;
-                out_inv->signal_map = driver.data.signal_map;
-
-                
-                $$ = out_inv;
-
-             }
-             | stl_formula SINCE interval stl_formula %prec SINCE
-             {
-                $1->param_map_ptr = &driver.worker.param_map; // TODO: is this problematic?
-                double a,b;
-                if (!$1->get_param($3->begin_str,a)) a = $3->begin;
-                if (!$1->get_param($3->end_str,b)) b = $3->end;
-
-                ostringstream oss1;
-                oss1 << "(" << *$1 << ")";
-                string shifted_name1 = oss1.str();
-
-                transducer *shift1 = new shifted_transducer($1, shifted_name1, -b);
-                shift1->trace_data_ptr = &driver.data.data_vector;
-                shift1->param_map = driver.worker.param_map;
-                shift1->signal_map = driver.data.signal_map;
-
-                transducer *inv1 = new past_transducer(shift1);
-                inv1->trace_data_ptr = &driver.data.data_vector;
-                inv1->param_map = driver.worker.param_map;
-                inv1->signal_map = driver.data.signal_map;
-
-                ostringstream oss2;
-                oss2 << "(" << *$4 << ")";
-                string shifted_name2 = oss2.str();
-
-                transducer *shift2 = new shifted_transducer($4, shifted_name2, -b+a);
-                shift2->trace_data_ptr = &driver.data.data_vector;
-                shift2->param_map = driver.worker.param_map;
-                shift2->signal_map = driver.data.signal_map;
-
-                transducer *inv2 = new past_transducer(shift2);
-                inv2->trace_data_ptr = &driver.data.data_vector;
-                inv2->param_map = driver.worker.param_map;
-                inv2->signal_map = driver.data.signal_map;
-
-                transducer* unt = new until_transducer(inv1, $3, inv2);
-                unt->trace_data_ptr = &driver.data.data_vector;
-                unt->param_map = driver.worker.param_map;
-                unt->signal_map = driver.data.signal_map;
-
-
-                transducer* out_inv = new past_transducer(unt);
-                out_inv->trace_data_ptr = &driver.data.data_vector;
-                out_inv->param_map = driver.worker.param_map;
-                out_inv->signal_map = driver.data.signal_map;
-
-                $$ = out_inv;
+                $$ = new once_transducer($2, $3);
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
 
              }
              | stl_formula UNTIL interval stl_formula %prec UNTIL

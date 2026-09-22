@@ -250,6 +250,33 @@ namespace STLRom {
         };
     };
 
+    class past_timed_unary_transducer: virtual public unary_transducer {
+    public:
+
+        interval *I;
+
+        past_timed_unary_transducer():unary_transducer()  {
+            I = new interval();
+            init_horizon();
+        };
+
+        past_timed_unary_transducer(transducer *_child): unary_transducer(_child){
+            I = new interval();
+            init_horizon();
+        };
+
+        past_timed_unary_transducer(interval *_I, transducer *_child): unary_transducer(_child), I(_I){
+            init_horizon();
+        };
+
+        void init_horizon();
+        void set_param(const string&, double); 
+
+        virtual ~past_timed_unary_transducer() {
+            delete I;
+        };
+    };
+
 
     // timed binary transducer (output depends on children output at some time )
     class timed_binary_transducer: virtual public binary_transducer {
@@ -525,6 +552,87 @@ namespace STLRom {
         }
 
     };
+
+    class once_transducer: public past_timed_unary_transducer {
+    public:
+
+        explicit once_transducer(interval *_I, transducer *_child) :
+            unary_transducer(_child),past_timed_unary_transducer(_I, _child)   {
+        };
+
+        virtual once_transducer* clone() const {
+            transducer * child_clone= child->clone();
+            interval *Iclone = new interval(*I);
+            return new once_transducer(Iclone, child_clone);
+        }
+
+        virtual ~once_transducer() { // child is killed by unary transducer and interval by timed_unary_transducer
+        }
+
+        double compute_robustness();
+        // double compute_lower_rob();
+        // double compute_upper_rob();
+
+        // void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        // void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
+
+        void print() const{
+            print(cout);
+        };
+
+        virtual void print(ostream &os) const {
+            os << "once_";
+            I->print(os);
+            os << " (";
+            child->print(os);
+            os << ")";
+        }
+        ;
+
+    };
+
+    class hist_transducer: public past_timed_unary_transducer {
+    public:
+
+        explicit hist_transducer(interval *_I, transducer *_child) :
+            unary_transducer(_child),past_timed_unary_transducer(_I, _child)   {
+        };
+
+        virtual hist_transducer* clone() const {
+            transducer * child_clone= child->clone();
+            interval *Iclone = new interval(*I);
+            return new hist_transducer(Iclone, child_clone);
+        }
+
+        virtual ~hist_transducer() { // child is killed by unary transducer and interval by timed_unary_transducer
+        }
+
+        double compute_robustness();
+        // double compute_lower_rob();
+        // double compute_upper_rob();
+
+        // void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        // void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
+
+        void print() const{
+            print(cout);
+        };
+
+        virtual void print(ostream &os) const {
+            os << "hist_";
+            I->print(os);
+            os << " (";
+            child->print(os);
+            os << ")";
+        }
+        ;
+
+    };
+
 
     class until_transducer: public timed_binary_transducer {
 

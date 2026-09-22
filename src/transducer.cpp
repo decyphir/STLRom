@@ -32,6 +32,19 @@ namespace STLRom {
 
     }
 
+    void past_timed_unary_transducer::init_horizon() {
+
+        // checks whether a and b are given by parameters, and assign corresponding values
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        // update start_time and end_time of child
+        child->set_horizon(fmax(0, start_time-b), fmax(0, end_time-a));
+        child->init_horizon();
+
+    }
+
     void timed_binary_transducer::init_horizon() {
 
         double a,b;
@@ -95,6 +108,13 @@ namespace STLRom {
 
 
     void timed_unary_transducer::set_param(const string &param, double val) {
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+        child->set_param(param, val);
+    }
+
+    void past_timed_unary_transducer::set_param(const string &param, double val) {
     	if (param_map.find(param)!=param_map.end()){
 		param_map[param]=val;
 	}
@@ -194,6 +214,60 @@ namespace STLRom {
         child->fill_online_robustness_map(rob_map, depth+1);
 
         rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+    }
+
+    double once_transducer::compute_robustness() {
+
+        #ifdef DEBUG__
+        printf(">  once_transducer::compute_robustness:         IN." );
+        cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
+        cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
+        #endif
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        child->compute_robustness();
+        Signal child_z = child->z; // is this a copy?
+        child_z.reverse();
+        child_z.shift(b);
+        z.compute_timed_eventually(child_z, a, b);
+        double et = min(z.endTime,end_time);
+        z.resize(start_time,max(start_time,et));
+        z.reverse();
+#ifdef DEBUG__
+        cout << "OUT:" << z << endl;
+        cout << "<  once_transducer::compute_robustness:         OUT." << endl;
+#endif
+        return z.front().value;
+    }
+
+    double hist_transducer::compute_robustness() {
+
+        #ifdef DEBUG__
+        printf(">  hist_transducer::compute_robustness:         IN." );
+        cout << "   I->a: " << I->begin << "   I->b: " << I->end << endl;
+        cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
+        #endif
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        child->compute_robustness();
+        Signal child_z = child->z; // is this a copy?
+        child_z.reverse();
+        child_z.shift(b);
+        z.compute_timed_globally(child_z, a, b);
+        double et =min(z.endTime,end_time);
+        z.resize(start_time,max(start_time,et));
+        z.reverse();
+#ifdef DEBUG__
+        cout << "OUT:" << z << endl;
+        cout << "<  hist_transducer::compute_robustness:         OUT." << endl;
+#endif
+        return z.front().value;
     }
 
     double alw_transducer::compute_robustness() {
