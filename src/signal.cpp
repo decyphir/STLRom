@@ -267,6 +267,10 @@ namespace STLRom {
 
         double T = beginTime + endTime;
 
+        if(fabs(back().time - endTime) > ZERO_POS) {
+            push_back(Sample(endTime, back().valueAt(endTime), back().derivative));
+        }
+
         std::reverse(begin(), end());
 
         for (Signal::iterator i = begin(); i != end(); ++i) {
