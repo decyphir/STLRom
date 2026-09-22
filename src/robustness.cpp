@@ -15,7 +15,7 @@ using namespace std;
 namespace STLRom { 
 
 void Signal::compute_boolean(const Signal &y) {
-	clear();
+	clear_all();
 	beginTime = y.beginTime;
 	endTime = y.endTime;
 	// cout << "compute BOOLEAN!!" << endl;
@@ -63,7 +63,7 @@ void Signal::compute_boolean(const Signal &y) {
 
 
 void Signal::compute_left_time_rob(const Signal &y) {
-	clear();
+	clear_all();
 	beginTime = y.beginTime;
 	endTime = y.endTime;
 
@@ -82,7 +82,7 @@ void Signal::compute_left_time_rob(const Signal &y) {
 }
 
 void Signal::compute_right_time_rob(const Signal &y) {
-	clear();
+	clear_all();
 	beginTime = y.beginTime;
 	endTime = y.endTime;
 	
@@ -111,7 +111,7 @@ void Signal::compute_right_time_rob(const Signal &y) {
 }
 
 void Signal::compute_not(const Signal &y) {
-	clear();
+	clear_all();
 	beginTime = y.beginTime;
 	endTime = y.endTime;
 	for (auto i = y.begin(); i != y.end(); i++) {
@@ -121,7 +121,9 @@ void Signal::compute_not(const Signal &y) {
 
 void Signal::compute_and(const Signal &x, const Signal &y) {
 
-	clear();
+	clear_all();
+	if (x.empty() || y.empty())
+		return;
 	auto i = x.rbegin();
 	auto j = y.rbegin();
 
@@ -140,7 +142,9 @@ void Signal::compute_and(const Signal &x, const Signal &y) {
 
 void Signal::compute_or(const Signal &x, const Signal &y) {
 
-	clear();
+	clear_all();
+	if (x.empty() || y.empty())
+		return;
 	Signal::const_reverse_iterator i = x.rbegin();
 	Signal::const_reverse_iterator j = y.rbegin();
 
@@ -159,7 +163,7 @@ void Signal::compute_or(const Signal &x, const Signal &y) {
 
 void Signal::compute_implies(const Signal &x, const Signal &y) {
 
-	clear();
+	clear_all();
 	Signal not_x;
 	not_x.compute_not(x);
 	compute_or(not_x, y);
@@ -196,7 +200,7 @@ void Signal::compute_until(const Signal &x, const Signal &y) {
 #endif
 
 	if (x.empty()||y.empty()) {
-		this->clear();
+		this->clear_all();
 		return;
 	}
 
@@ -249,7 +253,7 @@ void Signal::compute_bounded_eventually(const Signal& x, double a) {
   #endif
 
 	if (x.empty()) {
-		this->clear();
+		this->clear_all();
 		return;
 	}
 
@@ -277,7 +281,7 @@ void Signal::compute_timed_eventually(const Signal& x, double a, double b) {
   #endif
 
 	if (x.empty()) {
-		this->clear();
+		this->clear_all();
 		return;
 	}
 
@@ -317,7 +321,7 @@ void Signal::compute_bounded_globally(const Signal& x, double a) {
 #endif
 
 	if (x.empty()) {
-		this->clear();
+		this->clear_all();
 		return;
 	}
 
@@ -340,7 +344,7 @@ void Signal::compute_timed_globally(const Signal& x, double a, double b) {
 #endif
 
 	if (x.empty()) {
-		this->clear();
+		this->clear_all();
 		return;
 	}
 
@@ -384,7 +388,7 @@ void Signal::compute_timed_until(const Signal& x , const Signal& y, double a, do
 	Signal *yunt;
 
 	if (x.empty()||y.empty()) {
-		this->clear();
+		this->clear_all();
 		return;
 	}
 
@@ -427,7 +431,7 @@ void Signal::compute_plateau_max(const Signal &x, double a) {
 	Sequence y; //maximum of x(t) and x(t-) at discontinuity points of x
 	Sequence::iterator i;
 
-	clear();
+	clear_all();
 
 	beginTime = x.beginTime;
 	endTime = x.endTime;
@@ -549,7 +553,7 @@ void Signal::compute_plateau_min(const Signal &x, double a) {
 	Sequence y; //minimum of x(t) and x(t-) at discontinuity points of x
 	Sequence::iterator i;
 
-	clear();
+	clear_all();
 	beginTime = x.beginTime;
 	endTime = x.endTime;
 

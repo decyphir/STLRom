@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include "tools.h"
 
 using namespace std;
 
@@ -23,6 +22,7 @@ public:
 
 	// tries to convert string into doubles, if fails, keep the string assuming this is a parameter or expression
 	interval(string b, string e);
+	interval(double val): begin(val), end(val) {};
 	interval(double b, double e): begin(b), end(e) {};
 
 	double mid();

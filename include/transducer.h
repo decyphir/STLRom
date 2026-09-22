@@ -5,10 +5,10 @@
 #include <vector>
 #include <iterator>
 #include <string>
+#include <sstream>
 #include "robustness.h"
 #include "interval.h"
 #include "signal.h"
-#include "tube.h"
 
 using namespace std;
 
@@ -17,13 +17,11 @@ using namespace std;
 namespace STLRom {
 
     typedef vector<Signal> trace_data;
-    typedef vector<Tube> tube_data;
 
     struct robustness_info
     {
         int depth;
         const Signal* z;
-        const Tube* z_tube;
     };
     
     typedef map<string, robustness_info> robustness_map_t;
@@ -36,7 +34,6 @@ namespace STLRom {
     public:
 
         const trace_data *trace_data_ptr; // signal data to monitor: vector of Signal
-        const tube_data *tube_data_ptr; // tube data to monitor: vector of Tube
         const map<string, double> *param_map_ptr;   //  parameter values    
         const map<string, interval> *interval_map_ptr; //  interval values    
         
@@ -45,11 +42,10 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
-        // z is estimated robustness signal, z_tube.upper_signal is upper bound, z_tube.lower_signal is lower bound
+        // z is estimated robustness signal
         Signal z;
-        Tube z_tube;
 
-        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), tube_data_ptr(NULL), param_map_ptr(NULL), interval_map_ptr(NULL) {};
+        transducer(): start_time(0.), end_time(0.), trace_data_ptr(NULL), param_map_ptr(NULL), interval_map_ptr(NULL) {};
         
         virtual transducer * clone() const {return NULL;};
         virtual transducer * get_child()  const {return NULL;};
@@ -58,7 +54,7 @@ namespace STLRom {
         
         virtual ~transducer() {};
 
-        // Reset z, z_tube
+        // Reset z
         virtual void reset();
 
         // Initializes horizons
@@ -70,19 +66,11 @@ namespace STLRom {
             init_horizon();
         }
 
-        inline bool use_tube() {
-            return !tube_data_ptr->empty();
-        }
-
         // set trace data 
         // TODO should be done at the constructor, parser and cloning level...
         virtual void set_trace_data_ptr(const trace_data &trace) 
         {
             trace_data_ptr= &trace;
-        }
-        virtual void set_tube_data_ptr(const tube_data &tube) 
-        {
-            tube_data_ptr= &tube;
         }
         virtual void set_param_map_ptr(const map<string, double> &map)
         {
@@ -95,12 +83,8 @@ namespace STLRom {
         
         inline double get_last_data_time() const 
         {
-            if (trace_data_ptr->empty()) {
-                if (!tube_data_ptr->empty())
-                    return (tube_data_ptr->back()).lower_signal.back().time; // TODO: last time of last signal only, really ?
-                else
-                    return 0.; // reasonable default ?
-            }
+            if (trace_data_ptr->empty())
+                return 0.; // reasonable default ?
             else
                 return (trace_data_ptr->back()).back().time; // TODO: last time of last signal only, really ?
         }
@@ -126,8 +110,6 @@ namespace STLRom {
                 
         // get interval for which we have complete information to compute robustness
         virtual double get_end_complete();
-        virtual double get_end_complete_low();
-        virtual double get_end_complete_up();
 
         //TODO fix print mess
         virtual void print() const {};
@@ -146,7 +128,6 @@ namespace STLRom {
         bool get_param(const string&, double &) const;
         // same for interval_map
         bool get_interval(const string&, interval &) const;
-        // virtual void set_interval(const string&, interval &);  // TO FIX
 
     };
 
@@ -163,17 +144,11 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         void reset();
 
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;
             child->set_trace_data_ptr(trace);
-        }
-        virtual void set_tube_data_ptr(const tube_data &tube) {
-            tube_data_ptr= &tube;
-            child->set_tube_data_ptr(tube);
         }
         virtual void set_param_map_ptr(const map<string, double> &map) {
             param_map_ptr= &map;
@@ -217,20 +192,12 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         void reset();
         
         virtual void set_trace_data_ptr(const trace_data &trace) {
             trace_data_ptr= &trace;            
             childL->set_trace_data_ptr(trace);
             childR->set_trace_data_ptr(trace);
-        }
-
-        virtual void set_tube_data_ptr(const tube_data &tube) {
-            tube_data_ptr= &tube;            
-            childL->set_tube_data_ptr(tube);
-            childR->set_tube_data_ptr(tube);
         }
 
         virtual void set_param_map_ptr(const map<string, double> &map) {
@@ -280,12 +247,8 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         
         virtual double get_end_complete();
-        virtual double get_end_complete_low();
-        virtual double get_end_complete_up();
 
         virtual ~timed_unary_transducer() {
             delete I;
@@ -314,8 +277,6 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         
         // TODO
         //virtual double get_end_time_complete();
@@ -651,6 +612,8 @@ namespace STLRom {
         };
 
         double compute_robustness();
+        double compute_lower_rob();
+        double compute_upper_rob();
 
         void fill_robustness_map(robustness_map_t &rob_map, int depth);
 
@@ -677,7 +640,9 @@ namespace STLRom {
         void print() const {
             print(cout);
         }
-        ;
+
+    private:
+        void compute_robustness(const Signal &left, const Signal &right, comparator comp, Signal* z);
     };
 
     std::ostream& operator<<(std::ostream& os, const transducer& T);

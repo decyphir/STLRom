@@ -506,8 +506,6 @@ signal_new: NEW_ID
                 driver.data.signal_map[$1] = idx;
                 Signal s;
                 driver.data.data_vector.push_back(s);
-                Tube t;
-                driver.data.tube_vector.push_back(t);
                 if (driver.verbose_parser)
                     cout << CYAN << "Defined signal " << $1 << " with index " << idx << RESET << endl;
           }

@@ -9,7 +9,6 @@
 #include "tools.h"
 #include "signal.h"
 #include "stl_data.h"
-#include "tube.h"
 
 namespace STLRom
 {
@@ -304,9 +303,6 @@ namespace STLRom
         // set signals data 
         void set_signals(const std::vector<Signal>& signals);
 
-        // set tubes data 
-        void set_tubes(const std::vector<Tube>& tubes);
-
         /** load signals from csv file */
         void load_csv(const vector<string>& files);
 
@@ -331,10 +327,6 @@ namespace STLRom
         Signal get_rob_signal();
         Signal get_rob_signal(double);
         Signal get_rob_signal(double, double);
-
-        Tube get_rob_tube();
-        Tube get_rob_tube(double);
-        Tube get_rob_tube(double, double);
 
         vector<Signal> get_online_rob_signal();
         vector<Signal> get_online_rob_signal(double);

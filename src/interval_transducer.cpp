@@ -1,4 +1,5 @@
 #include <transducer.h>
+#include <signal_expr.h>
 #include <algorithm>
 #include <math.h>
 //#define DEBUG__
@@ -13,34 +14,27 @@ namespace STLRom {
     #ifdef DEBUG__
         printf(">  transducer:compute_lower_rob              IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
-        cout << "last data time:" << get_last_data_time() << endl; 
-    #endif
-        
-        // if for some reason, z was not computed before
-        if (z.empty()) // is it the best test ?
-            compute_robustness();
-
-    #ifdef DEBUG__
-        cout << "z :" << z << endl;
+        cout << "last data time:" << get_last_data_time() << endl;
+        cout << "z : " << z << endl;
     #endif
 
-        z_tube.lower_signal = Signal(z);
-        double last_data_t =  get_last_data_time();
-        
+        double last_data_t = get_last_data_time();
+        Signal z_low(z.lower_signal);
+
         if (end_time>last_data_t) 
         {   
-            z_tube.lower_signal.resize(start_time, last_data_t, BOTTOM);
-            z_tube.lower_signal.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
-            z_tube.lower_signal.endTime = end_time;
+            z_low.resize(start_time, last_data_t, BOTTOM);
+            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
+            z_low.endTime = end_time;
         }
         
     #ifdef DEBUG__
-        cout << "z_tube.lower_signal:" << z_tube.lower_signal << endl;
+        cout << "z_low:" << z_low << endl;
         printf( "<  transducer:compute_lower_rob              OUT.\n");
-         
     #endif
-        z_tube.lower_signal.simplify();
-        return z_tube.lower_signal.front().value;
+        z_low.simplify();
+        z.lower_signal = z_low.getSamplesDeque();
+        return z.lower_signal.front().value;
     };
 
     double transducer::compute_upper_rob(){
@@ -48,44 +42,149 @@ namespace STLRom {
     #ifdef DEBUG__
         printf( ">  transducer:compute_upper_rob              IN.\n");
     #endif
-        //compute_robustness();
-    #ifdef DEBUG__
-        cout << "z:" << z << endl;
-    #endif
-        // if for some reason, z was not computed before
-        if (z.empty()) // is it the best test ?
-            compute_robustness();
-        z_tube.upper_signal = Signal(z);
-        double last_data_t =  get_last_data_time();
-        
+        double last_data_t = get_last_data_time();
+        Signal z_up(z.upper_signal);
         if (end_time>last_data_t) 
         {   
-            z_tube.upper_signal.resize(start_time, last_data_t, TOP);
-            z_tube.upper_signal.appendSample(last_data_t+Signal::Eps, TOP, 0., false);
-            z_tube.upper_signal.endTime = end_time;
+            z_up.resize(start_time, last_data_t, TOP);
+            z_up.appendSample(last_data_t+Signal::Eps, TOP, 0., false);
+            z_up.endTime = end_time;
         }
 
     #ifdef DEBUG__
         printf( "<  transducer:compute_upper_rob              OUT.\n");
     #endif
-        z_tube.upper_signal.simplify();
-        return z_tube.upper_signal.front().value;
+        z_up.simplify();
+        z.upper_signal = z_up.getSamplesDeque();
+        return z.upper_signal.front().value;
     };
-    
+
+    double stl_atom::compute_lower_rob(){
+    #ifdef DEBUG__
+        printf(">  stl_atom:compute_lower_rob              IN.\n");
+        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
+        cout << "last data time:" << get_last_data_time() << endl;
+        cout << "z : " << z << endl;
+    #endif
+        Signal z_low;
+        Signal childL_low, childL_up, childR_low, childR_up;
+        
+        switch (comp) {
+            case STLRom::comparator::LESSTHAN:
+                childL->compute_upper_rob();
+                childR->compute_lower_rob();
+                childL_up = Signal(childL->z.upper_signal);
+                childL_up.endTime = childL->end_time;
+                childR_low = Signal(childR->z.lower_signal);
+                childR_low.endTime = childR->end_time;
+                compute_robustness(childL_up, childR_low, comp, &z_low);
+                break;
+            case STLRom::comparator::GREATERTHAN:
+                childL->compute_lower_rob();
+                childR->compute_upper_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childL_low.endTime = childL->end_time;
+                childR_up = Signal(childR->z.upper_signal);
+                childR_up.endTime = childR->end_time;
+                compute_robustness(childL_low, childR_up, comp, &z_low);
+                break;
+            case STLRom::comparator::EQUAL: // TODO what should we do?
+                childL->compute_lower_rob();
+                childR->compute_lower_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childL_low.endTime = childL->end_time;
+                childR_low = Signal(childR->z.lower_signal);
+                childR_low.endTime = childR->end_time;
+                compute_robustness(childL_low, childR_low, comp, &z_low);
+                break;
+        }
+
+        double last_data_t = get_last_data_time();
+        if (end_time>last_data_t) 
+        {   
+            z_low.resize(start_time, last_data_t, BOTTOM);
+            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
+            z_low.endTime = end_time;
+        }
+        
+    #ifdef DEBUG__
+        cout << "z_low:" << z_low << endl;
+        printf( "<  stl_atom:compute_lower_rob              OUT.\n");
+    #endif
+        z_low.simplify();
+        z.lower_signal = z_low.getSamplesDeque();
+        return z.lower_signal.front().value;
+    };
+
+    double stl_atom::compute_upper_rob(){
+    #ifdef DEBUG__
+        printf(">  stl_atom:compute_upper_rob              IN.\n");
+        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
+        cout << "last data time:" << get_last_data_time() << endl;
+        cout << "z : " << z << endl;
+    #endif
+        Signal z_up;
+        Signal childL_low, childL_up, childR_low, childR_up;
+
+        switch (comp) {
+            case STLRom::comparator::LESSTHAN:
+                childL->compute_lower_rob();
+                childR->compute_upper_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childR_up = Signal(childR->z.upper_signal);
+                compute_robustness(childL_low, childR_up, comp, &z_up);
+                break;
+            case STLRom::comparator::GREATERTHAN:
+                childL->compute_upper_rob();
+                childR->compute_lower_rob();
+                childL_up = Signal(childL->z.upper_signal);
+                childR_low = Signal(childR->z.lower_signal);
+                compute_robustness(childL_up, childR_low, comp, &z_up);
+                break;
+            case STLRom::comparator::EQUAL: // TODO what should we do?
+                childL->compute_upper_rob();
+                childR->compute_upper_rob();
+                childL_up = Signal(childL->z.upper_signal);
+                childR_up = Signal(childR->z.upper_signal);
+                compute_robustness(childL_up, childR_up, comp, &z_up);
+                break;
+        }
+
+        double last_data_t = get_last_data_time();
+        if (end_time>last_data_t) 
+        {   
+            z_up.resize(start_time, last_data_t, TOP);
+            z_up.appendSample(last_data_t+Signal::Eps, TOP, 0., false);
+            z_up.endTime = end_time;
+        }
+    #ifdef DEBUG__
+        cout << "z_up:" << z_up << endl;
+        printf( "<  stl_atom:compute_upper_rob              OUT.\n");
+    #endif
+        z_up.simplify();
+        z.upper_signal = z_up.getSamplesDeque();
+        return z.upper_signal.front().value;
+    };
+
+
     double and_transducer::compute_lower_rob(){
         #ifdef DEBUG__
         printf( ">  and_transducer:compute_lower_rob           IN.\n");
         #endif
         childL->compute_lower_rob();  
         childR->compute_lower_rob();
-        z_tube.lower_signal.compute_and(childL->z_tube.lower_signal,childR->z_tube.lower_signal);
-        z_tube.lower_signal.resize(start_time, min(childL->z_tube.lower_signal.endTime,childR->z_tube.lower_signal.endTime),BOTTOM);
-        if (z_tube.lower_signal.empty())
-            z_tube.lower_signal.appendSample(start_time, BOTTOM);
+        Signal z_low;
+        Signal childL_low(childL->z.lower_signal);
+        Signal childR_low(childR->z.lower_signal);
+        z_low.compute_and(childL_low,childR_low);
+        z_low.resize(start_time, min(childL_low.endTime,childR_low.endTime),BOTTOM);
+        if (z_low.empty())
+            z_low.appendSample(start_time, BOTTOM);
+        z.lower_signal = z_low.getSamplesDeque();
         #ifdef DEBUG__
         printf( "<  and_transducer:compute_lower_rob           OUT.\n");
         #endif
-        return z_tube.lower_signal.front().value;
+        return z.lower_signal.front().value;
     };
 
     double and_transducer::compute_upper_rob(){
@@ -94,85 +193,113 @@ namespace STLRom {
         #endif
         childL->compute_upper_rob();
         childR->compute_upper_rob();
-        z_tube.upper_signal.compute_and(childL->z_tube.upper_signal,childR->z_tube.upper_signal);
-        z_tube.upper_signal.resize(start_time,z_tube.upper_signal.endTime,TOP);
-        if (z_tube.upper_signal.empty())
-            z_tube.upper_signal.appendSample(start_time,TOP);
+        Signal z_up;
+        Signal childL_up(childL->z.upper_signal);
+        Signal childR_up(childR->z.upper_signal);
+        z_up.compute_and(childL_up,childR_up);
+        z_up.resize(start_time,z_up.endTime,TOP);
+        if (z_up.empty())
+            z_up.appendSample(start_time,TOP);
+        z.upper_signal = z_up.getSamplesDeque();
         #ifdef DEBUG__
         printf( "<  and_transducer:compute_upper_rob           OUT.\n");
         #endif
-        return z_tube.upper_signal.front().value;
+        return z.upper_signal.front().value;
     };
 
     double or_transducer::compute_lower_rob(){
         childL->compute_lower_rob();
         childR->compute_lower_rob();
-        z_tube.lower_signal.compute_or(childL->z_tube.lower_signal,childR->z_tube.lower_signal);
-        z_tube.lower_signal.resize(start_time,z_tube.lower_signal.endTime,BOTTOM);
-        if (z_tube.lower_signal.empty())
-            z_tube.lower_signal.appendSample(start_time, BOTTOM);
-        return z_tube.lower_signal.front().value;
+        Signal z_low;
+        Signal childL_low(childL->z.lower_signal);
+        Signal childR_low(childR->z.lower_signal);
+        z_low.compute_or(childL_low,childR_low);
+        z_low.resize(start_time,z_low.endTime,BOTTOM);
+        if (z_low.empty())
+            z_low.appendSample(start_time, BOTTOM);
+        z.lower_signal = z_low.getSamplesDeque();
+        return z.lower_signal.front().value;
     };
 
     double or_transducer::compute_upper_rob(){
         childL->compute_upper_rob();
         childR->compute_upper_rob();
-        z_tube.upper_signal.compute_or(childL->z_tube.upper_signal,childR->z_tube.upper_signal);
-        z_tube.upper_signal.resize(start_time,min(childL->z_tube.upper_signal.endTime,childR->z_tube.upper_signal.endTime),TOP);
-        if (z_tube.upper_signal.empty())
-            z_tube.upper_signal.appendSample(start_time,TOP);
+        Signal z_up;
+        Signal childL_up(childL->z.upper_signal);
+        Signal childR_up(childR->z.upper_signal);
+        z_up.compute_or(childL_up,childR_up);
+        z_up.resize(start_time,min(childL_up.endTime,childR_up.endTime),TOP);
+        if (z_up.empty())
+            z_up.appendSample(start_time,TOP);
 		
-        return z_tube.upper_signal.front().value;
+        z.upper_signal = z_up.getSamplesDeque();
+        return z.upper_signal.front().value;
     };
 
 // IMPLIES transducer
     double implies_transducer::compute_lower_rob(){
         childL->compute_upper_rob();
         childR->compute_lower_rob();
+        Signal z_low;
+        Signal childL_up(childL->z.upper_signal);
+        Signal childR_low(childR->z.lower_signal);
 
         Signal z1;
-        z1.compute_not(childL->z_tube.upper_signal);
-        z_tube.lower_signal.compute_or(z1,childR->z_tube.lower_signal);
-        z_tube.lower_signal.resize(start_time,z_tube.lower_signal.endTime,BOTTOM);
+        z1.compute_not(childL_up);
+        z_low.compute_or(z1,childR_low);
+        z_low.resize(start_time,z_low.endTime,BOTTOM);
 
-        if (z_tube.lower_signal.empty())
-            z_tube.lower_signal.appendSample(start_time, BOTTOM);
-        return z_tube.lower_signal.front().value;
+        if (z_low.empty())
+            z_low.appendSample(start_time, BOTTOM);
+        z.lower_signal = z_low.getSamplesDeque();
+        return z.lower_signal.front().value;
     };
 
     double implies_transducer::compute_upper_rob(){
         childL->compute_lower_rob();
         childR->compute_upper_rob();
+        Signal z_up;
+        Signal childL_low(childL->z.lower_signal);
+        Signal childR_up(childR->z.upper_signal);
 
         Signal z1;
-        z1.compute_not(childL->z_tube.lower_signal);
-        z_tube.upper_signal.compute_or(z1,childR->z_tube.upper_signal);
+        z1.compute_not(childL_low);
+        z_up.compute_or(z1,childR_up);
         
-        z_tube.upper_signal.resize(start_time,min(z1.endTime,childR->z_tube.upper_signal.endTime),TOP);
-        if (z_tube.upper_signal.empty())
-            z_tube.upper_signal.appendSample(start_time,TOP);
-        return z_tube.upper_signal.front().value;
+        z_up.resize(start_time,min(z1.endTime,childR_up.endTime),TOP);
+        if (z_up.empty())
+            z_up.appendSample(start_time,TOP);
+        z.upper_signal = z_up.getSamplesDeque();
+        return z.upper_signal.front().value;
     };
     
     // NOT transducer: swap upper and lower
     double not_transducer::compute_upper_rob(){
         child->compute_lower_rob();
-        if (child->z_tube.lower_signal.empty()) {
-            z_tube.upper_signal.appendSample(start_time,TOP);
+        Signal z_up;
+        if (child->z.lower_signal.empty()) {
+            z_up.appendSample(start_time,TOP);
+            z.upper_signal = z_up.getSamplesDeque();
             return TOP;
         }
-        z_tube.upper_signal.compute_not(child->z_tube.lower_signal);
-        return z_tube.upper_signal.front().value;
+        Signal child_low(child->z.lower_signal);
+        z_up.compute_not(child_low);
+        z.upper_signal = z_up.getSamplesDeque();
+        return z.upper_signal.front().value;
     }
 
     double not_transducer::compute_lower_rob(){
         child->compute_upper_rob();
-        if (child->z_tube.upper_signal.empty()) {
-            z_tube.lower_signal.appendSample(start_time,BOTTOM);
+        Signal z_low;
+        if (child->z.upper_signal.empty()) {
+            z_low.appendSample(start_time,BOTTOM);
+            z.lower_signal = z_low.getSamplesDeque();
             return BOTTOM;
         }
-        z_tube.lower_signal.compute_not(child->z_tube.upper_signal);
-        return z_tube.lower_signal.front().value;
+        Signal child_up(child->z.upper_signal);
+        z_low.compute_not(child_up);
+        z.lower_signal = z_low.getSamplesDeque();
+        return z.lower_signal.front().value;
     }
 
     // EVENTUALLY
@@ -185,30 +312,33 @@ namespace STLRom {
         cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
 
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
-
-        child->compute_lower_rob(); // 
+        child->compute_lower_rob();
+        Signal z_low;
+        Signal child_low(child->z.lower_signal);
 
         // Maybe there was/is a good reason for, feels like I'll regret it        
-//      if (child->z_tube.lower_signal.endTime < a) {
-//         z_tube.lower_signal.appendSample(start_time, BOTTOM); 
+//      if (child_low.endTime < I->begin) {
+//          z_low.appendSample(start_time, BOTTOM); 
+//          z.lower_signal = z_low.getSamplesDeque();
 //          return BOTTOM;
 //      }
     
-        z_tube.lower_signal.compute_timed_eventually(child->z_tube.lower_signal, a, b);        
-        double et =min(z_tube.lower_signal.endTime,end_time);
-        z_tube.lower_signal.resize(start_time,max(start_time,et), BOTTOM);
+        z_low.compute_timed_eventually(child_low, I->begin, I->end);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z_low.lower_signal.push_back(Sample(start_time, -Signal::get_BigM(), 0));
+        z_low.upper_signal.push_back(Sample(start_time, Signal::get_BigM(), 0));    
+        double et =min(z_low.endTime,end_time);
+        z_low.resize(start_time,max(start_time,et), BOTTOM);
 
-        if (z_tube.lower_signal.empty()) // why not, but can this really happen ?
-            z_tube.lower_signal.appendSample(start_time, BOTTOM); 
+        if (z_low.empty()) // why not, but can this really happen ?
+            z_low.appendSample(start_time, BOTTOM); 
 
+        z.lower_signal = z_low.getSamplesDeque();
 #ifdef DEBUG__
-        cout << "OUT: z_tube.lower_signal:"<< z_tube.lower_signal << endl;
+        cout << "OUT: z.lower_signal:"<< z.lower_signal << endl;
         printf( "<  ev_transducer:computer_lower_rob           OUT.\n");
 #endif
-        return z_tube.lower_signal.front().value;
+        return z.lower_signal.front().value;
     }
 
     double ev_transducer::compute_upper_rob() {
@@ -220,31 +350,37 @@ namespace STLRom {
         cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
 
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
+        double a = I->begin;
+        double b = I->end;
 
         child->compute_upper_rob();
+        Signal z_up;
+        Signal child_up(child->z.upper_signal);
     
-//        if (child->z_tube.upper_signal.endTime < a) {
-//            z_tube.upper_signal.appendSample(start_time, TOP); 
+//        if (child_up.endTime < a) {
+//            z_up.appendSample(start_time, TOP); 
+//            z.upper_signal = z_up.getSamplesDeque();
 //            return TOP;
 //        }
 
-        z_tube.upper_signal.compute_timed_eventually(child->z_tube.upper_signal, a, b);
+        z_up.compute_timed_eventually(child_up, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z_up.lower_signal.push_back(Sample(start_time, -Signal::get_BigM(), 0));
+        z_up.upper_signal.push_back(Sample(start_time, Signal::get_BigM(), 0));    
 
         // Here we remove values computed with partial data 
-        double et =min(z_tube.upper_signal.endTime-b+a,end_time);
-        z_tube.upper_signal.resize(start_time,et, 0.);
+        double et =min(z_up.endTime-b+a,end_time);
+        z_up.resize(start_time,et, 0.);
 
-        if (z_tube.upper_signal.empty()) 
-            z_tube.upper_signal.appendSample(start_time, TOP); 
+        if (z_up.empty()) 
+            z_up.appendSample(start_time, TOP); 
 
+        z.upper_signal = z_up.getSamplesDeque();
 #ifdef DEBUG__
-        cout << "OUT: z_tube.upper_signal:"<< z_tube.upper_signal << endl;
+        cout << "OUT: z.upper_signal:"<< z.upper_signal << endl;
         printf( "<  ev_transducer:computer_upper_rob           OUT.\n");
 #endif
-        return z_tube.upper_signal.front().value;
+        return z.upper_signal.front().value;
     }
 
     // ALWAYS
@@ -257,32 +393,38 @@ namespace STLRom {
         cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
 
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
+        double a = I->begin;
+        double b = I->end;
 
         child->compute_lower_rob();
+        Signal z_low;
+        Signal child_low(child->z.lower_signal);
 
-//        if (child->z_tube.lower_signal.endTime < a) {
-//            z_tube.lower_signal.appendSample(start_time,BOTTOM);        
+//        if (child_low_signal.endTime < a) {
+//            z_low.appendSample(start_time,BOTTOM);        
+//            z.lower_signal = z_low.getSamplesDeque();
 //            return BOTTOM;
 //        }
     
-        z_tube.lower_signal.compute_timed_globally(child->z_tube.lower_signal, a, b);
+        z_low.compute_timed_globally(child_low, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z_low.lower_signal.push_back(Sample(start_time, -Signal::get_BigM(), 0));
+        z_low.upper_signal.push_back(Sample(start_time, Signal::get_BigM(), 0));
 
         // Here we remove values computed with partial data 
-        double et =min(z_tube.lower_signal.endTime-b+a,end_time);
-        z_tube.lower_signal.resize(start_time,et, 0.);
-	
-        if (z_tube.lower_signal.empty()) 
-            z_tube.lower_signal.appendSample(start_time,BOTTOM);        
+        double et =min(z_low.endTime-b+a,end_time);
+        z_low.resize(start_time,et, 0.);
 
+        if (z_low.empty()) 
+            z_low.appendSample(start_time,BOTTOM);        
+
+        z.lower_signal = z_low.getSamplesDeque();
 #ifdef DEBUG__
-        printf( "OUT: z_tube.lower_signal:");
+        printf( "OUT: z.lower_signal:");
         cout << "<  alw_transducer:computer_lower_rob           OUT."<< endl;
 #endif
 
-        return z_tube.lower_signal.front().value;
+        return z.lower_signal.front().value;
     }
 
     double alw_transducer::compute_upper_rob() {
@@ -292,29 +434,34 @@ namespace STLRom {
         cout << "   start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
 
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
+        double a = I->begin;
+        double b = I->end;
 
         child->compute_upper_rob();
-//        if (child->z_tube.upper_signal.endTime < a) {
-//            z_tube.upper_signal.appendSample(start_time, TOP); 
+        Signal z_up;
+        Signal child_up(child->z.upper_signal);
+//        if (child_up.endTime < a) {
+//            z_up.appendSample(start_time, TOP); 
+//            z.upper_signal = z_up.getSamplesDeque();
 //            return TOP;
 //        }
 
-        //    cout << "child->z_tube.upper_signal:" << child->z_tube.upper_signal << endl;
-        z_tube.upper_signal.compute_timed_globally(child->z_tube.upper_signal, a, b);
-        double et =min(z_tube.upper_signal.endTime,end_time);
-        z_tube.upper_signal.resize(start_time,max(start_time,et), 0.);
+        //    cout << "child_up:" << child_up << endl;
+        z_up.compute_timed_globally(child_up, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z_up.lower_signal.push_back(Sample(start_time, -Signal::get_BigM(), 0));
+        z_up.upper_signal.push_back(Sample(start_time, Signal::get_BigM(), 0));
+        double et =min(z_up.endTime,end_time);
+        z_up.resize(start_time,max(start_time,et), 0.);
 
-        if (z_tube.upper_signal.empty()) 
-            z_tube.upper_signal.appendSample(start_time, TOP); 
-
+        if (z_up.empty()) 
+            z_up.appendSample(start_time, TOP); 
+        z.upper_signal = z_up.getSamplesDeque();
 #ifdef DEBUG__
-        cout << "OUT: z_tube.upper_signal:"<< z_tube.upper_signal << endl;
+        cout << "OUT: z.upper_signal:"<< z.upper_signal << endl;
         printf( "<  alw_transducer:computer_upper_rob          OUT.\n");
 #endif
-        return z_tube.upper_signal.front().value;
+        return z.upper_signal.front().value;
 
     }
 
@@ -322,42 +469,53 @@ namespace STLRom {
     double until_transducer::compute_lower_rob() {
 
         //cout << "GETTING INTO until_transducer::compute_lower_rob" << endl;
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
+        double a = I->begin;
+        double b = I->end;
         
         if (childL->compute_lower_rob()==BOTTOM) return BOTTOM;
         if (childR->compute_lower_rob()==BOTTOM) return BOTTOM;
+        Signal z_low;
+        Signal childL_low(childL->z.lower_signal);
+        Signal childR_low(childR->z.lower_signal);
 
-        z_tube.lower_signal.compute_timed_until(childL->z_tube.lower_signal,childR->z_tube.lower_signal, a, b);
-        double et =min(z_tube.lower_signal.endTime,end_time);
-        z_tube.lower_signal.resize(start_time,max(start_time,et),0.);
+        z_low.compute_timed_until(childL_low,childR_low, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z_low.lower_signal.push_back(Sample(start_time, -Signal::get_BigM(), 0));
+        z_low.upper_signal.push_back(Sample(start_time, Signal::get_BigM(), 0));
+        double et =min(z_low.endTime,end_time);
+        z_low.resize(start_time,max(start_time,et),0.);
         
-        
-        if (z_tube.lower_signal.empty())
+        z.lower_signal = z_low.getSamplesDeque();
+        if (z.lower_signal.empty())
             return BOTTOM;
         else
-            return z_tube.lower_signal.front().value;
+            return z.lower_signal.front().value;
 
     }
 
     double until_transducer::compute_upper_rob() {
 
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
+        double a = I->begin;
+        double b = I->end;
 
         if (childL->compute_upper_rob()==TOP) return TOP;
         if (childR->compute_upper_rob()==TOP) return TOP;
+        Signal z_up;
+        Signal childL_up(childL->z.upper_signal);
+        Signal childR_up(childR->z.upper_signal);
 
-        z_tube.upper_signal.compute_timed_until(childL->z_tube.upper_signal,childR->z_tube.upper_signal, a, b);
-        double et =min(z_tube.upper_signal.endTime-b,end_time);
-        z_tube.upper_signal.resize(start_time,max(start_time,et),0.);
+        z_up.compute_timed_until(childL_up,childR_up, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z_up.lower_signal.push_back(Sample(start_time, -Signal::get_BigM(), 0));
+        z_up.upper_signal.push_back(Sample(start_time, Signal::get_BigM(), 0));
+        double et =min(z_up.endTime-b,end_time);
+        z_up.resize(start_time,max(start_time,et),0.);
 
-        if (z_tube.upper_signal.empty())
+        z.upper_signal = z_up.getSamplesDeque();
+        if (z.upper_signal.empty())
             return TOP;
         else
-            return z_tube.upper_signal.front().value;
+            return z.upper_signal.front().value;
     }
 
 }

@@ -11,7 +11,6 @@
 #include "stl_data.h"
 #include "stl_driver.h"
 #include "signal.h"
-#include "tube.h"
 #include "tools.h"
 #include "transducer.h"
 #include <pybind11/pybind11.h>
@@ -70,17 +69,29 @@ PYBIND11_MODULE(_stlrom, m) {
 	//Class Signal
 	py::class_<STLRom::Signal>(m, "Signal")
 		.def(py::init<>())
+		.def("__init__", [](STLRom::Signal &instance, double t, double v) {
+			new (&instance) STLRom::Signal(t, v, 1);
+			throw std::runtime_error("");
+		})
 		.def("__str__", [](const Signal &sig) {
             std::ostringstream oss;
             oss << sig;
             return oss.str();
-        })	
+        })
+		.def("clear_all", &STLRom::Signal::clear_all)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double, bool)) &STLRom::Signal::appendSample)
 		.def("append_constant_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendConstantSample)
 		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendLinearSample)
 		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendLinearSample)
+		.def("append_lower_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendLowerSample)
+		.def("append_lower_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendLowerSample)
+		.def("append_lower_sample", (void (STLRom::Signal::*)(double, double, double, bool)) &STLRom::Signal::appendLowerSample)
+		.def("append_upper_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendUpperSample)
+		.def("append_upper_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendUpperSample)
+		.def("append_upper_sample", (void (STLRom::Signal::*)(double, double, double, bool)) &STLRom::Signal::appendUpperSample)
+		.def("inflate", &STLRom::Signal::inflate)
 		.def("value_at", &STLRom::Signal::valueAt)
 		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("compute_not",&STLRom::Signal::compute_not)	
@@ -90,6 +101,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("compute_left_time_rob",&STLRom::Signal::compute_left_time_rob)	
 		.def("compute_right_time_rob",&STLRom::Signal::compute_right_time_rob)	
 		.def("get_samples_list",&STLRom::Signal::getSamplesDeque)
+		.def("get_lower_list",&STLRom::Signal::getLowerDeque)
+		.def("get_upper_list",&STLRom::Signal::getUpperDeque)
 		.def_readwrite("begin_time",&STLRom::Signal::beginTime)
 		.def_readwrite("end_time",&STLRom::Signal::endTime)
 		.def_static("set_semantics",  &STLRom::Signal::set_semantics)
@@ -99,27 +112,16 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def_static("set_Eps",&STLRom::Signal::set_Eps)
 		.def_static("get_Eps",&STLRom::Signal::get_Eps)
 		.def("empty",&STLRom::Signal::empty)
+		.def("__eq__", &STLRom::Signal::operator==)
+		.def("__ne__", &STLRom::Signal::operator!=)
+		.def("__add__", &STLRom::Signal::operator+)
+		.def("__sub__", &STLRom::Signal::operator-)
+		.def("__mul__", &STLRom::Signal::operator*)
+		.def("__truediv__", &STLRom::Signal::operator/)
 		.def("copy", [](const STLRom::Signal &self) { return STLRom::Signal(self); })
 		.def("__copy__", [](const STLRom::Signal &self) { return STLRom::Signal(self); })
 		.def("__deepcopy__", [](const STLRom::Signal &self, py::dict) { return STLRom::Signal(self); })
 		.def("__del__", [](STLRom::Signal &self) {});
-		
-	//Class Tube
-	py::class_<STLRom::Tube>(m, "Tube")
-		.def(py::init<>())
-		.def(py::init<Signal &,Signal &>())
-		.def("__str__", [](const Tube &tube) {
-            std::ostringstream oss;
-            oss << tube;
-            return oss.str();
-        })
-		.def("inflate",&STLRom::Tube::inflate)	
-		.def_readwrite("lower_signal", &STLRom::Tube::lower_signal)
-		.def_readwrite("upper_signal", &STLRom::Tube::upper_signal)
-		.def("copy", [](const STLRom::Tube &self) { return STLRom::Tube(self); })
-		.def("__copy__", [](const STLRom::Tube &self) { return STLRom::Tube(self); })
-		.def("__deepcopy__", [](const STLRom::Tube &self, py::dict) { return STLRom::Tube(self); })
-		.def("__del__", [](STLRom::Tube &self) {});
 
 	m.def("read_point",&read_point,"A function that reads and print a point");
 	m.def("print_monitor",&print_monitor,"Prints a monitor (temporary test function).");
@@ -138,7 +140,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_childR",&STLRom::transducer::get_childR)
 		.def("get_formula_string",&STLRom::transducer::get_formula_string)				
 		.def_readwrite("z",&STLRom::transducer::z)
-		.def_readwrite("z_tube",&STLRom::transducer::z_tube)
 		;
 
 	//Class STLMonitor
@@ -152,7 +153,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("add_sample", (void (STLRom::STLMonitor::*)(vector <double>)) &STLRom::STLMonitor::add_sample)
 		.def("add_sample", (void (STLRom::STLMonitor::*)(vector <double>, bool)) &STLRom::STLMonitor::add_sample)
 		.def("set_signals",&STLRom::STLMonitor::set_signals)
-		.def("set_tubes",&STLRom::STLMonitor::set_tubes)
 		.def("load_csv",&STLRom::STLMonitor::load_csv)
 		.def("write_csv",&STLRom::STLMonitor::write_csv)
 		.def("get_lower_rob",&STLRom::STLMonitor::get_lower_rob)
@@ -161,10 +161,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_semantics",&STLRom::STLMonitor::get_semantics)
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_rob_signal)		
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_rob_signal)		
-		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_rob_signal)		
-		.def("get_rob_tube",(Tube (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_rob_tube)		
-		.def("get_rob_tube",(Tube (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_rob_tube)		
-		.def("get_rob_tube",(Tube (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_rob_tube)		
+		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_rob_signal)			
 		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_online_rob_signal)		
 		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_online_rob_signal)		
 		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_online_rob_signal)
@@ -175,14 +172,13 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::dict rob_dict;
 			
 			// reminder, rob map contains pairs (string,rob_info) where string is the formula of a subformula 
-			// rob_info is a struct containing the depth of the subformula in the formula tree and the robustness signals (z, z_tube)
+			// rob_info is a struct containing the depth of the subformula in the formula tree and the robustness signal (z)
 			for (const auto& item : rob_map) {
-				py::dict info_dict; // this dict will contain the robustness information for a given subformula (z, z_tube)
+				py::dict info_dict; // this dict will contain the robustness information for a given subformula (z)
 
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 
@@ -211,7 +207,6 @@ PYBIND11_MODULE(_stlrom, m) {
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 
@@ -267,7 +262,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("add_sample", (void (STLRom::STLDriver::*)(vector <double>)) &STLRom::STLDriver::add_sample)
 		.def("add_sample", (void (STLRom::STLDriver::*)(vector <double>, bool)) &STLRom::STLDriver::add_sample)
 		.def("set_signals",&STLRom::STLDriver::set_signals)
-		.def("set_tubes",&STLRom::STLDriver::set_tubes)
 		.def("load_csv",&STLRom::STLDriver::load_csv)
 		.def("write_csv",&STLRom::STLDriver::write_csv)
 		.def("get_monitor",&STLRom::STLDriver::get_monitor)
@@ -322,7 +316,6 @@ PYBIND11_MODULE(_stlrom, m) {
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 
@@ -353,7 +346,6 @@ PYBIND11_MODULE(_stlrom, m) {
 				// info_dict["depth"] = item.second.depth;
 
 				info_dict["z"] = item.second.z;
-				info_dict["z_tube"] = item.second.z_tube;
 
 				py::dict depth_dict; // grouping by depth
 				if (rob_dict.contains(py::int_(item.second.depth))) {
@@ -385,35 +377,23 @@ PYBIND11_MODULE(_stlrom, m) {
 	py::class_<STLRom::STLData>(m, "STLData")
 		.def(py::init<>())
 		.def(py::init<int>())
-		.def(py::init<int, bool>())
 		.def(py::init<trace_data>())		
-		.def(py::init<tube_data>())
-		.def(py::init<trace_data,tube_data>())
-		.def(py::init<trace_data,double>())
 		.def("__str__", [](const STLData &dd) {
             std::ostringstream oss;
             oss << dd;
             return oss.str();
         })
-		.def("get_signal",(Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
-		.def("get_signal",(Signal (STLRom::STLData::*)(const std::string &) const) &STLRom::STLData::get_signal)		
+		.def("get_signal", (Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
+		.def("get_signal", (Signal (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal)		
 		.def("get_signal_idx", &STLRom::STLData::get_signal_idx)
 		.def("get_signame_from_idx", &STLRom::STLData::get_signame_from_idx)
-		.def("get_tube",(Tube (STLRom::STLData::*)(int) const) &STLRom::STLData::get_tube)		
-		.def("get_tube",(Tube (STLRom::STLData::*)(const std::string &) const) &STLRom::STLData::get_tube)		
-		.def("get_tube_idx", &STLRom::STLData::get_signal_idx)
-		.def("get_tubename_from_idx", &STLRom::STLData::get_tubename_from_idx)
 		.def("add_sample", (void (STLRom::STLData::*)(vector<double>)) &STLRom::STLData::add_sample)
 		.def("add_sample", (void (STLRom::STLData::*)(vector<double>, bool)) &STLRom::STLData::add_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double)) &STLRom::STLData::add_signal_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double, double)) &STLRom::STLData::add_signal_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double, double, bool)) &STLRom::STLData::add_signal_sample)
-		.def("get_signal_idx", (int (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal_idx)
-		.def("get_signame_from_idx", (string (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signame_from_idx)
-		.def("get_signal", (Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)
-		.def("get_signal", (Signal (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal)
+		.def("inflate_signal", &STLRom::STLData::inflate_signal)
 		.def_readwrite("data_vector", &STLRom::STLData::data_vector)
-		.def_readwrite("tube_vector", &STLRom::STLData::tube_vector)
 		.def_readwrite("signal_map", &STLRom::STLData::signal_map)
 		;
 }

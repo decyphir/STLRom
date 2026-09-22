@@ -6,14 +6,11 @@
  */
 
 #include <cstdlib>
-#include <vector>
 #include <string>
 #include <ctime>
 #include <stdio.h>
-#include <vector>
 #include <string>
 #include <fstream>
-#include <sstream>
 #include <set>
 #include "tools.h"
 
@@ -114,7 +111,7 @@ bool read_trace(const string& filename,
 				throw std::runtime_error("CSV format mismatch: expected " + std::to_string(signals.size()) + " signals, but found " + std::to_string(row.size() - 1));
 			}
 
-			for (auto &s : signals) s.clear(); // clear existing signals if any, this means the function replaces signal data
+			for (auto &s : signals) s.clear_all(); // clear existing signals if any, this means the function replaces signal data
 			
 			init = false;
         }

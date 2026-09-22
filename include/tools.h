@@ -44,6 +44,10 @@ inline string d_to_s(
 	return o.str();
 }
 
+inline double bigM_clamping(double v) {
+    return std::max(std::min(v, Signal::BigM), -Signal::BigM);
+}
+
 /** Returns a m x n random trace */ 
 // TODO reimplement that 
 // trace_data rand_trace_data( int m, int n);
@@ -56,6 +60,7 @@ bool write_trace(const std::string& filename, const trace_data& signals);
 
 
 template <typename BinaryOp, typename QuartOp>
+// merge_signals_with_op does not modify lower and upper signal
 void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d)
 {
     auto itL = zL.begin();
@@ -113,7 +118,7 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
             ++itL; ++itR;
         }
 
-        out.appendSample(t, op_v(vL, vR), op_d(vL, vR, dL, dR));
+        out.appendSample(t, bigM_clamping(op_v(vL, vR)), op_d(vL, vR, dL, dR));
     }
 }
 

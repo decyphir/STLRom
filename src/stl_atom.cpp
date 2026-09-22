@@ -22,40 +22,30 @@ namespace STLRom {
     };
 
     constant_transducer::constant_transducer(const string &p) {
-
         value = 0.;
         itv = interval();
-        if (!s_to_d(p, value))  param = p; else  itv = interval(value,value);
-
+        if (!s_to_d(p, value))  param = p; else  itv = interval(value);
+        rob_computed = false;
     }
 
     constant_transducer::constant_transducer(const string &low, const string &up) {
-
         itv = interval();
         if (!s_to_d(low, itv.begin) || !s_to_d(up, itv.end))  param = low; // TODO what should we do?
         value = itv.mid();
-
+        rob_computed = false;
     }
-       
-    double stl_atom::compute_robustness() {
-#ifdef DEBUG__
-        printf(">> stl_atom::compute_robustness:              IN.\n");
-        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
-#endif
-    
-        childL->compute_robustness();
-        childR->compute_robustness();
 
-        z.beginTime = fmax(childL->z.beginTime, childR->z.beginTime);
-        double endTime = fmin(childL->z.endTime, childR->z.endTime);
+    void stl_atom::compute_robustness(const Signal &left, const Signal &right, comparator comp, Signal* z) {
 
+        double endTime = fmin(left.endTime, right.endTime);
+        z->beginTime = fmax(left.beginTime, right.beginTime);
 
-        auto itL = childL->z.begin();
-        auto itR = childR->z.begin();
+        auto itL = left.begin();
+        auto itR = right.begin();
 
         // Skip elements outside the overlap in the beginning
-        while (itL != childL->z.end() && itL->time < z.beginTime) ++itL;
-        while (itR != childR->z.end() && itR->time < z.beginTime) ++itR;
+        while (itL != left.end() && itL->time < z->beginTime) ++itL;
+        while (itR != right.end() && itR->time < z->beginTime) ++itR;
 
         // Iterate over both simultaneously
         bool first_pass = true;
@@ -70,8 +60,8 @@ namespace STLRom {
         auto last_itR = itR;
 
         while(tL < endTime || tR < endTime) {
-            tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
-            tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
+            tL = (itL != left.end()) ? itL->time : std::numeric_limits<double>::infinity();
+            tR = (itR != right.end()) ? itR->time : std::numeric_limits<double>::infinity();
 
             
             double vR, vL;
@@ -86,8 +76,8 @@ namespace STLRom {
             bool equals = false;
             bool first_eq_ineq = false; // first point in a subseries of equality points or inequality points (for comp::equal)
 
-            auto& sL = (itL != childL->z.end()) ? *itL : *(last_itL);
-            auto& sR = (itR != childR->z.end()) ? *itR : *(last_itR);
+            auto& sL = (itL != left.end()) ? *itL : *(last_itL);
+            auto& sR = (itR != right.end()) ? *itR : *(last_itR);
             double dL = (sL).derivative;
             double dR = (sR).derivative;
 
@@ -205,51 +195,48 @@ namespace STLRom {
                     if (e.isPlus) { // +epsilon crossing
                         if (comp == comparator::EQUAL) {
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                                z->appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
                             } else { // entering epsilon region
-                                z.appendSample(e.t, Signal::Eps, 0.);
+                                z->appendSample(e.t, Signal::Eps, 0.);
                             }
                         } else if (comp == comparator::GREATERTHAN) { 
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, d_prev_neq);
+                                z->appendSample(e.t, Signal::Eps, d_prev_neq);
                             } else { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                z->appendSample(e.t, -Signal::Eps, 0.);
                             }
                         } else if (comp == comparator::LESSTHAN) { 
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -d_prev_neq);
+                                z->appendSample(e.t, -Signal::Eps, -d_prev_neq);
                             } else { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                z->appendSample(e.t, -Signal::Eps, 0.);
                             }
                         }
                     } else { // -epsilon crossing
                         if (comp == comparator::EQUAL) { 
                             if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, Signal::Eps, 0.);
+                                z->appendSample(e.t, Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                                z->appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
                             }
                         } else if (comp == comparator::GREATERTHAN) { 
                             if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                z->appendSample(e.t, -Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, d_prev_neq);
+                                z->appendSample(e.t, -Signal::Eps, d_prev_neq);
                             }
                         } else if (comp == comparator::LESSTHAN) { 
                             if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                z->appendSample(e.t, -Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, -d_prev_neq);
+                                z->appendSample(e.t, Signal::Eps, -d_prev_neq);
                             }
                         }
                     } 
                 }
             }
 
-            z.appendSample(t, vt, dt);
-
-            
-
+            z->appendSample(t, vt, dt);
 
             t_prev = t;
             v_prev = vt;
@@ -257,15 +244,25 @@ namespace STLRom {
             d_prev_neq = d_neq;
             v_prev_neq = v_neq;
 
-            if (advance_L && itL != childL->z.end()) {last_itL = itL; itL++;}
-            if (advance_R && itR != childR->z.end()) {last_itR = itR; itR++;}
+            if (advance_L && itL != left.end()) {last_itL = itL; itL++;}
+            if (advance_R && itR != right.end()) {last_itR = itR; itR++;}
 
             first_pass = false;
         }
+      
+        z->endTime = end_time; // I know, can be confusing. 
+    }
+       
+    double stl_atom::compute_robustness() {
+#ifdef DEBUG__
+        printf(">> stl_atom::compute_robustness:              IN.\n");
+        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
+#endif
 
-        //z.endTime = endTime;        
-        z.endTime = end_time; // I know, can be confusing. 
-        
+        childL->compute_robustness();
+        childR->compute_robustness();
+        compute_robustness(childL->z, childR->z, comp, &z);
+
         Signal z_space;
         switch (Signal::semantics) {
 			case Semantics::SPACE:
@@ -325,20 +322,15 @@ namespace STLRom {
                     value = itv.mid();
                 }
             } else {
-                itv = interval(value, value);
+                itv = interval(value);
             }
         }
 
-        z.clear();
-        z.appendSample(start_time,value,0.);
-        z.appendSample(end_time,value,0.);
+        z.clear_all();
+        z.appendSample(start_time,value,itv);
+        z.appendSample(end_time,value,itv);
         z.endTime = end_time;
-
-        z_tube.clear();
-        z_tube.lower_signal.appendSample(start_time,itv.begin,0.);
-        z_tube.upper_signal.appendSample(end_time,itv.end,0.);
-        z_tube.lower_signal.endTime = end_time;
-        z_tube.upper_signal.endTime = end_time;
+        rob_computed = true;
         
 #ifdef DEBUG__
         printf("<< constant_transducer::compute_robustness OUT.\n");
@@ -351,7 +343,7 @@ namespace STLRom {
         childL->fill_robustness_map(rob_map, depth+1);
         childR->fill_robustness_map(rob_map, depth+1);
         
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z};
     }
 
     void stl_atom::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
@@ -359,15 +351,15 @@ namespace STLRom {
         childR->fill_online_robustness_map(rob_map, depth+1);
         
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z};
     }
 
     void signal_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
-        rob_map[this->variable] = robustness_info{depth, &z, nullptr};
+        rob_map[this->variable] = robustness_info{depth, &z};
     }
 
     void signal_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
-        rob_map[this->variable] = robustness_info{depth, &z, &z_tube};
+        rob_map[this->variable] = robustness_info{depth, &z};
     }
 
 }
