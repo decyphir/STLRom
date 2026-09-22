@@ -262,6 +262,26 @@ namespace STLRom {
         }
     }
 
+    void Signal::reverse() {
+        if (empty()) return;
+
+        double T = beginTime + endTime;
+
+        std::reverse(begin(), end());
+
+        for (Signal::iterator i = begin(); i != end(); ++i) {
+            i->time = T - i->time;
+        }
+
+        if (size() > 1) {
+            for (size_t idx = 0; idx + 1 < size(); ++idx) {
+                (*this)[idx].derivative = -(*this)[idx + 1].derivative;
+            }
+        }
+        back().derivative = -back().derivative;
+
+    }
+
     void Signal::read_from_file(const string& filename)
     {
         std::ifstream file(filename);

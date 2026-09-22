@@ -82,6 +82,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("value_at", &STLRom::Signal::valueAt)
 		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("shift",(void (STLRom::Signal::*)(double)) &STLRom::Signal::shift)
+		.def("reverse",(void (STLRom::Signal::*)()) &STLRom::Signal::reverse)
 		.def("compute_not",&STLRom::Signal::compute_not)	
 		.def("compute_and", &STLRom::Signal::compute_and)
 		.def("compute_or", &STLRom::Signal::compute_or)

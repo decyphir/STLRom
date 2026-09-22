@@ -169,6 +169,7 @@ public:
 	void resize(double, double); //restricts/extends the signal to [s,t) with interpolation where not defined
 	void resize(double, double, double); //restricts/extends the signal to [s,t) with default value v where not defined
 	void shift(double); //shifts the signal of delta_t time units
+	void reverse(); //reverses data points in a signal
     void addLastSample(); // add a sample at endTime. 
 	void to_sat();
 
