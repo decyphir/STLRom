@@ -246,8 +246,8 @@ namespace STLRom {
         child_z.shift(b);
         z.compute_timed_eventually(child_z, a, b);
         double et = min(z.endTime,end_time);
-        z.resize(start_time,max(start_time,et));
         z.reverse();
+        z.resize(start_time,max(start_time,et));
 #ifdef DEBUG__
         cout << "OUT:" << z << endl;
         cout << "<  once_transducer::compute_robustness:         OUT." << endl;
@@ -273,8 +273,8 @@ namespace STLRom {
         child_z.shift(b);
         z.compute_timed_globally(child_z, a, b);
         double et =min(z.endTime,end_time);
-        z.resize(start_time,max(start_time,et));
         z.reverse();
+        z.resize(start_time,max(start_time,et));
 #ifdef DEBUG__
         cout << "OUT:" << z << endl;
         cout << "<  hist_transducer::compute_robustness:         OUT." << endl;

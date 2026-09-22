@@ -276,8 +276,8 @@ namespace STLRom {
         z_low.compute_timed_eventually(child_z_low, a, b);        
         
         double et =min(z_low.endTime,end_time);
-        z_low.resize(start_time,max(start_time,et), BOTTOM);
         z_low.reverse();
+        z_low.resize(start_time,max(start_time,et), BOTTOM);
 
         if (z_low.empty()) // why not, but can this really happen ?
             z_low.appendSample(start_time, BOTTOM); 
@@ -317,8 +317,8 @@ namespace STLRom {
 
         // Here we remove values computed with partial data 
         double et =min(z_up.endTime-b+a,end_time);
-        z_up.resize(start_time,et, 0.);
         z_up.reverse();
+        z_up.resize(start_time,et, 0.);
 
         if (z_up.empty()) 
             z_up.appendSample(start_time, TOP); 
@@ -432,9 +432,9 @@ namespace STLRom {
 
         // Here we remove values computed with partial data 
         double et =min(z_low.endTime-b+a,end_time);
+        z_low.reverse();
         z_low.resize(start_time,et, 0.);
 
-        z_low.reverse();
 	
         if (z_low.empty()) 
             z_low.appendSample(start_time,BOTTOM);        
@@ -471,9 +471,9 @@ namespace STLRom {
         //    cout << "child->z_up:" << child->z_up << endl;
         z_up.compute_timed_globally(child_z_up, a, b);
         double et =min(z_up.endTime,end_time);
+        z_up.reverse();
         z_up.resize(start_time,max(start_time,et), 0.);
 
-        z_up.reverse();
 
         if (z_up.empty()) 
             z_up.appendSample(start_time, TOP); 
