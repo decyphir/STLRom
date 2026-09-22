@@ -146,7 +146,6 @@ namespace STLRom {
         bool get_param(const string&, double &) const;
         // same for interval_map
         bool get_interval(const string&, interval &) const;
-        // virtual void set_interval(const string&, interval &);  // TO FIX
 
     };
 
@@ -163,8 +162,6 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         void reset();
 
         virtual void set_trace_data_ptr(const trace_data &trace) {
@@ -217,8 +214,6 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         void reset();
         
         virtual void set_trace_data_ptr(const trace_data &trace) {
@@ -280,8 +275,6 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         
         virtual double get_end_complete();
         virtual double get_end_complete_low();
@@ -314,8 +307,6 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void set_param(const string&, double); 
-        // void set_interval(const string&, interval &);  // TO FIX
         
         // TODO
         //virtual double get_end_time_complete();
