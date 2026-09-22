@@ -40,7 +40,8 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         // update start_time and end_time of child
-        child->set_horizon(fmax(0, start_time-b), fmax(0, end_time-a));
+        // TODO: what happens when start_time-b is negative?
+        child->set_horizon(start_time-b, end_time-a);
         child->init_horizon();
 
     }
@@ -246,8 +247,8 @@ namespace STLRom {
         child_z.shift(b);
         z.compute_timed_eventually(child_z, a, b);
         double et = min(z.endTime,end_time);
-        z.reverse();
         z.resize(start_time,max(start_time,et));
+        z.reverse();
 #ifdef DEBUG__
         cout << "OUT:" << z << endl;
         cout << "<  once_transducer::compute_robustness:         OUT." << endl;
@@ -273,8 +274,8 @@ namespace STLRom {
         child_z.shift(b);
         z.compute_timed_globally(child_z, a, b);
         double et =min(z.endTime,end_time);
-        z.reverse();
         z.resize(start_time,max(start_time,et));
+        z.reverse();
 #ifdef DEBUG__
         cout << "OUT:" << z << endl;
         cout << "<  hist_transducer::compute_robustness:         OUT." << endl;
