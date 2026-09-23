@@ -244,7 +244,7 @@ namespace STLRom {
         child->compute_robustness();
         Signal child_z = child->z; // is this a copy?
         child_z.reverse();
-        child_z.shift(b);
+        child_z.shift(b+a);
         z.compute_timed_eventually(child_z, a, b);
         double et = min(z.endTime,end_time);
         z.resize(start_time,max(start_time,et));
@@ -271,7 +271,7 @@ namespace STLRom {
         child->compute_robustness();
         Signal child_z = child->z; // is this a copy?
         child_z.reverse();
-        child_z.shift(b);
+        child_z.shift(b+a);
         z.compute_timed_globally(child_z, a, b);
         double et =min(z.endTime,end_time);
         z.resize(start_time,max(start_time,et));
