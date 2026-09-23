@@ -113,6 +113,9 @@ namespace STLRom {
             // FIXME : temporary fix for unexplained double time problem in eventually
             // the temporary keeps the last sample with the same time stamp
             if (fabs(back().time - front().time) < ZERO_POS ) {
+                if (back().time == first_time) {
+                    front().time = first_time; // additional check to avoid infinite loop
+                }
                 pop_back();
                 push_back(front());
             }
