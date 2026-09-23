@@ -1026,7 +1026,7 @@ void computeSegmentAnd(Signal * z, const Sample & i, double t,
 void computePartialAnd(Signal * z, Signal::const_reverse_iterator & i,
 		Signal::const_reverse_iterator & j, double s, double t) {
 
-	while (i->time > s) {
+	while (i->time - s > ZERO_POS) {
 		computeSegmentAnd(z, *i, t, j);
 		if (j->time == i->time)
 			j++;
@@ -1142,7 +1142,7 @@ void computePartialOr(Signal * z, Signal::const_reverse_iterator & i,
 #endif
 
 
-	while (i->time > s) {
+	while (i->time - s > ZERO_POS) {
 		computeSegmentOr(z, *i, t, j);
 		if (j->time == i->time)
 			j++;
