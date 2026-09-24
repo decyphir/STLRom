@@ -311,6 +311,38 @@ namespace STLRom {
         };
     };
 
+    class past_timed_binary_transducer: virtual public binary_transducer {
+    public:
+
+        interval *I;
+
+        past_timed_binary_transducer():binary_transducer()  {
+            I = new interval();
+            init_horizon();
+        };
+
+        past_timed_binary_transducer(transducer *_childL, transducer *_childR): binary_transducer(_childL, _childR){
+            I = new interval();
+            init_horizon();
+        };
+
+        past_timed_binary_transducer( transducer *_childL, interval *_I,transducer *_childR): binary_transducer(_childL, _childR), I(_I){
+            init_horizon();
+        };
+
+        void init_horizon();
+        void set_param(const string&, double); 
+        
+        // TODO
+        //virtual double get_end_time_complete();
+        //virtual double get_end_time_complete_low();
+        //virtual double get_end_time_complete_up();
+
+        virtual ~past_timed_binary_transducer() {
+            delete I;
+        };
+    };
+
     /* Boolean transducers */
     class not_transducer: public unary_transducer {
 
@@ -667,6 +699,48 @@ namespace STLRom {
             os << "(";
             childL->print(os);
             os << ") until_";
+            I->print(os);
+            os << " (";
+            childR->print(os);
+            os << ")";
+        }
+        ;
+
+    };
+
+    class since_transducer: public timed_binary_transducer {
+
+    public:
+        explicit since_transducer(transducer *_childL, interval *_I, transducer *_childR) :
+			transducer(), binary_transducer(_childL, _childR), timed_binary_transducer(_childL, _I, _childR) {
+        }
+
+        virtual since_transducer* clone() const {
+            transducer * childL_clone= childL->clone();
+            transducer * childR_clone= childR->clone();
+            interval *Iclone = new interval(*I);
+            return new since_transducer(childL_clone, Iclone, childR_clone);
+        }
+
+        virtual ~since_transducer() {
+        }
+
+        double compute_robustness();
+        // double compute_lower_rob();
+        // double compute_upper_rob();
+
+        // void fill_robustness_map(robustness_map_t &rob_map, int depth);
+
+        // void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
+        void print() const{
+            print(cout);
+        };
+
+        virtual void print(ostream &os) const {
+            os << "(";
+            childL->print(os);
+            os << ") since_";
             I->print(os);
             os << " (";
             childR->print(os);

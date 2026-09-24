@@ -19,17 +19,20 @@ int main(int argc, char** argv) {
     "ev_x  := ev_ [a, b] x_sup\n"
     "x_until_y := x_sup until_[a, b] y_sup\n"
     "hist_x := hist_[a,b] x_sup\n"
-    "once_x := once_[a,b] x_sup\n";
+    "once_x := once_[a,b] x_sup\n"
+    "x_since_y := x_sup since_[a, b] y_sup\n";
 
     driver.parse_string(spec);
 
     driver.load_csv({"../test/test_data/x.csv", "../test/test_data/y.csv"});
 
-    const vector<string> phis_unary = {
+    const vector<string> phis_past = {
         "alw_x", 
         "ev_x", 
         "hist_x", 
-        "once_x"};
+        "once_x",
+        "x_until_y",
+        "x_since_y"};
 
     const vector<pair<double, double>> params = {
         {0.0, 0.5},
@@ -39,11 +42,11 @@ int main(int argc, char** argv) {
     const vector<pair<double, double>> rob_windows = {
         {0.0, 4.5},
         {0.0, 5.0},
-        {0.5, 4.5},
-        {0.5, 5.0}
+        {0.8, 4.5},
+        {0.8, 5.0}
     };
 
-    for (const auto& phi : phis_unary) {
+    for (const auto& phi : phis_past) {
         auto monitor = driver.get_monitor(phi);
 
         for (const auto& interv : params) {

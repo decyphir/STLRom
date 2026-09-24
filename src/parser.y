@@ -547,6 +547,14 @@ stl_formula :
                 $$->signal_map = driver.data.signal_map;
 
              }
+             | stl_formula SINCE interval stl_formula %prec SINCE
+             {
+                $$ = new since_transducer($1, $3, $4);
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->param_map = driver.worker.param_map;
+                $$->signal_map = driver.data.signal_map;
+
+             }
              | LPAREN stl_formula RPAREN
              {
                  $$ = $2;

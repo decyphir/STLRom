@@ -22,6 +22,8 @@ message(STATUS "Found Bison: ${BISON_EXECUTABLE} (Version: ${BISON_VERSION})")
 message(STATUS "Found Flex: ${FLEX_EXECUTABLE} (Version: ${FLEX_VERSION})")
 
 set(CMAKE_CXX_STANDARD 11)
+
+# Uncomment to build with debug flags
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG__ -DDEBUG___")
 
 # Include directories

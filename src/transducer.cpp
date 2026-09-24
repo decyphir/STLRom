@@ -27,7 +27,7 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         // update start_time and end_time of child
-        child->set_horizon(fmax(0, start_time+a),end_time+b);
+        child->set_horizon(start_time+a,end_time+b);
         child->init_horizon();
 
     }
@@ -54,7 +54,20 @@ namespace STLRom {
 
         // update start_time and end_time of children
         childL->set_horizon(start_time, end_time+b);
-        childR->set_horizon(fmax(0, start_time+a), end_time+b);
+        childR->set_horizon(start_time+a, end_time+b);
+        childL->init_horizon();
+        childR->init_horizon();
+    }
+
+    void past_timed_binary_transducer::init_horizon() {
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        // update start_time and end_time of children
+        childL->set_horizon(start_time-b, end_time);
+        childR->set_horizon(start_time-b, end_time-a);
         childL->init_horizon();
         childR->init_horizon();
     }
@@ -123,6 +136,14 @@ namespace STLRom {
     }
 
     void timed_binary_transducer::set_param(const string &param, double val) {
+    	if (param_map.find(param)!=param_map.end()){
+		param_map[param]=val;
+	}
+        childL->set_param(param, val);
+        childR->set_param(param, val);
+    }
+
+    void past_timed_binary_transducer::set_param(const string &param, double val) {
     	if (param_map.find(param)!=param_map.end()){
 		param_map[param]=val;
 	}
@@ -467,6 +488,33 @@ namespace STLRom {
 
         rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
     }
+
+    double since_transducer::compute_robustness() {
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        // update robustness of children
+        childL->compute_robustness();
+        childR->compute_robustness();
+
+        Signal childL_z = childL->z;
+        Signal childR_z = childR->z;
+
+        childL_z.reverse();
+        childR_z.reverse();
+        
+        z.compute_timed_until(childL_z, childR_z, a, b);
+
+        z.reverse();
+
+        z.shift(a);
+        z.resize(start_time, end_time,0.);
+
+        return z.front().value;
+    }
+
 
     double past_transducer::compute_robustness() {
         child-> compute_robustness();

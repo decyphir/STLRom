@@ -217,7 +217,7 @@ void Signal::compute_until(const Signal &x, const Signal &y) {
 	s = beginTime;
 	t = endTime;
 
-	while (i->time > s) {
+	while (i->time - s > ZERO_POS) {
 
 		computeSegmentUntil(this, *i, t, j, z_max);
 		z_max = front().value;
@@ -819,8 +819,7 @@ Signal * computeUntil(Signal * x, Signal * y) {
 	s = z->beginTime;
 	t = z->endTime;
 
-	while (i->time > s) {
-
+	while (i->time - s > ZERO_POS) {
 		computeSegmentUntil(z, *i, t, j, z_max);
 		z_max = z->front().value;
 
@@ -942,7 +941,7 @@ void computeSegmentAnd(Signal * z, const Sample & i, double t,
 	double s = j->time;
 
 	// for every sample *j in (i.time, t)
-	while (s > i.time) {
+	while (s - i.time > ZERO_POS) {
 		if (i.valueAt(t) < j->valueAt(t)) {
 			if (i.valueAt(s) > j->value) {
 				t = i.timeIntersect(*j);
@@ -1053,7 +1052,7 @@ void computeSegmentOr(Signal * z, const Sample & i, double t,
 	double s = j->time;
 
 	// for every sample *j in (i.time, t)
-	while (s > i.time) {
+	while (s - i.time > ZERO_POS) {
 		if (i.valueAt(t) > j->valueAt(t)) {
 			if (i.valueAt(s) < j->value) {
 				t = i.timeIntersect(*j);
@@ -1170,7 +1169,7 @@ void computePartialOr(Signal * z, Signal::const_reverse_iterator & i,
 void computePartialEventually(Signal* z, Signal::const_reverse_iterator & i, double s, double t) {
 	bool continued = false;
 	double z_max = BOTTOM;
-	while (i->time > s) {
+	while (i->time - s > ZERO_POS) {
 		if (i->derivative >= 0) {
 			if (z_max < i->valueAt(t)) {
 				if (continued) {
