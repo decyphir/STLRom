@@ -391,7 +391,7 @@ namespace STLRom {
     std::ostream & operator<<(std::ostream & out, const Signal & y) {
         Signal::const_iterator i;
 
-        if(y.begin() == y.end()) return out << "Empty Signal." << std::endl;
+        if(y.empty()) return out << "Empty Signal." << std::endl;
         
         out << "begin_time: " << y.beginTime;
         out << "  end_time: " << y.endTime <<  std::endl;

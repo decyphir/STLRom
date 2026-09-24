@@ -13,19 +13,11 @@ namespace STLRom {
     #ifdef DEBUG__
         printf(">  transducer:compute_lower_rob              IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
-        cout << "last data time:" << get_last_data_time() << endl; 
-    #endif
-        
-        // if for some reason, z was not computed before
-        if (z.empty()) // is it the best test ?
-            compute_robustness();
-
-    #ifdef DEBUG__
-        cout << "z :" << z << endl;
+        cout << "last data time:" << get_last_data_time() << endl;
+        cout << "z : " << z << endl;
     #endif
 
-        z_tube.lower_signal = Signal(z);
-        double last_data_t =  get_last_data_time();
+        double last_data_t = get_last_data_time();
         
         if (end_time>last_data_t) 
         {   
@@ -37,7 +29,6 @@ namespace STLRom {
     #ifdef DEBUG__
         cout << "z_tube.lower_signal:" << z_tube.lower_signal << endl;
         printf( "<  transducer:compute_lower_rob              OUT.\n");
-         
     #endif
         z_tube.lower_signal.simplify();
         return z_tube.lower_signal.front().value;
@@ -48,14 +39,6 @@ namespace STLRom {
     #ifdef DEBUG__
         printf( ">  transducer:compute_upper_rob              IN.\n");
     #endif
-        //compute_robustness();
-    #ifdef DEBUG__
-        cout << "z:" << z << endl;
-    #endif
-        // if for some reason, z was not computed before
-        if (z.empty()) // is it the best test ?
-            compute_robustness();
-        z_tube.upper_signal = Signal(z);
         double last_data_t =  get_last_data_time();
         
         if (end_time>last_data_t) 

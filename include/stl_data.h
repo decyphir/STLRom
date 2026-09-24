@@ -31,9 +31,10 @@ namespace STLRom
             }
 
             // constructor with vector of signals
-            explicit STLData(trace_data data_vector) : data_vector(std::move(data_vector)) {
+            explicit STLData(trace_data data_vector) : data_vector(std::move(data_vector)), tube_vector(data_vector.size()) {
                 for (int i = 0; i < this->data_vector.size(); i++) {
                     signal_map["x" + to_string(i)] = i;
+                    tube_vector[i] = Tube(data_vector[i],data_vector[i]);
                 }
             }
             // constructor with vector of tubes
@@ -65,7 +66,23 @@ namespace STLRom
             // constructor with vector of signals and signal map
             explicit STLData(trace_data data_vector, map<string, int> signal_map) : 
             data_vector(std::move(data_vector)),
-            signal_map(std::move(signal_map)) {}
+            tube_vector(data_vector.size()),
+            signal_map(std::move(signal_map)) {
+                for (int i = 0; i < this->data_vector.size(); i++) {
+                    tube_vector[i] = Tube(data_vector[i],data_vector[i]);
+                }
+            }
+
+            // constructor with vector of signals, uncertainty and signal map
+            explicit STLData(trace_data data_vector, double uncertainty, map<string, int> signal_map) : 
+            data_vector(std::move(data_vector)),
+            tube_vector(data_vector.size()),
+            signal_map(std::move(signal_map)) {
+                for (int i = 0; i < this->data_vector.size(); i++) {
+                    tube_vector[i] = Tube(data_vector[i],data_vector[i]);
+                    tube_vector[i].inflate(uncertainty);
+                }
+            }
 
             // constructor with vector of signals, tubes and signal map
             explicit STLData(trace_data data_vector, tube_data tube_vector, map<string, int> signal_map) : 

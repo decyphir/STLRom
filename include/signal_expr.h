@@ -97,7 +97,7 @@ namespace STLRom
         constant_transducer(double val)
         {
             value = val;
-            itv = interval(val, val);
+            itv = interval(val);
         };
         constant_transducer(double low, double up)
         {
@@ -132,7 +132,7 @@ namespace STLRom
             if (it != map.end())
             {
                 value = (*it).second;
-                itv = interval(value,value);
+                itv = interval(value);
             }            
         }
         virtual void set_interval_map_ptr(const map<string, interval> &map) {

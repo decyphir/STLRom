@@ -668,7 +668,9 @@ namespace STLRom {
         void print() const {
             print(cout);
         }
-        ;
+
+    private:
+        void compute_robustness(const Signal &left, const Signal &right, comparator comp, Signal* z);
     };
 
     std::ostream& operator<<(std::ostream& os, const transducer& T);

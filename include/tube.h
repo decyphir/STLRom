@@ -2,6 +2,7 @@
 #define __TUBE_H
 
 #include <iostream>
+#include "interval.h"
 #include "signal.h"
 
 using namespace std;
@@ -18,6 +19,21 @@ public:
     ~Tube() = default;
     
     void clear();
+    
+	void appendSample(double t, interval itv);
+	void appendSample(double t, interval itv, interval d);
+    void appendSample(double t, interval itv, interval d, bool interp);
+	void appendConstantSample(double t, interval itv);
+	void appendLinearSample(double t, interval itv);
+	void appendLinearSample(double t, interval itv, interval d);
+
+    int get_size() const;
+
+    // get and set time domain
+    double get_beginTime() const;
+    double get_endTime() const;
+    void set_beginTime(double);
+    void set_endTime(double);
 
     void inflate(double r);
 
