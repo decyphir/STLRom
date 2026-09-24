@@ -9,6 +9,7 @@
 #include <cmath>
 //#include <math.h>
 #include <algorithm>
+#include "interval.h"
 // TODO maybe make TOP and BOTTOM static signal attribute ...
 #define BOTTOM (-Signal::BigM) //-std::numeric_limits<double>::infinity()
 #define TOP (Signal::BigM) //std::numeric_limits<double>::infinity()
@@ -96,6 +97,10 @@ public:
 
 	static double BigM;
 	static double Eps;
+
+	// lower_signal and upper_signal are initialized with [-BigM, BigM] everywhere it is not specified
+	std::deque<Sample> lower_signal;
+	std::deque<Sample> upper_signal;
 	
 	// Guess that should be else where... 
 	
@@ -152,8 +157,20 @@ public:
 	Signal(): beginTime(0.), endTime(0.) { };
 	Signal(double, double, int); 
 	Signal(double *, double *, int); //create continuous signal from array of sampling points (time, value) with linear interpolation
+	// initialize signal with specified value(s) for lower_signal and upper_signal
+	Signal(double, double, interval, int);
+	Signal(double *, interval *, interval *, int);
+	// the crisp signal is initialized at the middle of the given interval(s)
+	Signal(double, interval, int);
+	Signal(double *, interval *, int);
+    
+	inline void clear_all() {
+		clear();
+		lower_signal.clear();
+		upper_signal.clear();
+	}
 	
-	
+	// itv = [-BigM, BigM]
 	void appendSample(double t, double v);
 	void appendSample(double t, double v, double d);
     void appendSample(double t, double v, double d, bool interp);
@@ -161,6 +178,17 @@ public:
 	void appendLinearSample(double t, double v);
 	void appendLinearSample(double t, double v, double d);
 	
+	void appendSample(double t, double v, interval itv);
+    void appendSample(double t, double v, double d, interval itv, interval d_itv, bool interp);
+
+	// v = itv.mid()
+	inline void appendSample(double t, interval itv) {
+		appendSample(t, itv.mid(), itv);
+	}
+
+	// set lower and upper signal at a distance r from the crisp signal
+    void inflate(double r);
+
 	inline double valueAt(double t) const {
 		if (!empty()) {
 			auto it = std::lower_bound(

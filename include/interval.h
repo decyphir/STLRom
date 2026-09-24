@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include "tools.h"
 
 using namespace std;
 
@@ -13,8 +12,6 @@ class interval {
 public:
 	double begin;
 	double end;
-	string begin_str;
-	string end_str;
 
 	interval();
 	interval(const interval& that);
@@ -22,7 +19,6 @@ public:
 	void copy(const interval& that);
 
 	// tries to convert string into doubles, if fails, keep the string assuming this is a parameter or expression
-	interval(string b, string e);
 	interval(double val): begin(val), end(val) {};
 	interval(double b, double e): begin(b), end(e) {};
 
