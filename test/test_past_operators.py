@@ -42,8 +42,5 @@ for phi in phis_unary:
         monitor.set_param('b', b)
         for t_begin, t_end in rob_windows:
             label = str(monitor.formula).replace('[a,b]', f'[{a},{b}]')
-            print(label, t_begin, t_end)
+            print(f"get_rob({t_begin}, {t_end}) of {label}")
             rob = monitor.get_rob_signal(t_begin, t_end)
-            ax = sin_sig.plot(label = 'x sig')
-            rob.plot(label = label, ax=ax)
-            ax.set_title(f'get_rob between t_begin={t_begin} and t_end={t_end}')

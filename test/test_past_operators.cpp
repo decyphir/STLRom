@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
     driver.load_csv({"../test/test_data/x.csv", "../test/test_data/y.csv"});
 
     const vector<string> phis_unary = {
-        // "alw_x", 
-        // "ev_x", 
+        "alw_x", 
+        "ev_x", 
         "hist_x", 
         "once_x"};
 

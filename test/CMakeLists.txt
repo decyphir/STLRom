@@ -23,12 +23,14 @@ endfunction()
 
 
 
-add_python_test(test_t0         test_online_rob_t0.py)
-add_python_test(test_>          test_gt.py)
-add_python_test(test_<          test_lt.py)
-add_python_test(test_or         test_or.py)
-add_python_test(test_always     test_alw.py)
-add_python_test(test_eventually test_ev.py)
-add_python_test(test_implies    test_implies.py)
-add_python_test(test_U          test_U.py)
-add_python_test(test_SetBigM    test_SetBigM.py)
+add_python_test(test_t0                 test_online_rob_t0.py)
+add_python_test(test_>                  test_gt.py)
+add_python_test(test_<                  test_lt.py)
+add_python_test(test_or                 test_or.py)
+add_python_test(test_always             test_alw.py)
+add_python_test(test_eventually         test_ev.py)
+add_python_test(test_implies            test_implies.py)
+add_python_test(test_U                  test_U.py)
+add_python_test(test_SetBigM            test_SetBigM.py)
+add_python_test(test_past_operators     test_past_operators.py)
+
