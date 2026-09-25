@@ -1,4 +1,5 @@
 #include "robustness.h"
+#include "tools.h"
 #include <list>
 #include <algorithm>
 // needed sometimes when compiling under windows 
@@ -122,18 +123,9 @@ void Signal::compute_not(const Signal &y) {
 void Signal::compute_and(const Signal &x, const Signal &y) {
 
 	clear();
-	auto i = x.rbegin();
-	auto j = y.rbegin();
 
-	beginTime = fmax(x.beginTime, y.beginTime);
-	endTime = fmin(x.endTime, y.endTime);
+	merge_signals_with_op(*this, x, y, [](double a, double b){return fmin(a, b);}, [](double vL, double vR, double dL, double dR){if (vL > vR) return dR; else return dL;}, true);
 
-	while ((i->time >= endTime) && i != x.rend()-1)
-		i++;
-	while ((j->time >= endTime) && j != y.rend()-1)
-		j++;
-
-	computePartialAnd(this, i, j, this->beginTime, this->endTime);
 	simplify();
 
 }
@@ -141,18 +133,9 @@ void Signal::compute_and(const Signal &x, const Signal &y) {
 void Signal::compute_or(const Signal &x, const Signal &y) {
 
 	clear();
-	Signal::const_reverse_iterator i = x.rbegin();
-	Signal::const_reverse_iterator j = y.rbegin();
 
-	beginTime = fmax(x.beginTime, y.beginTime);
-	endTime = fmin(x.endTime, y.endTime);
+	merge_signals_with_op(*this, x, y, [](double a, double b){return fmax(a, b);}, [](double vL, double vR, double dL, double dR){if (vL > vR) return dL; else return dR;}, true);
 
-	while ((i->time >= endTime) && i != x.rend()-1)
-		i++;
-	while ((j->time >= endTime) && j != y.rend()-1)
-		j++;
-
-	computePartialOr(this, i, j, beginTime, endTime);
 	simplify();
 
 }
@@ -734,8 +717,25 @@ Signal * computeOr(Signal * x, Signal * y) {
 	z->simplify();
 
 #ifdef DEBUG__
+	cout << "OUT: " << *z << endl;
 	cout << "<  computeOr:                                 OUT." << endl;
 #endif
+
+
+	// Signal *z = new Signal();
+
+	// merge_signals_with_op(*z, *x, *y, [](double a, double b){return fmax(a, b);}, [](double vL, double vR, double dL, double dR){
+	// 	if (vL > vR)
+	// 		return dL;
+	// 	else 
+	// 		return dR;
+	// 	}, true);
+	
+	// z->simplify();
+
+	// cout << "OUT: " << *z << endl;
+	// cout << "<  computeOr:                                 OUT." << endl;
+	
 	return z;
 
 }

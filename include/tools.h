@@ -56,8 +56,13 @@ bool write_trace(const std::string& filename, const trace_data& signals);
 
 
 template <typename BinaryOp, typename QuartOp>
-void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d)
+void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d, bool detect_intersections)
 {
+#ifdef DEBUG__
+            printf(">>>Signal::merge:                            IN.\n");
+        cout << "IN zL:" << zL << endl;
+        cout << "IN zR:" << zR << endl;
+#endif
     auto itL = zL.begin();
     auto itR = zR.begin();
 
@@ -71,6 +76,8 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
     auto last_itL = itL;
     auto last_itR = itR;
 
+    double t_intersect = std::numeric_limits<double>::infinity();
+
     while (true) {
 
         double tL = (itL != zL.end()) ? itL->time : std::numeric_limits<double>::infinity();
@@ -82,6 +89,11 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
         double vL, vR;
         double dL, dR;
 
+        if (detect_intersections && t_intersect < t) {
+            double v_intersect = last_itL->valueAt(t_intersect);
+            out.appendSample(t_intersect, v_intersect, op_v(last_itL->derivative, last_itR->derivative));
+        }
+
         if (tL < tR) {
             vL = itL->value;
             vR = last_itR->valueAt(t);
@@ -90,7 +102,7 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
             dR = last_itR->derivative;
 
             last_itL = itL;
-            ++itL;
+            ++itL;    
 
         } else if (tR < tL) {
             vL = last_itL->valueAt(t);
@@ -112,9 +124,20 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
             last_itL = itL; last_itR = itR;
             ++itL; ++itR;
         }
-
+        
+        if (detect_intersections) {
+            if (fabs(dR-dL) > ZERO_POS)
+                t_intersect = (vL - vR) / (dR - dL) + t;
+            else
+                t_intersect = std::numeric_limits<double>::infinity();
+        }
+        
         out.appendSample(t, op_v(vL, vR), op_d(vL, vR, dL, dR));
     }
+#ifdef DEBUG__
+        cout << "OUT: " << out << endl;
+        printf("<<<Signal::merge:                            OUT.\n");
+#endif
 }
 
 

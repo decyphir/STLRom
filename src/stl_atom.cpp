@@ -283,6 +283,7 @@ namespace STLRom {
         z.resize(start_time,end_time); // TODO we should note here what the data horizon available is                  
 
         #ifdef DEBUG__
+        cout << "OUT z:" << z << endl;
         printf("<< signal_transducer::compute_robustness      OUT.\n");
 #endif
         return z.front().value;
@@ -308,6 +309,7 @@ namespace STLRom {
         z.endTime = end_time;
         
 #ifdef DEBUG__
+        cout << "OUT z:" << z << endl;
         printf("<< constant_transducer::compute_robustness OUT.\n");
 #endif
         return value;
