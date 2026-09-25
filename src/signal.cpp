@@ -136,7 +136,11 @@ namespace STLRom {
     }
 
     void Signal::resize(double t_start, double t_end) {
-
+#ifdef DEBUG___
+        printf(">>>Signal::resize:                          IN.\n" );
+        cout << "to (" << t_start << ", " << t_end << ")\n"; 
+        cout << "IN: " << *this << endl;
+#endif
         // Sanitize inputs
         if (empty())
             return;
@@ -166,12 +170,15 @@ namespace STLRom {
         }
         else {
             //trim or extend front of signal
+            Sample first;
             while(front().time < t_start) 
+            {    
+                first = front();
                 pop_front();        
+            }
             
             if (front().time != t_start) {
-                Sample new_front = Sample(t_start, front().valueAt(t_start), front().derivative);
-                pop_front();
+                Sample new_front = Sample(t_start, first.valueAt(t_start), first.derivative);
                 push_front(new_front);
             }
             //trim or extend end of signal
@@ -179,7 +186,10 @@ namespace STLRom {
         }
         beginTime = t_start;
         endTime = t_end;
-        
+#ifdef DEBUG___	
+        cout << "OUT: " << *this << endl;
+        printf("<<<Signal::resize:                          OUT.\n");
+#endif
     }
     
     void Signal::resize(double t_start, double t_end, double v) {
