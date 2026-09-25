@@ -80,6 +80,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendLinearSample)
 		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendLinearSample)
 		.def("value_at", &STLRom::Signal::valueAt)
+		.def("read_from_file", &STLRom::Signal::read_from_file)
+		.def("write_to_file", &STLRom::Signal::write_to_file)
 		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("shift",(void (STLRom::Signal::*)(double)) &STLRom::Signal::shift)
 		.def("reverse",(void (STLRom::Signal::*)()) &STLRom::Signal::reverse)
