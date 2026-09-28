@@ -5,6 +5,7 @@
 #include <vector>
 #include <iterator>
 #include <string>
+#include <sstream>
 #include "robustness.h"
 #include "interval.h"
 #include "signal.h"

@@ -54,6 +54,25 @@ namespace STLRom {
 #endif
     }
 
+    Signal::Signal(double * T, double * V, double * D, int n) {
+        
+        beginTime=T[0];
+        endTime = T[n - 1];
+
+        if (n == 1)
+            push_back(Sample(T[0], V[0], D[0]));
+        else
+        {
+            for (int i = 0; i < n - 1; i++)
+            {
+                push_back(Sample(T[i], V[i], D[i]));
+            }
+            push_back(Sample(T[n - 1], V[n - 1], D[n - 1]));
+        }
+        lower_signal.push_back(Sample(T[0], -BigM, 0.));
+        upper_signal.push_back(Sample(T[0],  BigM, 0.));
+    }
+
 	Signal::Signal(double T, double V, interval itv, int n) {
         beginTime=T;
         endTime=T;
@@ -94,6 +113,19 @@ namespace STLRom {
         Signal(T, V, itv, n); // same here?
     }
 
+	Signal::Signal(std::deque<Sample> samples) {
+        int n = samples.size();
+        double T[n];
+        double V[n];
+        double D[n];
+        int i = 0;
+        for (auto s : samples) {
+            T[i] = s->time;
+            V[i] = s->value;
+            D[i] = s->derivative;
+        }
+        Signal(T, V, D, n);
+    }
 
     void Signal::addLastSample() {
         if (endTime> back().time) 

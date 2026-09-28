@@ -6,14 +6,11 @@
  */
 
 #include <cstdlib>
-#include <vector>
 #include <string>
 #include <ctime>
 #include <stdio.h>
-#include <vector>
 #include <string>
 #include <fstream>
-#include <sstream>
 #include <set>
 #include "tools.h"
 

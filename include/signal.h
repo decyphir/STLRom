@@ -155,14 +155,16 @@ public:
 	double beginTime;
 	double endTime;
 	Signal(): beginTime(0.), endTime(0.) { };
-	Signal(double, double, int); 
+	Signal(double, double, int);
 	Signal(double *, double *, int); //create continuous signal from array of sampling points (time, value) with linear interpolation
+	Signal(double *, double *, double *, int); //create continuous signal from array of sampling points (time, value, derivative)
 	// initialize signal with specified value(s) for lower_signal and upper_signal
 	Signal(double, double, interval, int);
 	Signal(double *, interval *, interval *, int);
 	// the crisp signal is initialized at the middle of the given interval(s)
 	Signal(double, interval, int);
 	Signal(double *, interval *, int);
+	Signal(std::deque<Sample>);
     
 	inline void clear_all() {
 		clear();
