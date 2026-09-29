@@ -224,7 +224,7 @@ namespace STLRom {
 
         z.lower_signal = z_low.getSamplesDeque();
 #ifdef DEBUG__
-        cout << "OUT: z.lower_signal:"<< z_tube.lower_signal << endl;
+        cout << "OUT: z.lower_signal:"<< z.lower_signal << endl;
         printf( "<  ev_transducer:computer_lower_rob           OUT.\n");
 #endif
         return z.lower_signal.front().value;
@@ -263,7 +263,7 @@ namespace STLRom {
 
         z.upper_signal = z_up.getSamplesDeque();
 #ifdef DEBUG__
-        cout << "OUT: z.upper_signal:"<< z_tube.upper_signal << endl;
+        cout << "OUT: z.upper_signal:"<< z.upper_signal << endl;
         printf( "<  ev_transducer:computer_upper_rob           OUT.\n");
 #endif
         return z.upper_signal.front().value;

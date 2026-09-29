@@ -56,6 +56,7 @@ bool write_trace(const std::string& filename, const trace_data& signals);
 
 
 template <typename BinaryOp, typename QuartOp>
+// merge_signals_with_op does not modify lower and upper signal
 void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d)
 {
     auto itL = zL.begin();

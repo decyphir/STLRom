@@ -264,21 +264,32 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
         compute_robustness(childL->z, childR->z, comp, &z);
+        // z.lower_signal.clear(); z.upper_signal.clear(); needed?
         
+        Signal childL_low(childL->z.lower_signal);
+        Signal childL_up(childL->z.upper_signal);
+        Signal childR_low(childR->z.lower_signal);
+        Signal childR_up(childR->z.upper_signal);
+        Signal low(z.lower_signal);
+        Signal up(z.upper_signal);
         switch (comp) {
             case STLRom::comparator::LESSTHAN:
-                compute_robustness(childL->z_tube.upper_signal, childR->z_tube.lower_signal, comp, &z_tube.lower_signal);
-                compute_robustness(childL->z_tube.lower_signal, childR->z_tube.upper_signal, comp, &z_tube.upper_signal);
+                compute_robustness(childL_up, childR_low, comp, &low);
+                compute_robustness(childL_low, childR_up, comp, &up);
                 break;
             case STLRom::comparator::GREATERTHAN:
-                compute_robustness(childL->z_tube.lower_signal, childR->z_tube.upper_signal, comp, &z_tube.lower_signal);
-                compute_robustness(childL->z_tube.upper_signal, childR->z_tube.lower_signal, comp, &z_tube.upper_signal);
+                compute_robustness(childL_low, childR_up, comp, &low);
+                compute_robustness(childL_up, childR_low, comp, &up);
                 break;
             case STLRom::comparator::EQUAL: // TODO what should we do?
-                compute_robustness(childL->z_tube.lower_signal, childR->z_tube.lower_signal, comp, &z_tube.lower_signal);
-                compute_robustness(childL->z_tube.upper_signal, childR->z_tube.upper_signal, comp, &z_tube.upper_signal);
+                compute_robustness(childL_low, childR_low, comp, &low);
+                compute_robustness(childL_up, childR_up, comp, &up);
                 break;
         }
+        low.simplify();
+        up.simplify();
+        z.lower_signal = low;
+        z.upper_signal = up;
 
         Signal z_space;
         switch (Signal::semantics) {
@@ -343,17 +354,10 @@ namespace STLRom {
             }
         }
 
-        z.clear();
-        z.appendSample(start_time,value,0.);
-        z.appendSample(end_time,value,0.);
+        z.clear_all();
+        z.appendSample(start_time,value,itv);
+        z.appendSample(end_time,value,itv);
         z.endTime = end_time;
-
-        z_tube.clear();
-        z_tube.lower_signal.appendSample(start_time,itv.begin,0.);
-        z_tube.upper_signal.appendSample(start_time,itv.end,0.);
-        z_tube.lower_signal.appendSample(end_time,itv.begin,0.);
-        z_tube.upper_signal.appendSample(end_time,itv.end,0.);
-        z_tube.set_endTime(end_time);
         
 #ifdef DEBUG__
         printf("<< constant_transducer::compute_robustness OUT.\n");
@@ -366,7 +370,7 @@ namespace STLRom {
         childL->fill_robustness_map(rob_map, depth+1);
         childR->fill_robustness_map(rob_map, depth+1);
         
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z};
     }
 
     void stl_atom::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
@@ -374,15 +378,15 @@ namespace STLRom {
         childR->fill_online_robustness_map(rob_map, depth+1);
         
 
-        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_tube};
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z};
     }
 
     void signal_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
-        rob_map[this->variable] = robustness_info{depth, &z, nullptr};
+        rob_map[this->variable] = robustness_info{depth, &z};
     }
 
     void signal_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
-        rob_map[this->variable] = robustness_info{depth, &z, &z_tube};
+        rob_map[this->variable] = robustness_info{depth, &z};
     }
 
 }

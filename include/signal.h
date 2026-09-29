@@ -160,7 +160,8 @@ public:
 	Signal(double *, double *, double *, int); //create continuous signal from array of sampling points (time, value, derivative)
 	// initialize signal with specified value(s) for lower_signal and upper_signal
 	Signal(double, double, interval, int);
-	Signal(double *, interval *, interval *, int);
+	Signal(double *, double *, interval *, int);
+	// TODO also initialize derivative interval?
 	// the crisp signal is initialized at the middle of the given interval(s)
 	Signal(double, interval, int);
 	Signal(double *, interval *, int);

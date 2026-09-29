@@ -11,11 +11,7 @@ namespace STLRom
     {
         for (auto &signal : data_vector)
             {
-                signal.clear();
-            }
-        for (auto &tube : tube_vector)
-            {
-                tube.clear();
+                signal.clear_all();
             }
     }
 
@@ -31,25 +27,6 @@ namespace STLRom
 			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
 		}
         this->data_vector = data_vector;
-        for (int i = 0; i < data_vector.size(); i++) {
-            Signal lower = data_vector[i]; // TODO check copy?
-            Signal upper = data_vector[i];
-            this->tube_vector[i] = Tube(lower, upper);
-        } 
-    }
-    
-    void STLData::set_tube_vector(const tube_data &tube_vector)
-    {
-        if (tube_vector.size() != signal_map.size()) {
-			throw std::invalid_argument("Number of signals does not match the number of declared signals.");
-		}
-        this->tube_vector = tube_vector;
-        // if (this->data_vector.empty()) {
-        for (int i = 0; i < tube_vector.size(); i++) {
-            Signal mid = (tube_vector[i].lower_signal+tube_vector[i].upper_signal)/2.;
-            this->data_vector[i] = mid; // TODO check copy?
-        } 
-        // }
     }
 
     void STLData::add_sample(vector <double> sample, bool interp)
@@ -63,7 +40,6 @@ namespace STLRom
         for (int i = 1; i < sample.size(); i++) 
         {
             data_vector[i - 1].appendSample(t, sample[i], 0., interp);
-            tube_vector[i - 1].appendSample(t, interval(sample[i]), interval(0.), interp);
         }
 
         // TODO: uptodate?
@@ -79,7 +55,6 @@ namespace STLRom
         int sig_idx = get_signal_idx(sig);
         if (sig_idx != -1)
             data_vector[sig_idx].appendSample(t,v,d,interp);
-            tube_vector[sig_idx].appendSample(t,interval(v),interval(d),interp);
     }
 
     int STLData::get_signal_idx(const string &sig) const
@@ -131,44 +106,6 @@ namespace STLRom
 
         Signal signal;
         return signal;
-    }
-
-    Tube STLData::get_tube(int idx) const
-    {
-        if (idx >= 0 && idx < get_size() && !tube_vector.empty())
-            return tube_vector[idx];
-        else
-            cout << "Tube index " << idx << " out of bounds for " << get_size() << " defined tubes (or tube_vector is empty)." << endl;
-        
-        Tube tube;
-        return tube;
-    }
-
-    Tube STLData::get_tube(const string &tub) const
-    {
-        int idx = get_tube_idx(tub);
-        if (idx != -1)
-            return get_tube(idx);
-
-        Tube tube;
-        return tube;
-    }
-
-    int STLData::get_tube_idx(const string &tub) const
-    {
-        auto it = signal_map.find(tub);
-        if (it == signal_map.end())
-        {
-            cout << "Tube " << tub << " not found in signal_map." << endl;
-            return -1;
-        }
-
-        return it->second;
-    }
-
-    string STLData::get_tubename_from_idx(int idx) const
-    {
-        return get_signame_from_idx(idx);
     }
 
     void STLData::add_signal_sample(string sig, double t, double v)

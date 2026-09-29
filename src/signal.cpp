@@ -80,7 +80,7 @@ namespace STLRom {
         lower_signal.push_back(Sample(T, itv.begin, 0.));
         upper_signal.push_back(Sample(T, itv.end, 0.));
     }
-	Signal::Signal(double * T, interval * V, interval * itv, int n) {
+	Signal::Signal(double * T, double * V, interval * itv, int n) {
         beginTime=T[0];
         endTime = T[n - 1];
 
@@ -92,12 +92,12 @@ namespace STLRom {
             for (int i = 0; i < n - 1; i++) { // TODO lower and upper derivatives more guaranteed?
                 double dt = (T[i + 1] - T[i]);
                 push_back(Sample(T[i], V[i], (V[i + 1] - V[i]) / dt));
-                lower_signal.push_back(Sample(T[i], itv[i].begin, (itv.begin[i + 1] - itv.begin[i]) / dt));
-                upper_signal.push_back(Sample(T[i], itv[i].end, (itv.end[i + 1] - itv.end[i]) / dt));
+                lower_signal.push_back(Sample(T[i], itv[i].begin, (itv[i + 1].begin - itv[i].begin) / dt));
+                upper_signal.push_back(Sample(T[i], itv[i].end, (itv[i + 1].end - itv[i].end) / dt));
             }
             push_back(Sample(T[n - 1], V[n - 1], 0.));
-            lower_signal.push_back(Sample(T[n - 1], itv.begin[n - 1], 0.));
-            upper_signal.push_back(Sample(T[n - 1], itv.end[n - 1], 0.));
+            lower_signal.push_back(Sample(T[n - 1], itv[n - 1].begin, 0.));
+            upper_signal.push_back(Sample(T[n - 1], itv[n - 1].end, 0.));
         }
         lower_signal.push_back(Sample(T[0], -BigM, 0.));
         upper_signal.push_back(Sample(T[0],  BigM, 0.));
@@ -120,9 +120,9 @@ namespace STLRom {
         double D[n];
         int i = 0;
         for (auto s : samples) {
-            T[i] = s->time;
-            V[i] = s->value;
-            D[i] = s->derivative;
+            T[i] = s.time;
+            V[i] = s.value;
+            D[i] = s.derivative;
         }
         Signal(T, V, D, n);
     }
@@ -155,7 +155,7 @@ namespace STLRom {
 
     void Signal::appendSample(double t, double v, double d, bool interp)
     {
-        appendConstantSample(t, v, d, interval(-BigM, BigM), interval(0.), interp);
+        appendSample(t, v, d, interval(-BigM, BigM), interval(0.), interp);
     }
     
 	void Signal::appendSample(double t, double v, interval itv) {
@@ -191,14 +191,18 @@ namespace STLRom {
         }
 	}
     
-    void inflate(double r) {
-		Signal signal_r = Signal(beginTime, r, 1);
-		signal_r.appendConstantSample(endTime, r);
+    void Signal::inflate(double r) {
 		fesetround(FE_DOWNWARD);
-    	merge_signals_with_op(lower_signal, *this, signal_r, [](double a, double b){return a - b;}, [](double, double, double dL, double dR){return dL - dR;});
-		fesetround(FE_UPWARD);
-    	merge_signals_with_op(upper_signal, *this, signal_r, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
-		fesetround(FE_TONEAREST);
+        lower_signal = *this; // TODO check is this a copy?
+        for (auto s : lower_signal) {
+            s.value = s.value - r;
+        }
+        fesetround(FE_UPWARD);
+        upper_signal = *this; // TODO same
+        for (auto s : upper_signal) {
+            s.value = s.value + r;
+        }
+        fesetround(FE_TONEAREST);
     }
 
     //remove redundant sample (no jump and no change in derivative)
@@ -454,7 +458,7 @@ namespace STLRom {
         if (i1 != cend())
             return false;
 
-        auto i1 = lower_signal.cbegin();
+        i1 = lower_signal.cbegin();
         for (auto i2 : that.lower_signal) {
             if (i1 == lower_signal.cend() || *i1 != i2) {
                 return false;
@@ -464,7 +468,7 @@ namespace STLRom {
         if (i1 != lower_signal.cend())
             return false;
 
-        auto i1 = upper_signal.cbegin();
+        i1 = upper_signal.cbegin();
         for (auto i2 : that.upper_signal) {
             if (i1 == upper_signal.cend() || *i1 != i2) {
                 return false;
@@ -488,9 +492,19 @@ namespace STLRom {
         Signal result = Signal();
     	merge_signals_with_op(result, *this, that, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
         fesetround(FE_DOWNWARD);
-    	merge_signals_with_op(result.lower_signal, lower_signal, that.lower_signal, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
+        Signal low(lower_signal);
+        Signal t_low(that.lower_signal);
+        Signal r_low(result.lower_signal);
+    	merge_signals_with_op(r_low, low, t_low, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
+        r_low.simplify();
+        result.lower_signal = r_low;
         fesetround(FE_UPWARD);
-    	merge_signals_with_op(result.upper_signal, upper_signal, that.upper_signal, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
+        Signal up(upper_signal);
+        Signal t_up(that.upper_signal);
+        Signal r_up(result.upper_signal);
+    	merge_signals_with_op(r_up, up, t_up, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
+        r_up.simplify();
+        result.upper_signal = r_up;
         fesetround(FE_TONEAREST);
         result.simplify();
         return result;
@@ -505,23 +519,26 @@ namespace STLRom {
         for (const Sample &s : *this) {
             result.appendSample(s.time, p*s.value, p*s.derivative);
         }
+        // remove default [-BigM,BigM]
+        result.lower_signal.clear();
+        result.upper_signal.clear();
         if (p >= 0) {
             fesetround(FE_DOWNWARD);
             for (const Sample &s : lower_signal) {
-                result.lower_signal.appendSample(s.time, p*s.value, p*s.derivative);
+                result.lower_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
             }
             fesetround(FE_UPWARD);
             for (const Sample &s : upper_signal) {
-                result.upper_signal.appendSample(s.time, p*s.value, p*s.derivative);
+                result.upper_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
             }
         } else {
             fesetround(FE_DOWNWARD);
             for (const Sample &s : upper_signal) {
-                result.lower_signal.appendSample(s.time, p*s.value, p*s.derivative);
+                result.lower_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
             }
             fesetround(FE_UPWARD);
             for (const Sample &s : lower_signal) {
-                result.upper_signal.appendSample(s.time, p*s.value, p*s.derivative);
+                result.upper_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
             }
         }
         fesetround(FE_TONEAREST);
