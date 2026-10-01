@@ -1,4 +1,4 @@
-from ._stlrom import Signal, Tube
+from ._stlrom import Signal
 from .signal import plot, plot_tube
 
 def get_signal_idx(self, sig):    
@@ -9,9 +9,6 @@ def get_signame_from_idx(self,idx):
 
 def get_signal(self, sig):
     return self.data.get_signal(sig)
-
-def get_tube(self, tube):
-    return self.data.get_tube(tube)
 
 def plot_signal(self, sig, label=None, ax=None, draw_samples=False):
     S = self.get_signal(sig)
@@ -53,9 +50,10 @@ def plot_sat(self, phi, t0, tf, label=None, ax=None, **kwargs):
 
 
 def plot_tube_sig(self, tube, label=None, ax=None, draw_samples=False, **kwargs):
-    T = tube if type(tube) is Tube else self.get_tube(tube)
-    # TODO: also accept list of sigs? (output of get_online_rob_signal)
+    return ax
+    # T = tube if type(tube) is Tube else self.get_tube(tube)
+    # # TODO: also accept list of sigs? (output of get_online_rob_signal)
 
-    if T is not None and label is None and type(tube) is not Tube: 
-        label = "Tube " + str(tube)
-    return plot_tube(T, label=label, ax=ax, draw_samples=draw_samples, **kwargs)
+    # if T is not None and label is None and type(tube) is not Tube: 
+    #     label = "Tube " + str(tube)
+    # return plot_tube(T, label=label, ax=ax, draw_samples=draw_samples, **kwargs)
