@@ -260,11 +260,11 @@ namespace STLRom {
         printf(">> stl_atom::compute_robustness:              IN.\n");
         cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
 #endif
-    
+
         childL->compute_robustness();
         childR->compute_robustness();
         compute_robustness(childL->z, childR->z, comp, &z);
-        // z.lower_signal.clear(); z.upper_signal.clear(); needed?
+        z.lower_signal.clear(); z.upper_signal.clear(); //needed?
         
         Signal childL_low(childL->z.lower_signal);
         Signal childL_up(childL->z.upper_signal);

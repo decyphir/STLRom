@@ -16,7 +16,6 @@ int main(int argc, char **argv)
     sig2 = Signal(0., 1., 1);
     sig2.appendConstantSample(4., 1.);
     
-    expected_sig = Signal();
     expected_sig.appendLinearSample(0., 1.);
     expected_sig.appendLinearSample(2., 3.);
     expected_sig.appendLinearSample(4., 1.);
@@ -35,13 +34,13 @@ int main(int argc, char **argv)
     sig1.appendLinearSample(6., 4.);
     sig1.appendLinearSample(12., -2.);
 
-    sig2 = Signal();
+    sig2.clear_all();
     sig2.appendSample(0., 1., -.5);
     sig2.appendConstantSample(4., 1.);
     sig2.appendConstantSample(9., 1.);
     sig2.appendLinearSample(12., -2.);
     
-    expected_sig = Signal();
+    expected_sig.clear_all();
     expected_sig.appendLinearSample(0., 1.);
     expected_sig.appendLinearSample(2., 2.);
     expected_sig.appendLinearSample(3., .5, .5);
@@ -67,7 +66,7 @@ int main(int argc, char **argv)
     sig2.appendLinearSample(2., 1.);
     sig2.appendLinearSample(4., -1.);
     
-    expected_sig = Signal();
+    expected_sig.clear_all();
     expected_sig.appendLinearSample(0., 1.);
     expected_sig.appendLinearSample(4., 5.);
 

@@ -23,7 +23,7 @@ namespace STLRom {
     Signal::Signal(double T, double V, int n) {
         beginTime=T;
         endTime=T;
-        push_back(Sample(T, V, 0.));
+        push_back(Sample(T, bigM_clamping(V), 0.));
         lower_signal.push_back(Sample(T, -BigM, 0.));
         upper_signal.push_back(Sample(T,  BigM, 0.));
     }
@@ -37,14 +37,14 @@ namespace STLRom {
         endTime = T[n - 1];
 
         if (n == 1)
-            push_back(Sample(T[0], V[0], 0.));
+            push_back(Sample(T[0], bigM_clamping(V[0]), 0.));
         else
         {
             for (int i = 0; i < n - 1; i++)
             {
-                push_back(Sample(T[i], V[i], (V[i + 1] - V[i]) / (T[i + 1] - T[i])));
+                push_back(Sample(T[i], bigM_clamping(V[i]), (V[i + 1] - V[i]) / (T[i + 1] - T[i])));
             }
-            push_back(Sample(T[n - 1], V[n - 1], 0.));
+            push_back(Sample(T[n - 1], bigM_clamping(V[n - 1]), 0.));
         }
         lower_signal.push_back(Sample(T[0], -BigM, 0.));
         upper_signal.push_back(Sample(T[0],  BigM, 0.));
@@ -60,14 +60,13 @@ namespace STLRom {
         endTime = T[n - 1];
 
         if (n == 1)
-            push_back(Sample(T[0], V[0], D[0]));
+            push_back(Sample(T[0], bigM_clamping(V[0]), D[0]));
         else
         {
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < n; i++)
             {
-                push_back(Sample(T[i], V[i], D[i]));
+                push_back(Sample(T[i], bigM_clamping(V[i]), D[i]));
             }
-            push_back(Sample(T[n - 1], V[n - 1], D[n - 1]));
         }
         lower_signal.push_back(Sample(T[0], -BigM, 0.));
         upper_signal.push_back(Sample(T[0],  BigM, 0.));
@@ -76,55 +75,61 @@ namespace STLRom {
 	Signal::Signal(double T, double V, interval itv, int n) {
         beginTime=T;
         endTime=T;
-        push_back(Sample(T, V, 0.));
-        lower_signal.push_back(Sample(T, itv.begin, 0.));
-        upper_signal.push_back(Sample(T, itv.end, 0.));
+        push_back(Sample(T, bigM_clamping(V), 0.));
+        lower_signal.push_back(Sample(T, bigM_clamping(itv.begin), 0.));
+        upper_signal.push_back(Sample(T, bigM_clamping(itv.end), 0.));
     }
 	Signal::Signal(double * T, double * V, interval * itv, int n) {
         beginTime=T[0];
         endTime = T[n - 1];
 
         if (n == 1) {
-            push_back(Sample(T[0], V[0], 0.));
-            lower_signal.push_back(Sample(T[0], itv[0].begin, 0.));
-            upper_signal.push_back(Sample(T[0], itv[0].end, 0.));
+            push_back(Sample(T[0], bigM_clamping(V[0]), 0.));
+            lower_signal.push_back(Sample(T[0], bigM_clamping(itv[0].begin), 0.));
+            upper_signal.push_back(Sample(T[0], bigM_clamping(itv[0].end), 0.));
         } else {
             for (int i = 0; i < n - 1; i++) { // TODO lower and upper derivatives more guaranteed?
                 double dt = (T[i + 1] - T[i]);
-                push_back(Sample(T[i], V[i], (V[i + 1] - V[i]) / dt));
-                lower_signal.push_back(Sample(T[i], itv[i].begin, (itv[i + 1].begin - itv[i].begin) / dt));
-                upper_signal.push_back(Sample(T[i], itv[i].end, (itv[i + 1].end - itv[i].end) / dt));
+                push_back(Sample(T[i], bigM_clamping(V[i]), (V[i + 1] - V[i]) / dt));
+                lower_signal.push_back(Sample(T[i], bigM_clamping(itv[i].begin), (itv[i + 1].begin - itv[i].begin) / dt));
+                upper_signal.push_back(Sample(T[i], bigM_clamping(itv[i].end), (itv[i + 1].end - itv[i].end) / dt));
             }
-            push_back(Sample(T[n - 1], V[n - 1], 0.));
-            lower_signal.push_back(Sample(T[n - 1], itv[n - 1].begin, 0.));
-            upper_signal.push_back(Sample(T[n - 1], itv[n - 1].end, 0.));
+            push_back(Sample(T[n - 1], bigM_clamping(V[n - 1]), 0.));
+            lower_signal.push_back(Sample(T[n - 1], bigM_clamping(itv[n - 1].begin), 0.));
+            upper_signal.push_back(Sample(T[n - 1], bigM_clamping(itv[n - 1].end), 0.));
         }
         lower_signal.push_back(Sample(T[0], -BigM, 0.));
         upper_signal.push_back(Sample(T[0],  BigM, 0.));
     }
 
-	Signal::Signal(double T, interval itv, int n) { // TODO *this = ?
-        Signal(T, itv.mid(), itv, n);
-    } 
-	Signal::Signal(double * T, interval * itv, int n) {
-        double V[n];
-        for (int i=0; i<n; i++)
-            V[i] = itv[i].mid();
-        Signal(T, V, itv, n); // same here?
+	Signal::Signal(double T, interval itv, int n) : Signal(T, itv.mid(), itv, n) {}
+
+	Signal::Signal(const std::deque<Sample> &samples) {
+        int n = samples.size();
+        
+        beginTime=samples[0].time;
+        endTime = samples[n - 1].time;
+
+        if (n == 1)
+            push_back(Sample(samples[0].time, bigM_clamping(samples[0].value), samples[0].derivative));
+        else
+        {
+            for (int i = 0; i < n; i++)
+            {
+                push_back(Sample(samples[i].time, bigM_clamping(samples[i].value), samples[i].derivative));
+            }
+        }
+        lower_signal.push_back(Sample(samples[0].time, -BigM, 0.));
+        upper_signal.push_back(Sample(samples[0].time,  BigM, 0.));
     }
 
-	Signal::Signal(std::deque<Sample> samples) {
+	Signal::Signal(std::deque<Sample> &&samples) noexcept {
+        *this = std::move(samples);
         int n = samples.size();
-        double T[n];
-        double V[n];
-        double D[n];
-        int i = 0;
-        for (auto s : samples) {
-            T[i] = s.time;
-            V[i] = s.value;
-            D[i] = s.derivative;
-        }
-        Signal(T, V, D, n);
+        beginTime = samples[0].time;
+        endTime = samples[n - 1].time;
+        lower_signal.push_back(Sample(samples[0].time, -BigM, 0.));
+        upper_signal.push_back(Sample(samples[0].time,  BigM, 0.));
     }
 
     void Signal::addLastSample() {
@@ -165,15 +170,16 @@ namespace STLRom {
     void Signal::appendSample(double t, double v, double d, interval itv, interval d_itv, bool interp) {
 
         if ((t <= endTime) && size() > 0)
-        {            
+        {
+            cout << "(t <= endTime) && size() > 0  ---  " << t << endl;
             return;
         }
 
         if (size() == 0)
         {
-            push_back(Sample(t, v, d));
-            lower_signal.push_back(Sample(t, itv.begin, d_itv.begin));
-            upper_signal.push_back(Sample(t, itv.end, d_itv.end));
+            push_back(Sample(t, bigM_clamping(v), d));
+            lower_signal.push_back(Sample(t, bigM_clamping(itv.begin), d_itv.begin));
+            upper_signal.push_back(Sample(t, bigM_clamping(itv.end), d_itv.end));
             beginTime = t;
             endTime = t;
         }
@@ -186,7 +192,12 @@ namespace STLRom {
                 lower_signal.back().derivative = (itv.begin - lower_signal.back().value) / (t - lower_signal.back().time);
                 upper_signal.back().derivative = (itv.end - upper_signal.back().value) / (t - upper_signal.back().time);
             }
-            push_back(Sample(t, v, d));
+            push_back(Sample(t, bigM_clamping(v), d));
+            // we add sample on lower and upper bounds only if it is not redundant
+            if (fabs(lower_signal.back().valueAt(t) - lower_signal.front().value) > ZERO_POS || fabs(lower_signal.back().derivative - lower_signal.front().derivative) > ZERO_POS)
+                lower_signal.push_back(Sample(t, bigM_clamping(itv.begin), d_itv.begin));
+            if (fabs(upper_signal.back().valueAt(t) - upper_signal.front().value) > ZERO_POS || fabs(upper_signal.back().derivative - upper_signal.front().derivative) > ZERO_POS)
+                upper_signal.push_back(Sample(t, bigM_clamping(itv.end), d_itv.end));
             endTime = t;
         }
 	}
@@ -195,23 +206,24 @@ namespace STLRom {
 		fesetround(FE_DOWNWARD);
         lower_signal = *this; // TODO check is this a copy?
         for (auto s : lower_signal) {
-            s.value = s.value - r;
+            s.value = bigM_clamping(s.value - r);
         }
         fesetround(FE_UPWARD);
         upper_signal = *this; // TODO same
         for (auto s : upper_signal) {
-            s.value = s.value + r;
+            s.value = bigM_clamping(s.value + r);
         }
         fesetround(FE_TONEAREST);
     }
 
     //remove redundant sample (no jump and no change in derivative)
-    // TODO simplifo lower_signal and upper_signal
     void Signal::simplify() {
 #ifdef DEBUG___
         printf(">>>Signal::simplify:                          IN." );
         cout << "IN: " << *this << endl;
 #endif
+        if (size() < 3)
+            return;
 
         double first_time = front().time;
         push_back(front());
@@ -311,7 +323,7 @@ namespace STLRom {
         cout << "IN: " << *this << endl;
     #endif
         if ( t_end<t_start-1e-14 ) {
-            clear();
+            clear_all();
             beginTime=0.;
             endTime=0.;
 
@@ -351,6 +363,7 @@ namespace STLRom {
             }
         }
 
+        v = bigM_clamping(v);
         //trim or extend back of signal
         if(endTime < t_end) {
             //		cout << "push_back here" << endl;
@@ -418,9 +431,9 @@ namespace STLRom {
             }
 
             if (row_size == 2) {
-                appendSample(row[0], row[1]);
+                appendSample(row[0], bigM_clamping(row[1]));
             } else {
-                appendSample(row[0], row[1], row[2]);
+                appendSample(row[0], bigM_clamping(row[1]), row[2]);
             }
 
         }
@@ -489,12 +502,13 @@ namespace STLRom {
     Signal Signal::operator+(const Signal& that) const {
         // Addition of two signals defined on the intersection of time domains.
         // TODO Compute on the union of time domains?
-        Signal result = Signal();
+        Signal result;
     	merge_signals_with_op(result, *this, that, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
         fesetround(FE_DOWNWARD);
         Signal low(lower_signal);
         Signal t_low(that.lower_signal);
         Signal r_low(result.lower_signal);
+        r_low.clear();
     	merge_signals_with_op(r_low, low, t_low, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
         r_low.simplify();
         result.lower_signal = r_low;
@@ -502,6 +516,7 @@ namespace STLRom {
         Signal up(upper_signal);
         Signal t_up(that.upper_signal);
         Signal r_up(result.upper_signal);
+        r_up.clear();
     	merge_signals_with_op(r_up, up, t_up, [](double a, double b){return a + b;}, [](double, double, double dL, double dR){return dL + dR;});
         r_up.simplify();
         result.upper_signal = r_up;
@@ -517,7 +532,7 @@ namespace STLRom {
 	Signal Signal::operator*(double p) const {
         Signal result = Signal();
         for (const Sample &s : *this) {
-            result.appendSample(s.time, p*s.value, p*s.derivative);
+            result.appendSample(s.time, bigM_clamping(p*s.value), p*s.derivative);
         }
         // remove default [-BigM,BigM]
         result.lower_signal.clear();
@@ -525,20 +540,20 @@ namespace STLRom {
         if (p >= 0) {
             fesetround(FE_DOWNWARD);
             for (const Sample &s : lower_signal) {
-                result.lower_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
+                result.lower_signal.push_back(Sample(s.time, std::min(p*s.value, BigM), p*s.derivative));
             }
             fesetround(FE_UPWARD);
             for (const Sample &s : upper_signal) {
-                result.upper_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
+                result.upper_signal.push_back(Sample(s.time, std::min(p*s.value, BigM), p*s.derivative));
             }
         } else {
             fesetround(FE_DOWNWARD);
             for (const Sample &s : upper_signal) {
-                result.lower_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
+                result.lower_signal.push_back(Sample(s.time, std::max(p*s.value, -BigM), p*s.derivative));
             }
             fesetround(FE_UPWARD);
             for (const Sample &s : lower_signal) {
-                result.upper_signal.push_back(Sample(s.time, p*s.value, p*s.derivative));
+                result.upper_signal.push_back(Sample(s.time, std::max(p*s.value, -BigM), p*s.derivative));
             }
         }
         fesetround(FE_TONEAREST);

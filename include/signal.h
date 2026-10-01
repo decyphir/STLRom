@@ -164,8 +164,44 @@ public:
 	// TODO also initialize derivative interval?
 	// the crisp signal is initialized at the middle of the given interval(s)
 	Signal(double, interval, int);
-	Signal(double *, interval *, int);
-	Signal(std::deque<Sample>);
+	Signal(const std::deque<Sample>&);
+	Signal(std::deque<Sample>&&) noexcept;
+
+    /** Copy constructor */
+    inline Signal(const Signal &other) : std::deque<Sample>(other) {
+		beginTime = other.beginTime;
+		endTime = other.endTime;
+		lower_signal = other.lower_signal;
+		upper_signal = other.upper_signal;
+	}
+
+    /** Copy assignment operator */
+    inline Signal &operator=(const Signal &other) {
+		std::deque<Sample>::operator=(other);
+		beginTime = other.beginTime;
+		endTime = other.endTime;
+		lower_signal = other.lower_signal;
+		upper_signal = other.upper_signal;
+		return *this;
+	}
+
+    /** Move constructor */
+    inline Signal(Signal &&other) noexcept {
+		beginTime = other.beginTime;
+		endTime = other.endTime;
+		lower_signal = std::move(other.lower_signal);
+		upper_signal = std::move(other.upper_signal);
+	}
+
+    /** Move assignment operator */
+    inline Signal &operator=(Signal &&other) noexcept {
+		std::deque<Sample>::operator=(std::move(other));
+		beginTime = other.beginTime;
+		endTime = other.endTime;
+		lower_signal = std::move(other.lower_signal);
+		upper_signal = std::move(other.upper_signal);
+		return *this;
+	}
     
 	inline void clear_all() {
 		clear();
