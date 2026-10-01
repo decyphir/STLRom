@@ -341,7 +341,7 @@ namespace STLRom {
         }
 
         for (const auto& sample : *this) {
-            file << sample.time << "," << sample.value << "," << sample.derivative << "\n";
+            file << std::setprecision (15) << sample.time << "," << sample.value << "," << sample.derivative << "\n";
         }
 
         file << endTime << "," << back().valueAt(endTime) << ",0\n"; // FIXME: is 0 derivative correct here ?
