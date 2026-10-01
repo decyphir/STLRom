@@ -106,6 +106,12 @@ namespace STLRom {
 
 	Signal::Signal(const std::deque<Sample> &samples) {
         int n = samples.size();
+
+        if (n == 0) {
+            beginTime = 0.;
+            endTime = 0.;
+            return;
+        }
         
         beginTime=samples[0].time;
         endTime = samples[n - 1].time;
@@ -119,15 +125,6 @@ namespace STLRom {
                 push_back(Sample(samples[i].time, bigM_clamping(samples[i].value), samples[i].derivative));
             }
         }
-        lower_signal.push_back(Sample(samples[0].time, -BigM, 0.));
-        upper_signal.push_back(Sample(samples[0].time,  BigM, 0.));
-    }
-
-	Signal::Signal(std::deque<Sample> &&samples) noexcept {
-        *this = std::move(samples);
-        int n = samples.size();
-        beginTime = samples[0].time;
-        endTime = samples[n - 1].time;
         lower_signal.push_back(Sample(samples[0].time, -BigM, 0.));
         upper_signal.push_back(Sample(samples[0].time,  BigM, 0.));
     }
@@ -171,7 +168,6 @@ namespace STLRom {
 
         if ((t <= endTime) && size() > 0)
         {
-            cout << "(t <= endTime) && size() > 0  ---  " << t << endl;
             return;
         }
 

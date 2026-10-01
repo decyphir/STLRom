@@ -165,7 +165,6 @@ public:
 	// the crisp signal is initialized at the middle of the given interval(s)
 	Signal(double, interval, int);
 	Signal(const std::deque<Sample>&);
-	Signal(std::deque<Sample>&&) noexcept;
 
     /** Copy constructor */
     inline Signal(const Signal &other) : std::deque<Sample>(other) {
