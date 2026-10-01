@@ -124,7 +124,14 @@ void Signal::compute_and(const Signal &x, const Signal &y) {
 
 	clear();
 
-	merge_signals_with_op(*this, x, y, [](double a, double b){return fmin(a, b);}, [](double vL, double vR, double dL, double dR){if (vL > vR) return dR; else return dL;}, true);
+	merge_signals_with_op(*this, x, y, [](double a, double b){return fmin(a, b);}, [](double vL, double vR, double dL, double dR){
+		if (fabs(vL-vR) < ZERO_POS)
+			return fmin(dL, dR);
+		else if (vL > vR)
+			return dR;
+		else 
+			return dL;
+	}, true);
 
 	simplify();
 
@@ -134,7 +141,14 @@ void Signal::compute_or(const Signal &x, const Signal &y) {
 
 	clear();
 
-	merge_signals_with_op(*this, x, y, [](double a, double b){return fmax(a, b);}, [](double vL, double vR, double dL, double dR){if (vL > vR) return dL; else return dR;}, true);
+	merge_signals_with_op(*this, x, y, [](double a, double b){return fmax(a, b);}, [](double vL, double vR, double dL, double dR){
+		if (fabs(vL-vR) < ZERO_POS)
+			return fmax(dL, dR);
+		else if (vL > vR)
+			return dL;
+		else 
+			return dR;
+	}, true);
 
 	simplify();
 
@@ -659,21 +673,29 @@ Signal * computeNot(Signal * y) {
 
 Signal * computeAnd(Signal * x, Signal * y) {
 
-	Signal::const_reverse_iterator i = x->rbegin();
-	Signal::const_reverse_iterator j = y->rbegin();
+#ifdef DEBUG__
+	cout << ">  computeAnd:                                 IN." << endl;
+	cout << "IN: x " << *x <<  endl;
+	cout << "IN: y " << *y <<  endl;
+#endif
 
-	Signal * z = new Signal();
+	Signal *z = new Signal();
 
-	z->beginTime = fmax(x->beginTime, y->beginTime);
-	z->endTime = fmin(x->endTime, y->endTime);
-
-	while (i->time >= z->endTime)
-		i++;
-	while (j->time >= z->endTime)
-		j++;
-
-	computePartialAnd(z, i, j, z->beginTime, z->endTime);
+	merge_signals_with_op(*z, *x, *y, [](double a, double b){return fmin(a, b);}, [](double vL, double vR, double dL, double dR){
+		if (fabs(vL-vR) < ZERO_POS)
+			return fmin(dL, dR);
+		else if (vL > vR)
+			return dR;
+		else 
+			return dL;
+		}, true);
+	
 	z->simplify();
+
+#ifdef DEBUG__
+	cout << "OUT: " << *z << endl;
+	cout << "<  computeAnd:                                 OUT." << endl;
+#endif
 
 	return z;
 }
@@ -682,38 +704,21 @@ Signal * computeOr(Signal * x, Signal * y) {
 
 #ifdef DEBUG__
 	cout << ">  computeOr:                                 IN." << endl;
-#endif
-
-	Signal::const_reverse_iterator i = x->rbegin();
-	Signal::const_reverse_iterator j = y->rbegin();
-
-#ifdef DEBUG__
 	cout << "IN: x " << *x <<  endl;
 	cout << "IN: y " << *y <<  endl;
 #endif
 
-	Signal * z = new Signal();
+	Signal *z = new Signal();
 
-	z->beginTime = fmax(x->beginTime, y->beginTime);
-	z->endTime = fmin(x->endTime, y->endTime);
-
-#ifdef DEBUG__
-	cout << "IN: z " << *z <<  endl;
-#endif
-
-
-	while (i->time >= z->endTime)
-		i++;
-	while (j->time >= z->endTime)
-		j++;
-
-
-#ifdef DEBUG__
-	cout << "Post................."<<  endl;
-#endif
-
-
-	computePartialOr(z, i, j, z->beginTime, z->endTime);
+	merge_signals_with_op(*z, *x, *y, [](double a, double b){return fmax(a, b);}, [](double vL, double vR, double dL, double dR){
+		if (fabs(vL-vR) < ZERO_POS)
+			return fmax(dL, dR);
+		else if (vL > vR)
+			return dL;
+		else 
+			return dR;
+		}, true);
+	
 	z->simplify();
 
 #ifdef DEBUG__
@@ -721,21 +726,6 @@ Signal * computeOr(Signal * x, Signal * y) {
 	cout << "<  computeOr:                                 OUT." << endl;
 #endif
 
-
-	// Signal *z = new Signal();
-
-	// merge_signals_with_op(*z, *x, *y, [](double a, double b){return fmax(a, b);}, [](double vL, double vR, double dL, double dR){
-	// 	if (vL > vR)
-	// 		return dL;
-	// 	else 
-	// 		return dR;
-	// 	}, true);
-	
-	// z->simplify();
-
-	// cout << "OUT: " << *z << endl;
-	// cout << "<  computeOr:                                 OUT." << endl;
-	
 	return z;
 
 }
