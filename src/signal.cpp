@@ -277,11 +277,11 @@ namespace STLRom {
         }
         else {
             //trim or extend front of signal
-            while(front().time < t_start) 
+            while(size()>1 && front().time < t_start)
                 pop_front();
-            while(lower_signal.front().time < t_start) 
+            while(lower_signal.size()>1 && lower_signal.front().time < t_start)
                 lower_signal.pop_front();
-            while(upper_signal.front().time < t_start) 
+            while(upper_signal.size()>1 && upper_signal.front().time < t_start)
                 upper_signal.pop_front();
             
             if (front().time != t_start) {
