@@ -10,28 +10,28 @@ def get_signame_from_idx(self,idx):
 def get_signal(self, sig):
     return self.data.get_signal(sig)
 
-def plot_signal(self, sig, label=None, ax=None, draw_samples=False):
+def plot_signal(self, sig, label=None, ax=None, draw_samples=False, draw_tube=False):
     S = self.get_signal(sig)
     
     if S is not None and label is None: 
         label = "Signal " + str(sig) #FIXME: dummy if sig is integer
-    return plot(S, label=label, ax=ax, draw_samples=draw_samples)
+    return plot(S, label=label, ax=ax, draw_samples=draw_samples, draw_tube=draw_tube)
     
-def plot_signals(self, sig_names=None, same_ax=True, ax=None, draw_samples=False):
+def plot_signals(self, sig_names=None, same_ax=True, ax=None, draw_samples=False, draw_tube=False):
     if sig_names is None:
         sig_names= list(self.data.signal_map.keys())
 
     if len(sig_names)>0:    
         if ax is None:
-            ax = self.plot_signal(sig_names[0], draw_samples=draw_samples)
+            ax = self.plot_signal(sig_names[0], draw_samples=draw_samples, draw_tube=draw_tube)
         else:
-            self.plot_signal(sig_names[0], ax=ax, draw_samples=draw_samples)
+            self.plot_signal(sig_names[0], ax=ax, draw_samples=draw_samples, draw_tube=draw_tube)
         if same_ax:
             for sig in sig_names[1:]:
-                self.plot_signal(sig, ax=ax,draw_samples=draw_samples)
+                self.plot_signal(sig, ax=ax,draw_samples=draw_samples, draw_tube=draw_tube)
         else:
             for sig in sig_names[1:]:
-                self.plot_signal(sig, draw_samples=draw_samples)
+                self.plot_signal(sig, draw_samples=draw_samples, draw_tube=draw_tube)
     return ax
 
 def plot_rob(self, phi, t0, tf, label=None, ax=None, **kwargs):
@@ -47,13 +47,3 @@ def plot_sat(self, phi, t0, tf, label=None, ax=None, **kwargs):
     if S is not None and label is None: 
         label = str(phi)
     return plot(S, label=label, ax=ax, plot_rob=False, plot_sat=True, **kwargs)
-
-
-def plot_tube_sig(self, tube, label=None, ax=None, draw_samples=False, **kwargs):
-    return ax
-    # T = tube if type(tube) is Tube else self.get_tube(tube)
-    # # TODO: also accept list of sigs? (output of get_online_rob_signal)
-
-    # if T is not None and label is None and type(tube) is not Tube: 
-    #     label = "Tube " + str(tube)
-    # return plot_tube(T, label=label, ax=ax, draw_samples=draw_samples, **kwargs)

@@ -1,8 +1,42 @@
+def samples_to_points(samples, end_time, with_samples=False):
+    times = []
+    values = []
+    samples_times = []
+    samples_values = []
+
+    for i in range(len(samples_list) - 1):
+        s = samples_list[i]
+        sn = samples_list[i + 1]
+        
+        sn_v = s.value_at(sn.time)
+        times += [s.time, sn.time]
+        values += [s.value, sn_v]
+        
+        if with_samples:
+            samples_times += [s.time, sn.time, np.nan]
+            samples_values += [s.value, sn_v, np.nan]
+
+    # Last segment (to end_time)
+    sn = samples_list[-1]
+
+    sn_v = sn.value_at(end_time)
+    times += [sn.time, end_time]
+    values += [sn.value, sn_v]
+
+    if with_samples:
+        samples_times += [sn.time, end_time, np.nan]
+        samples_values += [sn.value, sn_v, np.nan]
+    
+    return times, values, samples_times, samples_values
+
+
+
 def plot(self, label=None, ax=None, **kwargs):
     import matplotlib.pyplot as plt
 
     draw_canvas = kwargs.pop('draw_canvas', True)
     draw_samples = kwargs.pop('draw_samples', False)
+    draw_tube = kwargs.pop('draw_tube', False)
     plot_sat = kwargs.pop('plot_sat', False)
     plot_rob = kwargs.pop('plot_rob', True)
     legend = kwargs.pop('legend', True)
@@ -27,32 +61,8 @@ def plot(self, label=None, ax=None, **kwargs):
         print(f"{label}: No samples to plot.")
         return ax
 
-    times = []
-    values = []
-    samples_times = []
-    samples_values = []
-
-    for i in range(len(samples_list) - 1):
-        s = samples_list[i]
-        sn = samples_list[i + 1]
-        
-        sn_v = s.value_at(sn.time)
-        times += [s.time, sn.time]
-        values += [s.value, sn_v]
-        
-        samples_times += [s.time, sn.time, np.nan]
-        samples_values += [s.value, sn_v, np.nan]
-
-    # Last segment (to end_time)
-    sn = samples_list[-1]
-
-    sn_v = sn.value_at(self.end_time)
-    times += [sn.time, self.end_time]
-    values += [sn.value, sn_v]
-
-    samples_times += [sn.time, self.end_time, np.nan]
-    samples_values += [sn.value, sn_v, np.nan]
-
+    times, values, samples_times, samples_values = samples_to_points(samples_list, self.end_time, draw_samples)
+    
     if plot_rob:        
         if draw_samples:
             l_line, = ax.plot(samples_times, samples_values, **kwargs)    
@@ -70,6 +80,21 @@ def plot(self, label=None, ax=None, **kwargs):
             l_line, = ax.plot(times, values, **kwargs)    
         
         l_line.set_label(label)
+
+    if draw_tube:
+        lower_list = self.get_lower_list()
+        upper_list = self.get_upper_list()
+        if len(lower_list) == 0 or len(upper_list) == 0:
+            print(f"{label}: No tube to plot.")
+            return ax
+
+        l_times, l_values, _, _ = samples_to_points(lower_list, self.end_time)
+        u_times, u_values, _, _ = samples_to_points(upper_list, self.end_time)
+
+        c = l_line.get_color()
+        ax.plot(l_times, l_values, color=c, **kwargs)
+        ax.plot(u_times, u_values, color=c, **kwargs)
+
 
     if draw_canvas:
         ax.figure.canvas.draw()
@@ -90,16 +115,6 @@ def plot(self, label=None, ax=None, **kwargs):
         ax.legend(h, l)
 
     return ax
-
-
-def plot_tube(tube, label=None, ax=None, draw_samples=False, **kwargs):
-    return ax
-    # ax = plot(tube.lower_signal, ax=ax, draw_samples=draw_samples, **kwargs)
-    # ax.lines[-1].set_label(None)
-    # if label is None:
-    #     label = f'Tube {len(ax.get_lines())}' # TOFIX: plot_tube increases x.get_lines by 2, and increases signal number as well.
-    # # TODO: pop color from kwargs?
-    # return plot(tube.upper_signal, label=label, ax=ax, draw_samples=draw_samples, color=ax.lines[-1].get_color(), **kwargs)
 
 
 def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_figure=False, title='Robustness Map'):

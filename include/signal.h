@@ -284,6 +284,12 @@ public:
 	inline const std::deque<Sample>& getSamplesDeque() const {
     	return *this;
     }
+	inline const std::deque<Sample>& getLowerDeque() const {
+    	return this->lower_signal;
+    }
+	inline const std::deque<Sample>& getUpperDeque() const {
+    	return this->upper_signal;
+    }
 
 	// write signal to file
 	void dumpFile(const string filename) const {

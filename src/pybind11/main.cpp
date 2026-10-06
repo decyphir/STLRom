@@ -89,6 +89,8 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("compute_left_time_rob",&STLRom::Signal::compute_left_time_rob)	
 		.def("compute_right_time_rob",&STLRom::Signal::compute_right_time_rob)	
 		.def("get_samples_list",&STLRom::Signal::getSamplesDeque)
+		.def("get_lower_list",&STLRom::Signal::getLowerDeque)
+		.def("get_upper_list",&STLRom::Signal::getUpperDeque)
 		.def_readwrite("begin_time",&STLRom::Signal::beginTime)
 		.def_readwrite("end_time",&STLRom::Signal::endTime)
 		.def_static("set_semantics",  &STLRom::Signal::set_semantics)
