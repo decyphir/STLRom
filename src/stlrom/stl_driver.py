@@ -1,5 +1,5 @@
 from ._stlrom import Signal
-from .signal import plot, plot_tube
+from .signal import plot
 
 def get_signal_idx(self, sig):    
     return self.data.get_signal_idx(sig)

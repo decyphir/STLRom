@@ -73,6 +73,11 @@ PYBIND11_MODULE(_stlrom, m) {
 			new (&instance) STLRom::Signal(t, v, 1);
 			throw std::runtime_error("");
 		})
+		.def("__str__", [](const Signal &sig) {
+            std::ostringstream oss;
+            oss << sig;
+            return oss.str();
+        })
 		.def("clear_all", &STLRom::Signal::clear_all)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendSample)
 		.def("append_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendSample)
@@ -365,8 +370,8 @@ PYBIND11_MODULE(_stlrom, m) {
             oss << dd;
             return oss.str();
         })
-		.def("get_signal",(Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
-		.def("get_signal",(Signal (STLRom::STLData::*)(const std::string &) const) &STLRom::STLData::get_signal)		
+		.def("get_signal", (Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)		
+		.def("get_signal", (Signal (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal)		
 		.def("get_signal_idx", &STLRom::STLData::get_signal_idx)
 		.def("get_signame_from_idx", &STLRom::STLData::get_signame_from_idx)
 		.def("add_sample", (void (STLRom::STLData::*)(vector<double>)) &STLRom::STLData::add_sample)
@@ -374,10 +379,6 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double)) &STLRom::STLData::add_signal_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double, double)) &STLRom::STLData::add_signal_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double, double, bool)) &STLRom::STLData::add_signal_sample)
-		.def("get_signal_idx", (int (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal_idx)
-		.def("get_signame_from_idx", (string (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signame_from_idx)
-		.def("get_signal", (Signal (STLRom::STLData::*)(int) const) &STLRom::STLData::get_signal)
-		.def("get_signal", (Signal (STLRom::STLData::*)(const string &) const) &STLRom::STLData::get_signal)
 		.def_readwrite("data_vector", &STLRom::STLData::data_vector)
 		.def_readwrite("signal_map", &STLRom::STLData::signal_map)
 		;

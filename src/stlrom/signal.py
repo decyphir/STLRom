@@ -1,12 +1,13 @@
 def samples_to_points(samples, end_time, with_samples=False):
+    import numpy as np
     times = []
     values = []
     samples_times = []
     samples_values = []
 
-    for i in range(len(samples_list) - 1):
-        s = samples_list[i]
-        sn = samples_list[i + 1]
+    for i in range(len(samples) - 1):
+        s = samples[i]
+        sn = samples[i + 1]
         
         sn_v = s.value_at(sn.time)
         times += [s.time, sn.time]
@@ -17,7 +18,7 @@ def samples_to_points(samples, end_time, with_samples=False):
             samples_values += [s.value, sn_v, np.nan]
 
     # Last segment (to end_time)
-    sn = samples_list[-1]
+    sn = samples[-1]
 
     sn_v = sn.value_at(end_time)
     times += [sn.time, end_time]
@@ -56,7 +57,6 @@ def plot(self, label=None, ax=None, **kwargs):
         ax.set_title(title)
     ax.grid(True)
         
-    import numpy as np
     if len(samples_list) == 0:
         print(f"{label}: No samples to plot.")
         return ax

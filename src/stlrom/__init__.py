@@ -15,7 +15,6 @@ STLDriver.plot_signal = plot_signal
 STLDriver.plot_signals = plot_signals
 STLDriver.plot_rob = plot_rob
 STLDriver.plot_sat = plot_sat
-STLDriver.plot_tube = plot_tube_sig
 
 STLMonitor.get_signal_idx = get_signal_idx
 STLMonitor.get_signal = get_signal
@@ -23,5 +22,4 @@ STLMonitor.plot_signal = plot_signal
 STLMonitor.plot_signals = plot_signals
 STLMonitor.plot_rob = plot_rob
 STLMonitor.plot_sat = plot_sat
-STLMonitor.plot_tube = plot_tube_sig
 
