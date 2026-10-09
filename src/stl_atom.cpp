@@ -264,31 +264,6 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
         compute_robustness(childL->z, childR->z, comp, &z);
-        
-        Signal childL_low(childL->z.lower_signal);
-        Signal childL_up(childL->z.upper_signal);
-        Signal childR_low(childR->z.lower_signal);
-        Signal childR_up(childR->z.upper_signal);
-        Signal low;
-        Signal up;
-        switch (comp) {
-            case STLRom::comparator::LESSTHAN:
-                compute_robustness(childL_up, childR_low, comp, &low);
-                compute_robustness(childL_low, childR_up, comp, &up);
-                break;
-            case STLRom::comparator::GREATERTHAN:
-                compute_robustness(childL_low, childR_up, comp, &low);
-                compute_robustness(childL_up, childR_low, comp, &up);
-                break;
-            case STLRom::comparator::EQUAL: // TODO what should we do?
-                compute_robustness(childL_low, childR_low, comp, &low);
-                compute_robustness(childL_up, childR_up, comp, &up);
-                break;
-        }
-        low.simplify();
-        up.simplify();
-        z.lower_signal = low;
-        z.upper_signal = up;
 
         Signal z_space;
         switch (Signal::semantics) {

@@ -58,7 +58,110 @@ namespace STLRom {
         z.upper_signal = z_up.getSamplesDeque();
         return z.upper_signal.front().value;
     };
-    
+
+    double stl_atom::compute_lower_rob(){
+    #ifdef DEBUG__
+        printf(">  stl_atom:compute_lower_rob              IN.\n");
+        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
+        cout << "last data time:" << get_last_data_time() << endl;
+        cout << "z : " << z << endl;
+    #endif
+        Signal z_low(z.lower_signal);
+        Signal childL_low, childL_up, childR_low, childR_up;
+        
+        switch (comp) {
+            case STLRom::comparator::LESSTHAN:
+                childL->compute_upper_rob();
+                childR->compute_lower_rob();
+                childL_up = Signal(childL->z.upper_signal);
+                childR_low = Signal(childR->z.lower_signal);
+                compute_robustness(childL_up, childR_low, comp, &z_low);
+                break;
+            case STLRom::comparator::GREATERTHAN:
+                childL->compute_lower_rob();
+                childR->compute_upper_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childR_up = Signal(childR->z.upper_signal);
+                compute_robustness(childL_low, childR_up, comp, &z_low);
+                break;
+            case STLRom::comparator::EQUAL: // TODO what should we do?
+                childL->compute_lower_rob();
+                childR->compute_lower_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childR_low = Signal(childR->z.lower_signal);
+                compute_robustness(childL_low, childR_low, comp, &z_low);
+                break;
+        }
+
+        double last_data_t = get_last_data_time();
+        if (end_time>last_data_t) 
+        {   
+            z_low.resize(start_time, last_data_t, BOTTOM);
+            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
+            z_low.endTime = end_time;
+        }
+        
+    #ifdef DEBUG__
+        cout << "z_low:" << z_low << endl;
+        printf( "<  stl_atom:compute_lower_rob              OUT.\n");
+    #endif
+        z_low.simplify();
+        z.lower_signal = z_low.getSamplesDeque();
+        return z.lower_signal.front().value;
+    };
+
+    double stl_atom::compute_upper_rob(){
+    #ifdef DEBUG__
+        printf(">  stl_atom:compute_upper_rob              IN.\n");
+        cout<< "start_time:" << start_time << " end_time:" << end_time << endl;
+        cout << "last data time:" << get_last_data_time() << endl;
+        cout << "z : " << z << endl;
+    #endif
+        Signal z_up(z.upper_signal);
+        Signal childL_low, childL_up, childR_low, childR_up;
+
+        switch (comp) {
+            case STLRom::comparator::LESSTHAN:
+                childL->compute_lower_rob();
+                childR->compute_upper_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childR_up = Signal(childR->z.upper_signal);
+                compute_robustness(childL_low, childR_up, comp, &z_up);
+                break;
+            case STLRom::comparator::GREATERTHAN:
+                childL->compute_upper_rob();
+                childR->compute_lower_rob();
+                childL_up = Signal(childL->z.upper_signal);
+                childR_low = Signal(childR->z.lower_signal);
+                compute_robustness(childL_up, childR_low, comp, &z_up);
+                break;
+            case STLRom::comparator::EQUAL: // TODO what should we do?
+                childL->compute_upper_rob();
+                childR->compute_upper_rob();
+                childL_up = Signal(childL->z.upper_signal);
+                childR_up = Signal(childR->z.upper_signal);
+                compute_robustness(childL_up, childR_up, comp, &z_up);
+                break;
+        }
+
+        double last_data_t = get_last_data_time();
+        if (end_time>last_data_t) 
+        {   
+            z_up.resize(start_time, last_data_t, BOTTOM);
+            z_up.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
+            z_up.endTime = end_time;
+        }
+
+    #ifdef DEBUG__
+        cout << "z_up:" << z_up << endl;
+        printf( "<  stl_atom:compute_upper_rob              OUT.\n");
+    #endif
+        z_up.simplify();
+        z.upper_signal = z_up.getSamplesDeque();
+        return z.upper_signal.front().value;
+    };
+
+
     double and_transducer::compute_lower_rob(){
         #ifdef DEBUG__
         printf( ">  and_transducer:compute_lower_rob           IN.\n");
