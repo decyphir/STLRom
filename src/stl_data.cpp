@@ -118,6 +118,12 @@ namespace STLRom
         add_signal_sample(sig, t,v,d, 1);
     }
 
+    void STLData::inflate_signal(const string &sig, double r)
+    {
+        int idx = get_signal_idx(sig);
+        if (idx != -1)
+            data_vector[idx].inflate(r);
+    }
     
 
 

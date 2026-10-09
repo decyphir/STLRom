@@ -85,6 +85,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("append_constant_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendConstantSample)
 		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double)) &STLRom::Signal::appendLinearSample)
 		.def("append_linear_sample", (void (STLRom::Signal::*)(double, double, double)) &STLRom::Signal::appendLinearSample)
+		.def("inflate", &STLRom::Signal::inflate)
 		.def("value_at", &STLRom::Signal::valueAt)
 		.def("resize",(void (STLRom::Signal::*)(double,double)) &STLRom::Signal::resize)
 		.def("compute_not",&STLRom::Signal::compute_not)	
@@ -379,6 +380,7 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double)) &STLRom::STLData::add_signal_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double, double)) &STLRom::STLData::add_signal_sample)
 		.def("add_signal_sample", (void (STLRom::STLData::*)(string, double, double, double, bool)) &STLRom::STLData::add_signal_sample)
+		.def("inflate_signal", &STLRom::STLData::inflate_signal)
 		.def_readwrite("data_vector", &STLRom::STLData::data_vector)
 		.def_readwrite("signal_map", &STLRom::STLData::signal_map)
 		;

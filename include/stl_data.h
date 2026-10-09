@@ -85,6 +85,9 @@ namespace STLRom
             /** append new sample to signal */
             void add_signal_sample(string phi, double t, double v, double d, bool interp);
 
+            /** set lower and upper bound for signal sig with a radius r from the crisp signal */
+            void inflate_signal(const string &sig, double r);
+
             /** get signal index */
             int get_signal_idx(const string &sig) const;
 

@@ -66,7 +66,7 @@ namespace STLRom {
         cout << "last data time:" << get_last_data_time() << endl;
         cout << "z : " << z << endl;
     #endif
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal childL_low, childL_up, childR_low, childR_up;
         
         switch (comp) {
@@ -117,7 +117,7 @@ namespace STLRom {
         cout << "last data time:" << get_last_data_time() << endl;
         cout << "z : " << z << endl;
     #endif
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal childL_low, childL_up, childR_low, childR_up;
 
         switch (comp) {
@@ -168,7 +168,7 @@ namespace STLRom {
         #endif
         childL->compute_lower_rob();  
         childR->compute_lower_rob();
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal childL_low(childL->z.lower_signal);
         Signal childR_low(childR->z.lower_signal);
         z_low.compute_and(childL_low,childR_low);
@@ -188,7 +188,7 @@ namespace STLRom {
         #endif
         childL->compute_upper_rob();
         childR->compute_upper_rob();
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal childL_up(childL->z.upper_signal);
         Signal childR_up(childR->z.upper_signal);
         z_up.compute_and(childL_up,childR_up);
@@ -205,7 +205,7 @@ namespace STLRom {
     double or_transducer::compute_lower_rob(){
         childL->compute_lower_rob();
         childR->compute_lower_rob();
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal childL_low(childL->z.lower_signal);
         Signal childR_low(childR->z.lower_signal);
         z_low.compute_or(childL_low,childR_low);
@@ -219,7 +219,7 @@ namespace STLRom {
     double or_transducer::compute_upper_rob(){
         childL->compute_upper_rob();
         childR->compute_upper_rob();
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal childL_up(childL->z.upper_signal);
         Signal childR_up(childR->z.upper_signal);
         z_up.compute_or(childL_up,childR_up);
@@ -235,7 +235,7 @@ namespace STLRom {
     double implies_transducer::compute_lower_rob(){
         childL->compute_upper_rob();
         childR->compute_lower_rob();
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal childL_up(childL->z.upper_signal);
         Signal childR_low(childR->z.lower_signal);
 
@@ -253,7 +253,7 @@ namespace STLRom {
     double implies_transducer::compute_upper_rob(){
         childL->compute_lower_rob();
         childR->compute_upper_rob();
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal childL_low(childL->z.lower_signal);
         Signal childR_up(childR->z.upper_signal);
 
@@ -271,7 +271,7 @@ namespace STLRom {
     // NOT transducer: swap upper and lower
     double not_transducer::compute_upper_rob(){
         child->compute_lower_rob();
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal child_low(child->z.lower_signal);
         if (child->z.lower_signal.empty()) {
             z_up.appendSample(start_time,TOP);
@@ -285,7 +285,7 @@ namespace STLRom {
 
     double not_transducer::compute_lower_rob(){
         child->compute_upper_rob();
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal child_up(child->z.upper_signal);
         if (child->z.upper_signal.empty()) {
             z_low.appendSample(start_time,BOTTOM);
@@ -308,7 +308,7 @@ namespace STLRom {
 #endif
 
         child->compute_lower_rob();
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal child_low(child->z.lower_signal);
 
         // Maybe there was/is a good reason for, feels like I'll regret it        
@@ -346,7 +346,7 @@ namespace STLRom {
         double b = I->end;
 
         child->compute_upper_rob();
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal child_up(child->z.upper_signal);
     
 //        if (child_up.endTime < a) {
@@ -386,7 +386,7 @@ namespace STLRom {
         double b = I->end;
 
         child->compute_lower_rob();
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal child_low(child->z.lower_signal);
 
 //        if (child_low_signal.endTime < a) {
@@ -424,7 +424,7 @@ namespace STLRom {
         double b = I->end;
 
         child->compute_upper_rob();
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal child_up(child->z.upper_signal);
 //        if (child_up.endTime < a) {
 //            z_up.appendSample(start_time, TOP); 
@@ -457,7 +457,7 @@ namespace STLRom {
         
         if (childL->compute_lower_rob()==BOTTOM) return BOTTOM;
         if (childR->compute_lower_rob()==BOTTOM) return BOTTOM;
-        Signal z_low(z.lower_signal);
+        Signal z_low;
         Signal childL_low(childL->z.lower_signal);
         Signal childR_low(childR->z.lower_signal);
 
@@ -480,7 +480,7 @@ namespace STLRom {
 
         if (childL->compute_upper_rob()==TOP) return TOP;
         if (childR->compute_upper_rob()==TOP) return TOP;
-        Signal z_up(z.upper_signal);
+        Signal z_up;
         Signal childL_up(childL->z.upper_signal);
         Signal childR_up(childR->z.upper_signal);
 

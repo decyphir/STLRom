@@ -199,16 +199,14 @@ namespace STLRom {
 	}
     
     void Signal::inflate(double r) {
+        this->lower_signal = *this;
+        this->upper_signal = *this;
 		fesetround(FE_DOWNWARD);
-        lower_signal = *this; // TODO check is this a copy?
-        for (auto s : lower_signal) {
+        for (Sample &s : this->lower_signal)
             s.value = bigM_clamping(s.value - r);
-        }
         fesetround(FE_UPWARD);
-        upper_signal = *this; // TODO same
-        for (auto s : upper_signal) {
+        for (Sample &s : this->upper_signal)
             s.value = bigM_clamping(s.value + r);
-        }
         fesetround(FE_TONEAREST);
     }
 
