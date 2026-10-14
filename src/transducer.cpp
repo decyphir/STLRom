@@ -110,8 +110,11 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
-        child->compute_robustness();        
+        child->compute_robustness();
         z.compute_timed_eventually(child->z, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z.lower_signal.push_back(Sample(start_time,-Signal::get_BigM(),0));
+        z.upper_signal.push_back(Sample(start_time,Signal::get_BigM(),0));
         double et = min(z.endTime,end_time);
         z.resize(start_time,max(start_time,et), 0.);
 
@@ -147,6 +150,9 @@ namespace STLRom {
         
         child->compute_robustness();
         z.compute_timed_globally(child->z, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z.lower_signal.push_back(Sample(start_time,-Signal::get_BigM(),0));
+        z.upper_signal.push_back(Sample(start_time,Signal::get_BigM(),0));
         double et =min(z.endTime,end_time);
         z.resize(start_time,max(start_time, et ),0.);
 
@@ -287,6 +293,9 @@ namespace STLRom {
         childR->compute_robustness();
 
         z.compute_timed_until(childL->z, childR->z, a, b);
+        // patch for deprecated robustness funcs that erase lower and upper signal (TODO?)
+        z.lower_signal.push_back(Sample(start_time,-Signal::get_BigM(),0));
+        z.upper_signal.push_back(Sample(start_time,Signal::get_BigM(),0));
         z.resize(0.,z.endTime,0.);
         return z.front().value;
     }

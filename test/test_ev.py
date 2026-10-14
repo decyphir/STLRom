@@ -10,9 +10,18 @@ driver.add_sample([0, 1])
 driver.add_sample([3.5, -1])
 driver.add_sample([5, -1])
 
+x = driver.get_signal("x")
+x.append_lower_sample(0,-10)
+x.append_lower_sample(3,-12)
+x.append_lower_sample(4,-9)
+x.append_upper_sample(0, 1)
+x.append_upper_sample(5, 0, 0, True)
+driver.set_signals([x])
+
 robs = driver.get_online_rob("phi")
+print(robs)
 assert(robs[0]==6) #, "Robustness is wrong.")
-assert(robs[1]==6)  # "Lower robustness is wrong.")
-assert(robs[2]==6)  # "Upper robustness is wrong.")
+assert(robs[1]==4.8)  # "Lower robustness is wrong.")
+assert(robs[2]==17)  # "Upper robustness is wrong.")
 
 

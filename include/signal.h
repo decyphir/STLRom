@@ -229,6 +229,14 @@ public:
 		appendSample(t, itv.mid(), itv);
 	}
 
+	// add samples to lower or upper signal
+	void appendLowerSample(double t, double v);
+	void appendLowerSample(double t, double v, double d);
+    void appendLowerSample(double t, double v, double d, bool interp);
+	void appendUpperSample(double t, double v);
+	void appendUpperSample(double t, double v, double d);
+    void appendUpperSample(double t, double v, double d, bool interp);
+
 	// set lower and upper signal at a distance r from the crisp signal
     void inflate(double r);
 

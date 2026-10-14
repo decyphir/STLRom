@@ -181,23 +181,85 @@ namespace STLRom {
         }
         else
         {
+            interval default_itv(-Signal::BigM, Signal::BigM);
             if (interp) 
             {   // we discard the derivative of last sample and make it so it 
                 // interpolates linearly with the new one   
                 back().derivative = (v - back().value) / (t - back().time);
-                lower_signal.back().derivative = (itv.begin - lower_signal.back().value) / (t - lower_signal.back().time);
-                upper_signal.back().derivative = (itv.end - upper_signal.back().value) / (t - upper_signal.back().time);
+                if (itv != default_itv) {
+                    lower_signal.back().derivative = (itv.begin - lower_signal.back().value) / (t - lower_signal.back().time);
+                    upper_signal.back().derivative = (itv.end - upper_signal.back().value) / (t - upper_signal.back().time);
+                }
             }
             push_back(Sample(t, bigM_clamping(v), d));
-            // we add sample on lower and upper bounds only if it is not redundant
-            if (fabs(lower_signal.back().valueAt(t) - lower_signal.front().value) > ZERO_POS || fabs(lower_signal.back().derivative - lower_signal.front().derivative) > ZERO_POS)
+            if (itv != default_itv) {
                 lower_signal.push_back(Sample(t, bigM_clamping(itv.begin), d_itv.begin));
-            if (fabs(upper_signal.back().valueAt(t) - upper_signal.front().value) > ZERO_POS || fabs(upper_signal.back().derivative - upper_signal.front().derivative) > ZERO_POS)
                 upper_signal.push_back(Sample(t, bigM_clamping(itv.end), d_itv.end));
+            }
             endTime = t;
         }
 	}
     
+	void Signal::appendLowerSample(double t, double v) {
+        appendLowerSample(t, v, 0., false);
+    }
+
+	void Signal::appendLowerSample(double t, double v, double d) {
+        appendLowerSample(t, v, d, false);
+    }
+
+    // add a sample to the lower bound signal. t should be st. beginTime <= t <= endTime.
+    // Default -BigM is removed beforehand if t==beginTime.
+    void Signal::appendLowerSample(double t, double v, double d, bool interp) {
+        if (t < beginTime || t > endTime || (t <= lower_signal.back().time && lower_signal.size() > 1))
+            return;
+        if (t == beginTime && lower_signal.size() == 1 && lower_signal.front().value == -Signal::get_BigM())
+            lower_signal.clear();
+        if (lower_signal.size() == 0)
+        {
+            lower_signal.push_back(Sample(t, bigM_clamping(v), d));
+        }
+        else
+        {
+            if (interp) 
+            {   // we discard the derivative of last sample and make it so it 
+                // interpolates linearly with the new one   
+                lower_signal.back().derivative = (v - lower_signal.back().value) / (t - lower_signal.back().time);
+            }
+            lower_signal.push_back(Sample(t, bigM_clamping(v), d));
+        }
+    }
+
+	void Signal::appendUpperSample(double t, double v) {
+        appendUpperSample(t, v, 0., false);
+    }
+
+	void Signal::appendUpperSample(double t, double v, double d) {
+        appendUpperSample(t, v, d, false);
+    }
+
+    // add a sample to the upper bound signal. t should be st. beginTime <= t <= endTime.
+    // Default BigM is removed beforehand if t==beginTime.
+    void Signal::appendUpperSample(double t, double v, double d, bool interp) {
+        if ((t < beginTime || t > endTime) || (t <= upper_signal.back().time && upper_signal.size() > 1))
+            return;
+        if (t == beginTime && upper_signal.size() == 1 && upper_signal.front().value == Signal::get_BigM())
+            upper_signal.clear();
+        if (upper_signal.size() == 0)
+        {
+            upper_signal.push_back(Sample(t, bigM_clamping(v), d));
+        }
+        else
+        {
+            if (interp) 
+            {   // we discard the derivative of last sample and make it so it 
+                // interpolates linearly with the new one   
+                upper_signal.back().derivative = (v - upper_signal.back().value) / (t - upper_signal.back().time);
+            }
+            upper_signal.push_back(Sample(t, bigM_clamping(v), d));
+        }
+    }
+
     void Signal::inflate(double r) {
         this->lower_signal = *this;
         this->upper_signal = *this;
@@ -219,11 +281,11 @@ namespace STLRom {
         if (size() < 3)
             return;
 
-        double first_time = front().time;
+        double initial_size = size();
         push_back(front());
         pop_front();
         
-        while (front().time != first_time) {
+        for (int i=0; i<initial_size-1; i++) {
             if( fabs(back().valueAt(front().time) - front().value) > ZERO_POS || fabs(back().derivative - front().derivative) > ZERO_POS) {
                 push_back(front());
             }
@@ -240,6 +302,7 @@ namespace STLRom {
 #endif
     }
 
+    // Resize signal to begin at time t_start and end at time t_end 
     void Signal::resize(double t_start, double t_end) {
 
         // Sanitize inputs
@@ -275,110 +338,75 @@ namespace STLRom {
         }
         else {
             //trim or extend front of signal
-            while(size()>1 && front().time < t_start)
+            Sample s, s_low, s_up;
+            if (front().time > t_start) {
+                s=front();
                 pop_front();
-            while(lower_signal.size()>1 && lower_signal.front().time < t_start)
-                lower_signal.pop_front();
-            while(upper_signal.size()>1 && upper_signal.front().time < t_start)
-                upper_signal.pop_front();
+            } else {
+                while(size()>1 && front().time < t_start) {
+                    s=front();
+                    pop_front();
+                }
+            }
+            // if (lower_signal.empty()) lower_signal.push_back(Sample(t_start,-BigM,0)); // TODO needed?
+            if (lower_signal.front().time > t_start) {
+                s_low=front();
+                pop_front();
+            } else {
+                while(lower_signal.size()>1 && lower_signal.front().time < t_start) {
+                    s_low=lower_signal.front();
+                    lower_signal.pop_front();
+                }
+            }
+            // if (upper_signal.empty()) upper_signal.push_back(Sample(t_start,BigM,0)); // TODO needed?
+            if (upper_signal.front().time > t_start) {
+                s_up=front();
+                pop_front();
+            } else {
+                while(upper_signal.size()>1 && upper_signal.front().time < t_start) {
+                    s_up=upper_signal.front();
+                    upper_signal.pop_front();
+                }
+            }
             
             if (front().time != t_start) {
-                Sample new_front = Sample(t_start, front().valueAt(t_start), front().derivative);
-                pop_front();
+                Sample new_front = Sample(t_start, s.valueAt(t_start), s.derivative);
                 push_front(new_front);
             }
             if (lower_signal.front().time != t_start) {
-                Sample new_front = Sample(t_start, lower_signal.front().valueAt(t_start), lower_signal.front().derivative);
-                lower_signal.pop_front();
+                Sample new_front = Sample(t_start, s_low.valueAt(t_start), s_low.derivative);
                 lower_signal.push_front(new_front);
             }
             if (upper_signal.front().time != t_start) {
-                Sample new_front = Sample(t_start, upper_signal.front().valueAt(t_start), upper_signal.front().derivative);
-                upper_signal.pop_front();
+                Sample new_front = Sample(t_start, s_up.valueAt(t_start), s_up.derivative);
                 upper_signal.push_front(new_front);
             }
-            //trim or extend end of signal
+            //trim end of signal
             while(t_end<back().time) pop_back();
             while(t_end<lower_signal.back().time) lower_signal.pop_back();
             while(t_end<upper_signal.back().time) upper_signal.pop_back();
         }
         beginTime = t_start;
         endTime = t_end;
-        
     }
     
+    // Resize signal to begin at time t_start and end at time t_end, with value v between endTime and t_end
     void Signal::resize(double t_start, double t_end, double v) {
-        // Resize signal to begin at time t_start and end at time t_end 
-        // Consider obsoleting this implementation and using the one above instead
-        // TODO remove or deal with lower and upper _signal
-    #ifdef DEBUG__
-            printf(">>>Signal::resize:                            IN.\n");
-        cout << "to start_time:" << t_start << " and end_time:" << t_end << endl;
-        cout << "IN: " << *this << endl;
-    #endif
-        if ( t_end<t_start-1e-14 ) {
-            clear_all();
-            beginTime=0.;
-            endTime=0.;
-
-    #ifdef DEBUG__
-            cout << "OUT(premature): " << *this << endl;
-            printf("<<<Signal::resize:                            OUT.\n");
-    #endif
-            return;
-        }
-        else 
-            if (t_end < t_start)
-                t_end = t_start;  // hope I don't_end regret this.
-        Sample first;
-
-        //trim or extend front of signal
-        if(beginTime > t_start) {
-            //double der = (front().value-v)/(front().time-t_start);
-            cout << "push font ?? " << Sample(t_start, front().value, 0) << endl;
-            push_front(Sample(t_start, front().value, 0));
-        }
-        else {
-            while((!empty())&&(front().time < t_start)) {
-                first=front();
-                pop_front();
-            }
-            if (empty()) {
-                cout << "push empty " << first << endl;
-                push_front(Sample(t_start, first.valueAt(t_start), 0));
-                if (endTime < t_start)
-                    endTime = t_start;
-            }
-            else {
-                if (front().time > t_start)  {
-                    double val = first.valueAt(t_start);				
-                    push_front(Sample(t_start,val,first.derivative));
-                }
-            }
-        }
-
+        resize(t_start, t_end);
+        //extend back of signal if needed
         v = bigM_clamping(v);
-        //trim or extend back of signal
-        if(endTime < t_end) {
-            //		cout << "push_back here" << endl;
-            if (back().value != v || back().derivative != 0.)
-                push_back(Sample(endTime, v, 0));
-        }
-        else {
-            while(!empty()&&back().time >t_end) {
-                pop_back();
+        if (empty()) {
+            push_back(Sample(t_start, v, 0));
+            lower_signal.push_back(Sample(t_start, -BigM, 0.));
+            upper_signal.push_back(Sample(t_start, BigM, 0.));
+        } else {
+            if(endTime < t_end) {
+                if (back().value != v || back().derivative != 0.)
+                    push_back(Sample(endTime, v, 0));
             }
         }
-        if (empty()) {
-            //		cout << "push_back empty" << endl;
-            push_back(Sample(t_start, v, 0));
-        }
-        beginTime=t_start;
-        endTime=t_end;
-#ifdef DEBUG__
-        cout << "OUT: " << *this << endl;
-        printf("<<<Signal::resize:                            OUT.\n");
-#endif
+        beginTime = t_start;
+        endTime = t_end;
     }
 
     void Signal::shift(double a) {

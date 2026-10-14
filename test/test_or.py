@@ -8,10 +8,11 @@ driver.parse_string(s)
 
 driver.add_sample([0, 1, -3])
 driver.add_sample([0.5, -1, 2])
+driver.data.inflate_signal("x", 0.2)
 
 robs = driver.get_online_rob("phi")
 assert(robs[0]==3) #, "Robustness is wrong.")
-assert(robs[1]==3)  # "Lower robustness is wrong.")
-assert(robs[2]==3)  # "Upper robustness is wrong.")
+assert(round(robs[1],15)==0.8)  # "Lower robustness is wrong.")
+assert(robs[2]==stlrom.Signal().get_BigM())  # "Upper robustness is wrong.")
 
 

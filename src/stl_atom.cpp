@@ -22,19 +22,17 @@ namespace STLRom {
     };
 
     constant_transducer::constant_transducer(const string &p) {
-
         value = 0.;
         itv = interval();
         if (!s_to_d(p, value))  param = p; else  itv = interval(value);
-
+        rob_computed = false;
     }
 
     constant_transducer::constant_transducer(const string &low, const string &up) {
-
         itv = interval();
         if (!s_to_d(low, itv.begin) || !s_to_d(up, itv.end))  param = low; // TODO what should we do?
         value = itv.mid();
-
+        rob_computed = false;
     }
 
     void stl_atom::compute_robustness(const Signal &left, const Signal &right, comparator comp, Signal* z) {
@@ -332,6 +330,7 @@ namespace STLRom {
         z.appendSample(start_time,value,itv);
         z.appendSample(end_time,value,itv);
         z.endTime = end_time;
+        rob_computed = true;
         
 #ifdef DEBUG__
         printf("<< constant_transducer::compute_robustness OUT.\n");

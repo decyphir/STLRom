@@ -88,21 +88,25 @@ namespace STLRom
         double value;
         interval itv;
         long int td_idx;
+        bool rob_computed;
 
         constant_transducer()
         {
             value = 0.;
-            itv = interval();
+            itv = interval(0.);
+            rob_computed = false;
         };
         constant_transducer(double val)
         {
             value = val;
             itv = interval(val);
+            rob_computed = false;
         };
         constant_transducer(double low, double up)
         {
             itv = interval(low, up);
             value = itv.mid();
+            rob_computed = false;
         };
         constant_transducer(const string &p);
         constant_transducer(const string &low, const string &up);
@@ -117,6 +121,7 @@ namespace STLRom
             T->param = param;
             T->value = value;
             T->itv = itv;
+            T->rob_computed = rob_computed;
             return T;
         }
 
@@ -149,6 +154,16 @@ namespace STLRom
         virtual ~constant_transducer(){};
 
         virtual double compute_robustness();
+        virtual double compute_lower_rob() {
+            if (!rob_computed)
+                compute_robustness();
+            return itv.begin;
+        }
+        virtual double compute_upper_rob() {
+            if (!rob_computed)
+                compute_robustness();
+            return itv.end;
+        }
 
         void print(ostream &os) const
         {
