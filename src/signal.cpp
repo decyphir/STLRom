@@ -126,9 +126,9 @@ namespace STLRom {
         }
 
         // check last sample
-        if (back().time < endTime)
+        if (back().time < endTime){
             push_back(Sample(endTime, back().valueAt(endTime), 0.));
-
+        }
 #ifdef DEBUG___	
         cout << "OUT: " << *this << endl;
         printf("<<<Signal::simplify:                          OUT.\n");
@@ -177,7 +177,7 @@ namespace STLRom {
                 pop_front();        
             }
             
-            if (front().time != t_start) {
+            if (fabs(front().time - t_start) > ZERO_POS) {
                 Sample new_front = Sample(t_start, first.valueAt(t_start), first.derivative);
                 push_front(new_front);
             }
@@ -340,11 +340,16 @@ namespace STLRom {
             throw std::invalid_argument("Could not open file " + filename + " for writing");
         }
 
+        if (this->empty()) {
+            return;
+        }
+
         for (const auto& sample : *this) {
             file << std::setprecision (15) << sample.time << "," << sample.value << "," << sample.derivative << "\n";
         }
 
-        file << endTime << "," << back().valueAt(endTime) << ",0\n"; // FIXME: is 0 derivative correct here ?
+        if (back().time < endTime)
+            file << endTime << "," << back().valueAt(endTime) << ",0\n"; // FIXME: is 0 derivative correct here ?
     }
 
     /*

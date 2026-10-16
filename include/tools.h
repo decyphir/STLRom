@@ -134,6 +134,7 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
         
         out.appendSample(t, op_v(vL, vR), op_d(vL, vR, dL, dR));
     }
+    out.endTime = endTime;
 #ifdef DEBUG__
         cout << "OUT: " << out << endl;
         printf("<<<Signal::merge:                            OUT.\n");

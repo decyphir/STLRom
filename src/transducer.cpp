@@ -217,7 +217,7 @@ namespace STLRom {
         child->compute_robustness();        
         z.compute_timed_eventually(child->z, a, b);
         double et = min(z.endTime,end_time);
-        z.resize(start_time,max(start_time,et), 0.);
+        z.resize(start_time,max(start_time,et));
 
 #ifdef DEBUG__
         cout << "OUT:" << z << endl;
@@ -318,7 +318,7 @@ namespace STLRom {
         child->compute_robustness();
         z.compute_timed_globally(child->z, a, b);
         double et =min(z.endTime,end_time);
-        z.resize(start_time,max(start_time, et ),0.);
+        z.resize(start_time,max(start_time, et ));
 
 #ifdef DEBUG__
         cout << "OUT:" << z << endl;
