@@ -108,6 +108,9 @@ namespace STLRom {
         double first_time = front().time;
         push_back(front());
         pop_front();
+
+        while (front().time == first_time && size() > 1)
+            pop_front();
         
         while (front().time != first_time) {
             // FIXME : temporary fix for unexplained double time problem in eventually
