@@ -843,7 +843,7 @@ Signal * computeBoundedEventually(Signal * x, double a) {
 
 	z1 = plateauMax(x, a);
 	z2 = new Signal(*x);
-	z2->resize(x->beginTime + a, x->endTime + a, BOTTOM);
+	z2->resize(x->beginTime + a, x->endTime + a);
 	z2->shift(-a);
 
 	z3 = computeOr(z2, z1);
@@ -874,7 +874,7 @@ Signal * computeBoundedGlobally(Signal * x, double a) {
 
 	z2 = new Signal(*x);
 	//cout << *z2 << endl;
-	z2->resize(x->beginTime + a, x->endTime + a, TOP);
+	z2->resize(x->beginTime + a, x->endTime + a);
 	z2->shift(-a);
 
 	//cout << *z1 << endl;
@@ -1290,7 +1290,7 @@ Signal * plateauMax(Signal * x, double a) {
 		t = j->time;
 		v = j->value;
 	}
-	y.push_front(Point(x->front().time, x->front().value));
+	// y.push_front(Point(x->front().time, x->front().value));
 
 	#ifdef DEBUG___
 	cout << "y: " << y << endl;
@@ -1363,14 +1363,14 @@ Signal * plateauMax(Signal * x, double a) {
 		   cout << "OUTPUT OF NEW MAXIMUM" << endl;
 		#endif
 
-		if (M.empty()) {                         
-			#ifdef DEBUG___
-			cout << "No candidate." << endl;
-			#endif
-			z->push_back(Sample(t, BOTTOM, 0));
-		}
-           //next best candidate
-        else {
+		if (!M.empty()) {                         
+		// 	#ifdef DEBUG___
+		// 	cout << "No candidate." << endl;
+		// 	#endif
+		// 	z->push_back(Sample(t, BOTTOM, 0));
+		// }
+        //    //next best candidate
+        // else {
 			//if ((!z->empty())&& (z->back().time==t)) 
 				 //t = M.front().time;
 			//	 z->push_back(Sample(M.front().time, M.front().value, 0));
@@ -1467,7 +1467,7 @@ Signal * plateauMin(Signal * x, double a) {
 		t = j->time;
 		v = j->value;
 	}
-	y.push_front(Point(x->front().time, x->front().value));
+	// y.push_front(Point(x->front().time, x->front().value));
 
 	//INIT: read values in [0, a)
 	i = y.begin();
@@ -1517,12 +1517,11 @@ Signal * plateauMin(Signal * x, double a) {
 
 		//OUTPUT OF NEW MINIMUM
 		//no candidate
-        if (M.empty()) {
-             z->push_back(Sample(t, TOP, 0)); //  => Why ? otherwise crashes :)
-         }
-
-        else //next best candidate
-            {
+        if (!M.empty()) {
+        //      z->push_back(Sample(t, TOP, 0)); //  => Why ? otherwise crashes :)
+        //  }
+        // else //next best candidate
+        //     {
 		 	// To Be double checked
             //if ((!z->empty())&& (z->back().time==t)) 
 			//	 z->push_back(Sample(M.front().time, M.front().value, 0));
