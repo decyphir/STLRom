@@ -66,15 +66,23 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
     auto itL = zL.begin();
     auto itR = zR.begin();
 
+    auto last_itL = itL;
+    auto last_itR = itR;
+    
     double beginTime = std::max(zL.beginTime, zR.beginTime);
     double endTime   = std::min(zL.endTime,   zR.endTime);
 
     // Skip elements outside the overlap in the beginning
-    while (itL != zL.end() && itL->time < beginTime) ++itL;
-    while (itR != zR.end() && itR->time < beginTime) ++itR;
+    while (itL != zL.end() && itL->time < beginTime) {
+        last_itL = itL;
+        ++itL;
+    }
+    
+    while (itR != zR.end() && itR->time < beginTime) {
+        last_itR = itR;
+        ++itR;
+    }
 
-    auto last_itL = itL;
-    auto last_itR = itR;
 
     double t_intersect = std::numeric_limits<double>::infinity();
 
