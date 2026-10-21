@@ -44,6 +44,9 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
+        // interval of time for which the provided values are valid
+        double valid_start, valid_end;
+
         // z is estimated robustness signal, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
 

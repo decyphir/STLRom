@@ -186,6 +186,10 @@ namespace STLRom {
     double not_transducer::compute_robustness() {
         //	cout << "Computing robustness of NOT"
         child->compute_robustness();
+
+        valid_start = child->valid_start;
+	    valid_end   = child->valid_end;
+
         z.compute_not(child->z);
         return z.front().value;
     }
@@ -215,6 +219,10 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         child->compute_robustness();        
+
+        valid_start = child->valid_start - a;
+	    valid_end   = child->valid_end - b;
+
         z.compute_timed_eventually(child->z, a, b);
         double et = min(z.endTime,end_time);
         z.resize(start_time,max(start_time,et));
@@ -263,6 +271,10 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         child->compute_robustness();
+
+        valid_start = child->valid_start + a;
+	    valid_end   = child->valid_end + b;
+
         Signal child_z = child->z; // is this a copy?
         child_z.reverse();
         child_z.shift(b+a);
@@ -290,6 +302,10 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         child->compute_robustness();
+
+        valid_start = child->valid_start + a;
+	    valid_end   = child->valid_end + b;
+
         Signal child_z = child->z; // is this a copy?
         child_z.reverse();
         child_z.shift(b+a);
@@ -316,6 +332,10 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
         
         child->compute_robustness();
+
+        valid_start = child->valid_start - a;
+	    valid_end   = child->valid_end - b;
+
         z.compute_timed_globally(child->z, a, b);
         double et =min(z.endTime,end_time);
         z.resize(start_time,max(start_time, et ));
@@ -359,6 +379,9 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end   = fmin(childL->valid_end, childR->valid_end);
+
         Signal z1= childL->z;
         Signal z2= childR->z;
 
@@ -397,6 +420,9 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end   = fmin(childL->valid_end, childR->valid_end);
+
         Signal z1= childL->z;
         Signal z2= childR->z;
 
@@ -434,6 +460,9 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end   = fmin(childL->valid_end, childR->valid_end);
+
         Signal z1= childL->z;
         Signal z2= childR->z;
         double et = max(z1.endTime, z2.endTime);
@@ -468,6 +497,9 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end   = fmin(childL->valid_end, childR->valid_end);
+
         z.compute_timed_until(childL->z, childR->z, a, b);
         z.resize(0.,z.endTime,0.);
         return z.front().value;
@@ -499,6 +531,9 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end   = fmin(childL->valid_end, childR->valid_end);
+
         Signal childL_z = childL->z;
         Signal childR_z = childR->z;
 
@@ -518,6 +553,9 @@ namespace STLRom {
 
     double past_transducer::compute_robustness() {
         child-> compute_robustness();
+
+        valid_start = child->valid_start;
+	    valid_end   = child->valid_end;
 
         double T = child->z.beginTime + child->z.endTime;
         

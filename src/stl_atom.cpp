@@ -37,6 +37,9 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end   = fmin(childL->valid_end, childR->valid_end);
+
         z.beginTime = fmax(childL->z.beginTime, childR->z.beginTime);
         double endTime = fmin(childL->z.endTime, childR->z.endTime);
 
@@ -280,7 +283,11 @@ namespace STLRom {
 #endif
         short i = signal_map[variable];
         z = trace_data_ptr->at(i); // that a deep copy right ?
-        z.resize(start_time,end_time); // TODO we should note here what the data horizon available is                  
+
+        valid_start = fmax(start_time, z.beginTime);
+        valid_end = fmin(end_time, z.endTime);
+
+        z.resize(start_time,end_time); // TODO we should note here what the data horizon available is 
 
         #ifdef DEBUG__
         cout << "OUT z:" << z << endl;
@@ -307,6 +314,9 @@ namespace STLRom {
         z.appendSample(start_time,value,0.);
         // z.appendSample(end_time,value,0.);
         z.endTime = end_time;
+
+        valid_start = start_time;
+        valid_end = end_time;
         
 #ifdef DEBUG__
         cout << "OUT z:" << z << endl;

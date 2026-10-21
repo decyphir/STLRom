@@ -18,6 +18,9 @@ namespace STLRom {
 double formula_signal_transducer::compute_robustness() {
 	child->compute_robustness();
 
+	valid_start = child->valid_start;
+	valid_end   = child->valid_end;
+
 	auto iter = child->z.begin();
 	
 	for (; iter != child->z.end();
@@ -33,6 +36,9 @@ double formula_signal_transducer::compute_robustness() {
 
 double shifted_transducer::compute_robustness() {
 	child->compute_robustness();
+
+	valid_start = child->valid_start-_shift;
+	valid_end   = child->valid_end-_shift;
 
 	auto iter = child->z.begin();
 	
@@ -57,6 +63,9 @@ double abs_transducer::compute_robustness() {
 	// update child robustness
 	child->compute_robustness();
 
+	valid_start = child->valid_start;
+	valid_end   = child->valid_end;
+
 	auto iter = child->z.begin();
 	
 	for (; iter != child->z.end();
@@ -74,6 +83,9 @@ double unary_minus_transducer::compute_robustness() {
 
 	// update child robustness
 	child->compute_robustness();
+
+	valid_start = child->valid_start;
+	valid_end   = child->valid_end;
 
 	auto iter = child->z.begin();
 	
@@ -96,6 +108,9 @@ double plus_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
+	valid_start = fmax(childL->valid_start, childR->valid_start);
+	valid_end   = fmin(childL->valid_end, childR->valid_end);
+
 	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a + b;}, [](double vL, double vR, double dL, double dR){return dL + dR;}, false);
 
 	// auto iterL = childL->z.begin();
@@ -117,6 +132,9 @@ double minus_transducer::compute_robustness() {
 	childL->compute_robustness();
 	childR->compute_robustness();
 
+	valid_start = fmax(childL->valid_start, childR->valid_start);
+	valid_end   = fmin(childL->valid_end, childR->valid_end);
+
 	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a - b;}, [](double vL, double vR, double dL, double dR){return dL - dR;}, false);
 	
 	// auto iterL = childL->z.begin();
@@ -137,6 +155,9 @@ double mult_transducer::compute_robustness() {
 
 	childL->compute_robustness();
 	childR->compute_robustness();
+
+	valid_start = fmax(childL->valid_start, childR->valid_start);
+	valid_end   = fmin(childL->valid_end, childR->valid_end);
 
 	merge_signals_with_op(z, childL->z, childR->z, [](double a, double b){return a * b;}, [](double vL, double vR, double dL, double dR){return dL*vR + dR*vL;}, false);
 	// auto iterL = childL->z.begin();

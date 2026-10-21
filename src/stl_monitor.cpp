@@ -140,8 +140,13 @@ namespace STLRom
 			formula->set_horizon(t_start, t_end);
 			rob = formula->compute_robustness();
     		up_to_date = true;
-		}			
-        return formula->z;
+		}
+		
+		double r_s = fmax(formula->valid_start, t_start);
+		double r_e = fmin(formula->valid_end, t_end);
+
+        formula->z.resize(r_s, r_e);
+		return formula->z;
     }	
 
 
@@ -175,7 +180,13 @@ namespace STLRom
             lower_rob = formula->compute_lower_rob();
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
-		}			
+		}
+		
+		double r_s = fmax(formula->valid_start, t_start);
+		double r_e = fmin(formula->valid_end, t_end);
+
+        formula->z.resize(r_s, r_e);
+		
         return {formula->z, formula->z_low, formula->z_up};
     }
 	
