@@ -840,7 +840,13 @@ Signal * computeBoundedEventually(Signal * x, double a) {
 #endif
 
 	Signal *z, *z1, *z2, *z3;
-
+	
+	
+	// plateauMax givees max of discontinuity points between x[t] and x[t+a]
+	// eventually should take into account x[t] and x[t+a]
+	// hence ev[t] = max (x[t], max(plateauMax, x[t+a]))
+	// therefore the computeOrs
+	
 	z1 = plateauMax(x, a);
 	z2 = new Signal(*x);
 	z2->resize(x->beginTime + a, x->endTime + a);
@@ -1273,7 +1279,6 @@ Signal * plateauMax(Signal * x, double a) {
  	#endif
 	bool new_candidate = true, end_candidate = true;
 	double t, v;
-	Signal::const_reverse_iterator j;
 	Sequence M; //sorted in ascending times from front to back
 	Sequence y; //maximum of x(t) and x(t-) at discontinuity points of x
 	Sequence::iterator i;
@@ -1284,13 +1289,20 @@ Signal * plateauMax(Signal * x, double a) {
 
 	//PRECOMPUTATION: list the local maximums of x
 	t = x->endTime;
-	v = BOTTOM;
-	for (j = x->rbegin(); j != x->rend(); j++) {
+
+	Signal::const_reverse_iterator j = x->rbegin();
+	if (j!= x->rend() && j->time == x->endTime) {
+		v = j->value;
+		j++;
+	} else {
+		v = BOTTOM;
+	}
+
+	for (; j != x->rend(); j++) {
 		y.push_front(Point(t, fmax(v, j->valueAt(t))));
 		t = j->time;
 		v = j->value;
 	}
-	// y.push_front(Point(x->front().time, x->front().value));
 
 	#ifdef DEBUG___
 	cout << "y: " << y << endl;
@@ -1303,8 +1315,6 @@ Signal * plateauMax(Signal * x, double a) {
 		while (!M.empty() && i->value >= M.back().value) {
 			M.pop_back();
 		}
-		//    cout << "i->time:" << i->time << " i->value:" << i->value << endl;
-
 		M.push_back(*i);
 		i++;
 	}
@@ -1313,7 +1323,7 @@ Signal * plateauMax(Signal * x, double a) {
 	cout << "M:" << M << endl;
 	#endif
 	
-	if (i->time == x->beginTime + a)
+	if (fabs(i->time - (x->beginTime + a)) < ZERO_POS)
 		new_candidate = true;
 	else
 		new_candidate = false;
@@ -1363,21 +1373,15 @@ Signal * plateauMax(Signal * x, double a) {
 		   cout << "OUTPUT OF NEW MAXIMUM" << endl;
 		#endif
 
-		if (!M.empty()) {                         
-		// 	#ifdef DEBUG___
-		// 	cout << "No candidate." << endl;
-		// 	#endif
-		// 	z->push_back(Sample(t, BOTTOM, 0));
-		// }
-        //    //next best candidate
-        // else {
-			//if ((!z->empty())&& (z->back().time==t)) 
-				 //t = M.front().time;
-			//	 z->push_back(Sample(M.front().time, M.front().value, 0));
-			//else 
-				z->push_back(Sample(t, M.front().value, 0));
+		if (M.empty()) {                         
+			#ifdef DEBUG___
+			cout << "No candidate." << endl;
+			#endif
+			z->push_back(Sample(t, BOTTOM, 0));
 		}
-		//cout << "z: " << *z << endl;
+        else {
+			z->push_back(Sample(t, M.front().value, 0));
+		}
 		//NEXT EVENT DETECTION
 	   	#ifdef DEBUG___
 		   cout << "NEXT EVENT DETECTION" << endl;
@@ -1385,7 +1389,7 @@ Signal * plateauMax(Signal * x, double a) {
 		if (!M.empty()) {
 
 			if (i != y.end()) {
-				if (i->time - a == M.front().time) {
+				if (fabs((i->time - a) - M.front().time) < ZERO_POS) {
 					#ifdef DEBUG___
 					cout << "M not empty and M.front+a == i->time" << endl << "=> new & end" << endl; 
 					#endif
@@ -1435,7 +1439,7 @@ Signal * plateauMax(Signal * x, double a) {
 		cont = (new_candidate||end_candidate);
 	}
 
-    if(z->back().time==z->endTime) z->pop_back(); // from Breach ...
+    if(fabs(z->back().time - z->endTime) < ZERO_POS) z->pop_back(); // from Breach ...
 
 #ifdef DEBUG___
 		cout << "OUT:" <<  *z  << endl; 
@@ -1450,7 +1454,6 @@ Signal * plateauMax(Signal * x, double a) {
 Signal * plateauMin(Signal * x, double a) {
 	bool new_candidate, end_candidate;
 	double t, v;
-	Signal::const_reverse_iterator j;
 	Sequence M; //sorted in ascending times from front to back
 	Sequence y; //minimum of x(t) and x(t-) at discontinuity points of x
 	Sequence::iterator i;
@@ -1461,13 +1464,19 @@ Signal * plateauMin(Signal * x, double a) {
 
 	//PRECOMPUTATION: list the local minimums of x
 	t = x->endTime;
-	v = TOP;
-	for (j = x->rbegin(); j != x->rend(); j++) {
+	Signal::const_reverse_iterator j = x->rbegin();
+	if (j!= x->rend() && j->time == x->endTime) {
+		v = j->value;
+		j++;
+	} else {
+		v = TOP;
+	}
+
+	for (; j != x->rend(); j++) {
 		y.push_front(Point(t, fmin(v, j->valueAt(t))));
 		t = j->time;
 		v = j->value;
 	}
-	// y.push_front(Point(x->front().time, x->front().value));
 
 	//INIT: read values in [0, a)
 	i = y.begin();
@@ -1478,16 +1487,14 @@ Signal * plateauMin(Signal * x, double a) {
 		M.push_back(*i);
 		i++;
 	}
-	if (i->time == x->beginTime + a)
+
+	if (fabs(i->time - (x->beginTime + a)) < ZERO_POS)
 		new_candidate = true;
 	else
 		new_candidate = false;
 
 	end_candidate = false;
 	t = x->beginTime;
-
-	// push first element in M
-	//z->push_back(Sample(t, M.front().value, 0));
 
 	//STEP
 	bool cont = true;
@@ -1516,25 +1523,18 @@ Signal * plateauMin(Signal * x, double a) {
 		}
 
 		//OUTPUT OF NEW MINIMUM
-		//no candidate
-        if (!M.empty()) {
-        //      z->push_back(Sample(t, TOP, 0)); //  => Why ? otherwise crashes :)
-        //  }
-        // else //next best candidate
-        //     {
-		 	// To Be double checked
-            //if ((!z->empty())&& (z->back().time==t)) 
-			//	 z->push_back(Sample(M.front().time, M.front().value, 0));
-			//else 
-				z->push_back(Sample(t, M.front().value, 0));
-
-			
-			}
+        if (M.empty()) { // no candidate
+             z->push_back(Sample(t, TOP, 0)); //  => Why ? otherwise crashes :)
+         }
+        else //next best candidate
+        {
+				z->push_back(Sample(t, M.front().value, 0));		
+		}
 
 		//NEXT EVENT DETECTION
 		if (!M.empty()) {
 			if (i != y.end()) {
-				if (i->time - a == M.front().time) {
+				if (fabs(i->time - a - M.front().time) < ZERO_POS) {
 					t = M.front().time;
 					new_candidate = true;
 					end_candidate = true;
@@ -1566,7 +1566,7 @@ Signal * plateauMin(Signal * x, double a) {
 		cont = (new_candidate || end_candidate);
 	}
 
-    if(z->back().time==z->endTime) z->pop_back();
+    if(fabs(z->back().time - z->endTime) < ZERO_POS) z->pop_back();
 
 	return z;
 }
