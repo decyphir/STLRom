@@ -145,7 +145,7 @@ namespace STLRom
 		double r_s = fmax(formula->valid_start, t_start);
 		double r_e = fmin(formula->valid_end, t_end);
 
-        formula->z.resize(r_s, r_e);
+        // formula->z.resize(r_s, r_e);
 		return formula->z;
     }	
 

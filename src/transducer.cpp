@@ -10,13 +10,17 @@ namespace STLRom {
     void unary_transducer::init_horizon() {
         child->set_horizon(start_time, end_time);
         child->init_horizon();
+        start_time = child->start_time;
+        end_time = child->end_time;
     }
 
     void binary_transducer::init_horizon() {
         childL->set_horizon(start_time, end_time);
         childR->set_horizon(start_time, end_time);
-        childL->init_horizon();
-        childR->init_horizon();
+        // childL->init_horizon();
+        // childR->init_horizon();
+        start_time = fmax(childL->start_time, childR->start_time);
+        end_time = fmin(childL->end_time, childR->end_time);
     }
 
     void timed_unary_transducer::init_horizon() {
@@ -28,7 +32,10 @@ namespace STLRom {
 
         // update start_time and end_time of child
         child->set_horizon(start_time+a,end_time+b);
-        child->init_horizon();
+
+        start_time = child->start_time - a;
+        end_time = child->end_time - b;
+        // child->init_horizon();
 
     }
 
@@ -42,7 +49,9 @@ namespace STLRom {
         // update start_time and end_time of child
         // TODO: what happens when start_time-b is negative?
         child->set_horizon(start_time-b, end_time-a);
-        child->init_horizon();
+        // child->init_horizon();
+        start_time = child->start_time + b;
+        end_time = child->end_time + a;
 
     }
 
@@ -55,8 +64,10 @@ namespace STLRom {
         // update start_time and end_time of children
         childL->set_horizon(start_time, end_time+b);
         childR->set_horizon(start_time+a, end_time+b);
-        childL->init_horizon();
-        childR->init_horizon();
+        // childL->init_horizon();
+        // childR->init_horizon();
+        start_time = fmax(childL->start_time, childR->start_time-a);
+        end_time = fmin(childL->end_time-b, childR->end_time-b);
     }
 
     void past_timed_binary_transducer::init_horizon() {
@@ -68,8 +79,10 @@ namespace STLRom {
         // update start_time and end_time of children
         childL->set_horizon(start_time-b, end_time);
         childR->set_horizon(start_time-b, end_time-a);
-        childL->init_horizon();
-        childR->init_horizon();
+        // childL->init_horizon();
+        // childR->init_horizon();
+        start_time = fmax(childL->start_time+b, childR->start_time+b);
+        end_time = fmin(childL->end_time, childR->end_time+a);
     }
 
     /* set param */
@@ -272,8 +285,8 @@ namespace STLRom {
 
         child->compute_robustness();
 
-        valid_start = child->valid_start + a;
-	    valid_end   = child->valid_end + b;
+        valid_start = child->valid_start + b;
+	    valid_end   = child->valid_end + a;
 
         Signal child_z = child->z; // is this a copy?
         child_z.reverse();
@@ -303,8 +316,8 @@ namespace STLRom {
 
         child->compute_robustness();
 
-        valid_start = child->valid_start + a;
-	    valid_end   = child->valid_end + b;
+        valid_start = child->valid_start + b;
+	    valid_end   = child->valid_end + a;
 
         Signal child_z = child->z; // is this a copy?
         child_z.reverse();

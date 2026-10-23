@@ -28,10 +28,9 @@ dev = [
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
-cmake.args = [
-    "-DBUILD_PYTHON_EXTENSION=ON",
-    "-DDEBUG=OFF"
-]
+[tool.scikit-build.cmake.define]
+BUILD_PYTHON_EXTENSION = "ON"
+DEBUG = { env = "STLROM_DEBUG", default = "OFF" }
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"

@@ -142,7 +142,7 @@ namespace STLRom {
 
         explicit unary_transducer(transducer *_child) :
 			transducer(), child(_child) {
-            init_horizon();
+            // init_horizon();
         };
 
         void init_horizon();
@@ -182,12 +182,12 @@ namespace STLRom {
         binary_transducer(): transducer() {
             childL = nullptr;
             childR = nullptr;
-            init_horizon();
+            // init_horizon();
         };
 
         explicit binary_transducer(transducer *_childL,transducer *_childR) :
 			transducer(), childL(_childL), childR(_childR) {
-            init_horizon();
+            // init_horizon();
         };
 
         void init_horizon();
@@ -229,16 +229,16 @@ namespace STLRom {
 
         timed_unary_transducer():unary_transducer()  {
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         timed_unary_transducer(transducer *_child): unary_transducer(_child){
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         timed_unary_transducer(interval *_I, transducer *_child): unary_transducer(_child), I(_I){
-            init_horizon();
+            // init_horizon();
         };
 
         void init_horizon();
@@ -260,16 +260,16 @@ namespace STLRom {
 
         past_timed_unary_transducer():unary_transducer()  {
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         past_timed_unary_transducer(transducer *_child): unary_transducer(_child){
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         past_timed_unary_transducer(interval *_I, transducer *_child): unary_transducer(_child), I(_I){
-            init_horizon();
+            // init_horizon();
         };
 
         void init_horizon();
@@ -289,16 +289,16 @@ namespace STLRom {
 
         timed_binary_transducer():binary_transducer()  {
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         timed_binary_transducer(transducer *_childL, transducer *_childR): binary_transducer(_childL, _childR){
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         timed_binary_transducer( transducer *_childL, interval *_I,transducer *_childR): binary_transducer(_childL, _childR), I(_I){
-            init_horizon();
+            // init_horizon();
         };
 
         void init_horizon();
@@ -321,16 +321,16 @@ namespace STLRom {
 
         past_timed_binary_transducer():binary_transducer()  {
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         past_timed_binary_transducer(transducer *_childL, transducer *_childR): binary_transducer(_childL, _childR){
             I = new interval();
-            init_horizon();
+            // init_horizon();
         };
 
         past_timed_binary_transducer( transducer *_childL, interval *_I,transducer *_childR): binary_transducer(_childL, _childR), I(_I){
-            init_horizon();
+            // init_horizon();
         };
 
         void init_horizon();
