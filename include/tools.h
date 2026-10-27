@@ -58,11 +58,11 @@ bool write_trace(const std::string& filename, const trace_data& signals);
 template <typename BinaryOp, typename QuartOp>
 void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d, bool detect_intersections)
 {
-#ifdef DEBUG__
-            printf(">>>Signal::merge:                            IN.\n");
-        cout << "IN zL:" << zL << endl;
-        cout << "IN zR:" << zR << endl;
-#endif
+// #ifdef DEBUG__
+//             printf(">>>Signal::merge:                            IN.\n");
+//         cout << "IN zL:" << zL << endl;
+//         cout << "IN zR:" << zR << endl;
+// #endif
     auto itL = zL.begin();
     auto itR = zR.begin();
 
@@ -143,10 +143,10 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
         out.appendSample(t, op_v(vL, vR), op_d(vL, vR, dL, dR));
     }
     out.endTime = endTime;
-#ifdef DEBUG__
-        cout << "OUT: " << out << endl;
-        printf("<<<Signal::merge:                            OUT.\n");
-#endif
+// #ifdef DEBUG__
+//         cout << "OUT: " << out << endl;
+//         printf("<<<Signal::merge:                            OUT.\n");
+// #endif
 }
 
 
