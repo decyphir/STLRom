@@ -21,15 +21,35 @@ double abs_transducer::compute_robustness() {
 	child->compute_robustness();
 
 	auto iter = child->z.begin();
+
+	double t_cross = std::numeric_limits<double>::infinity();
+	double d = 0;
 	
 	for (; iter != child->z.end();
 			iter++) {
+
 		double t= (*iter).time;
 		double v = (*iter).value;
-		double d = (*iter).derivative;
+
+		if (t_cross < t - ZERO_POS) {
+			z.appendSample(t_cross, 0, fabs(d));
+		}
+
+		d = (*iter).derivative;
 		double abs_d = (v > 0) ? d : (v < 0) ? -d : fabs(d);
-		z.appendSample(t, fabs(v), abs_d);
+		
+		if (abs_d < 0)
+			t_cross = t - fabs(v)/abs_d;
+		else
+			t_cross = std::numeric_limits<double>::infinity();
+		
+			z.appendSample(t, fabs(v), abs_d);
 	}
+
+	if (t_cross < child->z.endTime) {
+		z.appendSample(t_cross, 0, fabs(d));
+	}
+
 	return z.front().value;
 }
 
