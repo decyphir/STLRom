@@ -74,6 +74,7 @@
 ">"       { return STLRom::Parser::make_GT(yylloc); }
 "<="      { return STLRom::Parser::make_LE(yylloc); }
 ">="      { return STLRom::Parser::make_GE(yylloc); }
+"in"      { return STLRom::Parser::make_IN(yylloc); }
 "!"       { return STLRom::Parser::make_NOT(yylloc); }
 ","       { return STLRom::Parser::make_COMMA(yylloc); }
 "&"       { return STLRom::Parser::make_AND(yylloc); }
@@ -141,11 +142,7 @@
 
 }
 
--?[0-9]+\. {
-    return STLRom::Parser::make_CONSTANT(yytext, yylloc);
-}
-
--?[0-9]+             { 
+-?[0-9]+\.? {
     return STLRom::Parser::make_CONSTANT(yytext, yylloc);
 }
 

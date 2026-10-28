@@ -320,8 +320,9 @@ namespace STLRom {
         };
 
         void print(ostream &os) const {
-            os << "not ";
+            os << "not (";
             child->print(os);
+            os << ")";
         }
         ;
 

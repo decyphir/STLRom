@@ -25,10 +25,11 @@ public:
 	interval(double val): begin(val), end(val) {};
 	interval(double b, double e): begin(b), end(e) {};
 
-	double mid();
+	double mid() const;
+	bool is_degenerated() const;
 
-	bool operator==(const interval& that);
-	bool operator!=(const interval& that);
+	bool operator==(const interval& that) const;
+	bool operator!=(const interval& that) const;
 
 	string to_string() const;
 

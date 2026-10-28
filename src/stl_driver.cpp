@@ -578,7 +578,7 @@ void STLDriver::print(ostream &out) const
     {
         for (auto formula = formula_map.begin(); formula != formula_map.end(); formula++)
         {
-            out << formula->first << ":= " << *(formula->second) << endl;
+            out << formula->first << " := " << *(formula->second) << endl;
         }
     }
     out << "\n# Data:" << endl;

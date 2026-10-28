@@ -35,15 +35,19 @@ interval interval::operator=(const interval& that) {
 	return *this;
 }
 
-double interval::mid() {
+double interval::mid() const {
 	return (this->begin + this->end) / 2;
 }
 
-bool interval::operator==(const interval &that) {
+bool interval::is_degenerated() const {
+	return this->begin == this->end;
+}
+
+bool interval::operator==(const interval &that) const {
 	return this->begin == that.begin && this->end == that.end;
 }
 
-bool interval::operator!=(const interval &that) {
+bool interval::operator!=(const interval &that) const {
 	return !this->interval::operator==(that);
 }
 

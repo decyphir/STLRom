@@ -35,6 +35,12 @@ namespace STLRom {
         rob_computed = false;
     }
 
+    constant_transducer::constant_transducer(const interval &i) {
+        itv = i;
+        value = itv.mid();
+        rob_computed = false;
+    }
+
     void stl_atom::compute_robustness(const Signal &left, const Signal &right, comparator comp, Signal* z) {
 
         double endTime = fmin(left.endTime, right.endTime);

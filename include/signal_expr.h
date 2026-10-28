@@ -110,6 +110,7 @@ namespace STLRom
         };
         constant_transducer(const string &p);
         constant_transducer(const string &low, const string &up);
+        constant_transducer(const interval &i);
 
         void init_horizon(){};
 
@@ -167,7 +168,11 @@ namespace STLRom
 
         void print(ostream &os) const
         {
-            param.empty() ? os << value : os << param;
+            if (param.empty()) {
+                itv.is_degenerated() ? os << value : os << itv;
+            } else {
+                os << param;
+            }
         };
 
         void print() const

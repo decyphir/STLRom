@@ -133,6 +133,7 @@
 %token                 TEST            "test"
 %token                 LE              "<="
 %token                 GE              ">="
+%token                 IN              "in"
 
 %token                 CONSTANT_IDENTIFIER "constant_identifier"
 
@@ -152,7 +153,7 @@
 %left OR
 %left NOT
 %left IMPLIES
-%left LT GT LE GE
+%left LT GT LE GE IN
 %left BOX DIAMOND UNTIL ASSIGN
 %left PLUS MINUS
 %left MULT
@@ -166,7 +167,7 @@
 %type <STLRom::transducer*> constant_signal
 %type <STLRom::transducer*> stl_formula
 %type <STLRom::interval*>   interval
-%type <std::string>         op op_eq
+%type <std::string>         op op_eq op_in
 %type <std::string>         constant
 /* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
@@ -180,6 +181,12 @@ constant : CONSTANT | PARAM_ID
 constant_signal : constant
         {
             $$ = new constant_transducer($1);
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->signal_map = driver.data.signal_map;
+        }
+        | interval
+        {
+            $$ = new constant_transducer(*$1);
             $$->trace_data_ptr = &driver.data.data_vector;
             $$->signal_map = driver.data.signal_map;
         }
@@ -292,6 +299,8 @@ op_eq     :
             LE { $$ = ">"; } // a <= b <=> !(a > b)
           | GE { $$ = "<"; } // a >= b <=> !(a < b)
 
+op_in     : IN { $$ = "in"; } // a in b <=> !(a < b or a > b)
+
 interval : LINT constant COMMA constant RINT
          {
              $$ = new interval($2, $4);
@@ -300,11 +309,38 @@ interval : LINT constant COMMA constant RINT
          {
              $$ = new interval($2, $3);
          }
+         | LINT PARAM_ID RINT
+         {
+            if (driver.worker.param_map.find($2) != driver.worker.param_map.end())
+                $$ = new interval(driver.worker.param_map[$2]);
+            else
+                $$ = new interval(driver.worker.interval_map[$2]);
+         }
 
 stl_formula :
              signal_expr op_eq signal_expr
              {
                 auto atom = new stl_atom($1, $2, $3);
+                atom->trace_data_ptr = &driver.data.data_vector;
+                atom->signal_map = driver.data.signal_map;
+
+                $$ = new not_transducer(atom);
+                $$->trace_data_ptr = &driver.data.data_vector;
+                $$->signal_map = driver.data.signal_map;
+             }
+             |
+             signal_expr op_in signal_expr
+             {
+                auto lhs = $1->clone();
+                auto rhs = $3->clone();
+                auto atom_lt = new stl_atom($1, "<", $3);
+                atom_lt->trace_data_ptr = &driver.data.data_vector;
+                atom_lt->signal_map = driver.data.signal_map;
+                auto atom_gt = new stl_atom(lhs, ">", rhs);
+                atom_gt->trace_data_ptr = &driver.data.data_vector;
+                atom_gt->signal_map = driver.data.signal_map;
+
+                auto atom = new or_transducer(atom_lt, atom_gt);
                 atom->trace_data_ptr = &driver.data.data_vector;
                 atom->signal_map = driver.data.signal_map;
 
@@ -422,6 +458,9 @@ param_assignement: PARAM_ID PARAM_EQ CONSTANT
                  {
                     double val;
                     s_to_d( $3, val );
+                    auto it = driver.worker.interval_map.find($1);
+                    if (it != driver.worker.interval_map.end())
+                        driver.worker.interval_map.erase(it); // remove param from interval_map (param switching from interval to double)
                     driver.worker.param_map[$1] = val;
                     if (driver.verbose_parser)
                         cout << CYAN << "Parameter " << $1 << " re-assigned value " << val << RESET << endl;
@@ -481,6 +520,9 @@ param_assignements: PARAM_DECL param_assignement_list
 
 interval_assignement: PARAM_ID PARAM_EQ interval
                     {
+                        auto it = driver.worker.param_map.find($1);
+                        if (it != driver.worker.param_map.end())
+                            driver.worker.param_map.erase(it); // remove param from param_map (param switching from double to interval)
                         driver.worker.interval_map[$1] = *$3;
                         if (driver.verbose_parser)
                             cout << CYAN << "Interval " << $1 << " re-assigned value " << *$3 << RESET << endl;
