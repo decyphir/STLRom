@@ -57,8 +57,6 @@ enum comparator {
         LESSTHAN, GREATERTHAN, EQUAL
     };
 
-Signal * computeComparisons(Signal * childL, Signal * childR, comparator comp);
-
 }
 
 #endif

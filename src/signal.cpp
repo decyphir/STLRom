@@ -348,7 +348,7 @@ namespace STLRom {
                     pop_front();
                 }
             }
-            // if (lower_signal.empty()) lower_signal.push_back(Sample(t_start,-BigM,0)); // TODO needed?
+            if (lower_signal.empty()) lower_signal.push_back(Sample(t_start,-BigM,0));
             if (lower_signal.front().time > t_start) {
                 s_low=front();
                 pop_front();
@@ -358,7 +358,7 @@ namespace STLRom {
                     lower_signal.pop_front();
                 }
             }
-            // if (upper_signal.empty()) upper_signal.push_back(Sample(t_start,BigM,0)); // TODO needed?
+            if (upper_signal.empty()) upper_signal.push_back(Sample(t_start,BigM,0));
             if (upper_signal.front().time > t_start) {
                 s_up=front();
                 pop_front();
