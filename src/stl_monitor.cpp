@@ -168,20 +168,19 @@ namespace STLRom
     }	
 
 
-    vector<Signal> STLMonitor::get_online_rob_signal() {
+    Signal STLMonitor::get_online_rob_signal() {
         return get_online_rob_signal(start_time, end_time);
     }
 
-    vector<Signal> STLMonitor::get_online_rob_signal(double t) {        
+    Signal STLMonitor::get_online_rob_signal(double t) {        
 		return get_online_rob_signal(t,t);
     }
-	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end)
+	Signal STLMonitor::get_online_rob_signal(double t_start, double t_end)
     {
 		if (data->is_empty())
 		{
 			cout << "Empty data" << endl;
-			vector<Signal> out_rob;
-			return out_rob;
+			return Signal();
 		}
 		start_time = t_start;
 		end_time  = t_end;
@@ -199,7 +198,7 @@ namespace STLRom
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
 		}			
-        return {formula->z, formula->z.lower_signal, formula->z.upper_signal};
+        return formula->z;
     }
 	
 

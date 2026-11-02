@@ -166,9 +166,9 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_rob_signal)		
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_rob_signal)		
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_rob_signal)			
-		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_online_rob_signal)		
-		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_online_rob_signal)		
-		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_online_rob_signal)
+		.def("get_online_rob_signal",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_online_rob_signal)		
+		.def("get_online_rob_signal",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_online_rob_signal)		
+		.def("get_online_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_online_rob_signal)
 		.def("get_robustness_map",
 		[](STLRom::STLMonitor& self) {
 			const auto rob_map = self.get_robustness_map();
@@ -301,14 +301,14 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("t_start"),
 			py::arg("t_end"))
 		.def("get_online_rob_signal",
-			(vector<Signal> (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::get_online_rob_signal,
+			(Signal (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"))
 		.def("get_online_rob_signal",
-			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::get_online_rob_signal,
+			(Signal (STLRom::STLDriver::*)(const std::string &, double)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"),
 			py::arg("t"))
 		.def("get_online_rob_signal",
-			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::get_online_rob_signal,
+			(Signal (STLRom::STLDriver::*)(const std::string &, double, double)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))

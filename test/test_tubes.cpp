@@ -58,11 +58,8 @@ int main(int argc, char **argv)
     Signal rho_phi = phi.get_rob_signal(); // Compute robustness only on the signal and not the tube? :(
     cout << "rho(phi): " << rho_phi << endl;
 
-
-    vector<Signal> online_rho_phi = phi.get_online_rob_signal();
-    cout << "online rho(phi): " << rho_phi[0] << endl;
-    cout << "online rho(phi): " << rho_phi[1] << endl;
-    cout << "online rho(phi): " << rho_phi[2] << endl; // upper should be > z ? 
+    Signal online_rho_phi = phi.get_online_rob_signal();
+    cout << "online rho(phi): " << online_rho_phi << endl;
 
     return 0;
 }

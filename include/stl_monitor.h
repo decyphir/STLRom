@@ -332,9 +332,9 @@ namespace STLRom
         Signal get_rob_signal(double);
         Signal get_rob_signal(double, double);
 
-        vector<Signal> get_online_rob_signal();
-        vector<Signal> get_online_rob_signal(double);
-        vector<Signal> get_online_rob_signal(double, double);
+        Signal get_online_rob_signal();
+        Signal get_online_rob_signal(double);
+        Signal get_online_rob_signal(double, double);
 
         robustness_map_t get_robustness_map();
         robustness_map_t get_online_robustness_map();
