@@ -421,25 +421,65 @@ void STLDriver::add_sample(vector<double> s)
 {
     data.add_sample(s);
 }
+void STLDriver::add_lower_bound(vector<double> s)
+{
+    data.add_lower_bound(s);
+}
+void STLDriver::add_upper_bound(vector<double> s)
+{
+    data.add_upper_bound(s);
+}
 
 void STLDriver::add_sample(vector<double> s, bool interp)
 {
     data.add_sample(s, interp);
+}
+void STLDriver::add_lower_bound(vector<double> s, bool interp)
+{
+    data.add_lower_bound(s, interp);
+}
+void STLDriver::add_upper_bound(vector<double> s, bool interp)
+{
+    data.add_upper_bound(s, interp);
 }
 
 void STLDriver::add_signal_sample(string sig, double t, double v)
 {
     data.add_signal_sample(sig, t, v);
 }
+void STLDriver::add_signal_lower_bound(string sig, double t, double v)
+{
+    data.add_signal_lower_bound(sig, t, v);
+}
+void STLDriver::add_signal_upper_bound(string sig, double t, double v)
+{
+    data.add_signal_upper_bound(sig, t, v);
+}
 
 void STLDriver::add_signal_sample(string sig, double t, double v, double d)
 {
     data.add_signal_sample(sig, t, v, d);
 }
+void STLDriver::add_signal_lower_bound(string sig, double t, double v, double d)
+{
+    data.add_signal_lower_bound(sig, t, v, d);
+}
+void STLDriver::add_signal_upper_bound(string sig, double t, double v, double d)
+{
+    data.add_signal_upper_bound(sig, t, v, d);
+}
 
 void STLDriver::add_signal_sample(string sig, double t, double v, double d, bool interp)
 {
     data.add_signal_sample(sig, t, v, d, interp);   
+}
+void STLDriver::add_signal_lower_bound(string sig, double t, double v, double d, bool interp)
+{
+    data.add_signal_lower_bound(sig, t, v, d, interp);   
+}
+void STLDriver::add_signal_upper_bound(string sig, double t, double v, double d, bool interp)
+{
+    data.add_signal_upper_bound(sig, t, v, d, interp);   
 }
 
 

@@ -12,10 +12,30 @@ namespace STLRom
 		data->add_sample(s);
 		up_to_date = false;
 	}
+	void STLMonitor::add_lower_bound(vector<double> s)
+	{
+		data->add_lower_bound(s);
+		up_to_date = false;
+	}
+	void STLMonitor::add_upper_bound(vector<double> s)
+	{
+		data->add_upper_bound(s);
+		up_to_date = false;
+	}
 
 	void STLMonitor::add_sample(vector<double> s, bool interp)
 	{
 		data->add_sample(s, interp);
+		up_to_date = false;
+	}
+	void STLMonitor::add_lower_bound(vector<double> s, bool interp)
+	{
+		data->add_lower_bound(s, interp);
+		up_to_date = false;
+	}
+	void STLMonitor::add_upper_bound(vector<double> s, bool interp)
+	{
+		data->add_upper_bound(s, interp);
 		up_to_date = false;
 	}
 

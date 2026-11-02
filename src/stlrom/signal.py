@@ -92,9 +92,7 @@ def plot(self, label=None, ax=None, **kwargs):
         u_times, u_values, _, _ = samples_to_points(upper_list, self.end_time)
 
         c = l_line.get_color()
-        ax.plot(l_times, l_values, color=c, **kwargs)
-        ax.plot(u_times, u_values, color=c, **kwargs)
-
+        ax.fill(l_times + u_times[::-1], l_values + u_values[::-1], facecolor=c, edgecolor=None, alpha=.3, **kwargs)
 
     if draw_canvas:
         ax.figure.canvas.draw()

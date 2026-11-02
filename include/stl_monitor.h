@@ -299,7 +299,11 @@ namespace STLRom
         // append new sample to data
         void add_sample(vector<double> s);
         void add_sample(vector<double> s, bool interp);
-
+        void add_lower_bound(vector<double> s);
+        void add_lower_bound(vector<double> s, bool interp);
+        void add_upper_bound(vector<double> s);
+        void add_upper_bound(vector<double> s, bool interp);
+        
         // set signals data 
         void set_signals(const std::vector<Signal>& signals);
 

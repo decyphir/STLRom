@@ -11,15 +11,19 @@ Signal.__repr__ = lambda self: (
 STLDriver.get_signal_idx = get_signal_idx
 STLDriver.get_signal = get_signal
 STLDriver.get_signame_from_idx = get_signame_from_idx
+STLDriver.add_bounds = add_bounds
 STLDriver.plot_signal = plot_signal
 STLDriver.plot_signals = plot_signals
 STLDriver.plot_rob = plot_rob
+STLDriver.plot_online_rob = plot_online_rob
 STLDriver.plot_sat = plot_sat
 
 STLMonitor.get_signal_idx = get_signal_idx
 STLMonitor.get_signal = get_signal
+STLMonitor.add_bounds = add_bounds
 STLMonitor.plot_signal = plot_signal
 STLMonitor.plot_signals = plot_signals
 STLMonitor.plot_rob = plot_rob
+STLMonitor.plot_online_rob = plot_online_rob
 STLMonitor.plot_sat = plot_sat
 

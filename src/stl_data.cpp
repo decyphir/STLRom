@@ -45,9 +45,51 @@ namespace STLRom
         // TODO: uptodate?
     }
 
+    
+    void STLData::add_lower_bound(vector <double> sample, bool interp)
+    {
+        if (sample.size() != get_size() + 1) 
+	    {
+        	throw std::invalid_argument("Sample size does not match the number of signals.");
+    	}
+
+        double t = sample[0];
+        for (int i = 1; i < sample.size(); i++) 
+        {
+            data_vector[i - 1].appendLowerSample(t, sample[i], 0., interp);
+        }
+
+        // TODO: uptodate?
+    }
+
+
+    void STLData::add_upper_bound(vector <double> sample, bool interp)
+    {
+        if (sample.size() != get_size() + 1) 
+	    {
+        	throw std::invalid_argument("Sample size does not match the number of signals.");
+    	}
+
+        double t = sample[0];
+        for (int i = 1; i < sample.size(); i++) 
+        {
+            data_vector[i - 1].appendUpperSample(t, sample[i], 0., interp);
+        }
+
+        // TODO: uptodate?
+    }
+
     void STLData::add_sample(vector <double> sample)
     {
         add_sample(sample, true);
+    }
+    void STLData::add_lower_bound(vector <double> sample)
+    {
+        add_lower_bound(sample, true);
+    }
+    void STLData::add_upper_bound(vector <double> sample)
+    {
+        add_upper_bound(sample, true);
     }
 
     void STLData::add_signal_sample(string sig, double t, double v, double d, bool interp)
@@ -55,6 +97,18 @@ namespace STLRom
         int sig_idx = get_signal_idx(sig);
         if (sig_idx != -1)
             data_vector[sig_idx].appendSample(t,v,d,interp);
+    }
+    void STLData::add_signal_lower_bound(string sig, double t, double v, double d, bool interp)
+    {
+        int sig_idx = get_signal_idx(sig);
+        if (sig_idx != -1)
+            data_vector[sig_idx].appendLowerSample(t,v,d,interp);
+    }
+    void STLData::add_signal_upper_bound(string sig, double t, double v, double d, bool interp)
+    {
+        int sig_idx = get_signal_idx(sig);
+        if (sig_idx != -1)
+            data_vector[sig_idx].appendUpperSample(t,v,d,interp);
     }
 
     int STLData::get_signal_idx(const string &sig) const
@@ -112,10 +166,26 @@ namespace STLRom
     {
         add_signal_sample(sig, t,v,0., 1);
     }
+    void STLData::add_signal_lower_bound(string sig, double t, double v)
+    {
+        add_signal_lower_bound(sig, t,v,0., 1);
+    }
+    void STLData::add_signal_upper_bound(string sig, double t, double v)
+    {
+        add_signal_upper_bound(sig, t,v,0., 1);
+    }
 
     void STLData::add_signal_sample(string sig, double t, double v, double d)
     {
         add_signal_sample(sig, t,v,d, 1);
+    }
+    void STLData::add_signal_lower_bound(string sig, double t, double v, double d)
+    {
+        add_signal_lower_bound(sig, t,v,d, 1);
+    }
+    void STLData::add_signal_upper_bound(string sig, double t, double v, double d)
+    {
+        add_signal_upper_bound(sig, t,v,d, 1);
     }
 
     void STLData::inflate_signal(const string &sig, double r)

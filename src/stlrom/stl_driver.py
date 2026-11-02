@@ -10,6 +10,11 @@ def get_signame_from_idx(self,idx):
 def get_signal(self, sig):
     return self.data.get_signal(sig)
 
+def add_bounds(self, sample): # sample = [t, [sig1_lb, sig1_ub], [sig2_lb, sig2_ub], ...]
+    t, sigs = sample[0], sample[1:]
+    self.add_lower_bound([t] + [s[0] for s in sigs])
+    self.add_upper_bound([t] + [s[1] for s in sigs])
+
 def plot_signal(self, sig, label=None, ax=None, draw_samples=False, draw_tube=False):
     S = self.get_signal(sig)
     
@@ -40,6 +45,13 @@ def plot_rob(self, phi, t0, tf, label=None, ax=None, **kwargs):
     if S is not None and label is None: 
         label = str(phi)
     return plot(S, label=label, ax=ax, **kwargs)
+
+def plot_online_rob(self, phi, t0, tf, label=None, ax=None, **kwargs):
+    S = self.get_online_rob_signal(phi, t0, tf)
+    
+    if S is not None and label is None: 
+        label = str(phi)
+    return plot(S, label=label, ax=ax, draw_tube=True, **kwargs)
 
 def plot_sat(self, phi, t0, tf, label=None, ax=None, **kwargs):
     S = self.get_rob_signal(phi, t0, tf)

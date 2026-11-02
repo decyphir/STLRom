@@ -72,18 +72,28 @@ namespace STLRom
 
             /** append new sample to data, default linear interpolation */
             void add_sample(vector <double> sample);
+            void add_lower_bound(vector <double> sample);
+            void add_upper_bound(vector <double> sample);
 
             /** append new sample to data */
             void add_sample(vector <double> sample, bool interp);
+            void add_lower_bound(vector <double> sample, bool interp);
+            void add_upper_bound(vector <double> sample, bool interp);
 
             /** append new sample to signal, default linear interpolation */
             void add_signal_sample(string phi, double t, double v);
+            void add_signal_lower_bound(string phi, double t, double v);
+            void add_signal_upper_bound(string phi, double t, double v);
 
             /** append new sample to signal, default linear interpolation */
             void add_signal_sample(string phi, double t, double v, double d);
+            void add_signal_lower_bound(string phi, double t, double v, double d);
+            void add_signal_upper_bound(string phi, double t, double v, double d);
 
             /** append new sample to signal */
             void add_signal_sample(string phi, double t, double v, double d, bool interp);
+            void add_signal_lower_bound(string phi, double t, double v, double d, bool interp);
+            void add_signal_upper_bound(string phi, double t, double v, double d, bool interp);
 
             /** set lower and upper bound for signal sig with a radius r from the crisp signal */
             void inflate_signal(const string &sig, double r);
