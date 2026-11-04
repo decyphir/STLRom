@@ -178,3 +178,167 @@ bool write_trace(const std::string& filename, const trace_data& signals)
 // 	file.close();
 // 	return true;
 // }
+
+double crossing_event(double t, const Sample s1, const Sample s2) {
+    // return the time when the two signal will cross each other. It returns t if the crossing never happen, or happen after t or before one of the sample.
+    double d1 = s1.derivative;
+    double d2 = s2.derivative;
+    if (d1 == d2)
+        return t; // will never cross
+    double t_min = std::max(s1.time, s2.time); // if corssing happen before t_min, return t (not relevant)
+    double t_crossing = (s2.valueAt(0) - s1.valueAt(0)) / (d1 - d2);
+    if (t_crossing <= t_min || t_crossing > t)
+        return t;
+    return t_crossing; 
+}
+
+
+void min_signal(Signal &out, const Signal& zL, const Signal& zR) {
+    
+    auto itL = zL.begin();
+    auto itR = zR.begin();
+
+    double beginTime = std::max(zL.beginTime, zR.beginTime);
+    double endTime   = std::min(zL.endTime,   zR.endTime);
+
+    // Skip elements outside the overlap in the beginning
+    while (itL != zL.end() && itL->time < beginTime) ++itL;
+    while (itR != zR.end() && itR->time < beginTime) ++itR;
+
+    auto last_itL = itL;
+    auto last_itR = itR;
+
+    while (true) {
+
+        double tL = (itL != zL.end()) ? itL->time : std::numeric_limits<double>::infinity();
+        double tR = (itR != zR.end()) ? itR->time : std::numeric_limits<double>::infinity();
+
+        double t = std::min(tL, tR);
+        if (t > endTime) break;
+
+        double vL, vR;
+        double dL, dR;
+
+        double t_crossing = crossing_event(t, *last_itL, *last_itR);
+        if (t_crossing != t) // crossing happens
+            out.appendSample(t_crossing, last_itL->valueAt(t_crossing), std::min(last_itL->derivative, last_itR->derivative));
+
+        if (tL < tR) {
+            vL = itL->value;
+            vR = last_itR->valueAt(t);
+
+            dL = itL->derivative;
+            dR = last_itR->derivative;
+
+            last_itL = itL;
+            ++itL;
+
+        } else if (tR < tL) {
+            vL = last_itL->valueAt(t);
+            vR = itR->value;
+
+            dL = last_itL->derivative;
+            dR = itR->derivative;
+
+            last_itR = itR;
+            ++itR;
+
+        } else {
+            vL = itL->value;
+            vR = itR->value;
+
+            dL = itL->derivative;
+            dR = itR->derivative;
+
+            last_itL = itL; last_itR = itR;
+            ++itL; ++itR;
+        }
+
+        if (vL < vR) {
+            out.appendSample(t, vL, dL);
+        } else if (vL > vR) {
+            out.appendSample(t, vR, dR);
+        } else { // vL == vR
+            if (dL < dR) {
+                out.appendSample(t, vL, dL);
+            } else {
+                out.appendSample(t, vL, dR);
+            }
+        }
+    }
+}
+
+void max_signal(Signal &out, const Signal& zL, const Signal& zR) {
+    
+    auto itL = zL.begin();
+    auto itR = zR.begin();
+
+    double beginTime = std::max(zL.beginTime, zR.beginTime);
+    double endTime   = std::min(zL.endTime,   zR.endTime);
+
+    // Skip elements outside the overlap in the beginning
+    while (itL != zL.end() && itL->time < beginTime) ++itL;
+    while (itR != zR.end() && itR->time < beginTime) ++itR;
+
+    auto last_itL = itL;
+    auto last_itR = itR;
+
+    while (true) {
+
+        double tL = (itL != zL.end()) ? itL->time : std::numeric_limits<double>::infinity();
+        double tR = (itR != zR.end()) ? itR->time : std::numeric_limits<double>::infinity();
+
+        double t = std::min(tL, tR);
+        if (t > endTime) break;
+
+        double vL, vR;
+        double dL, dR;
+
+        double t_crossing = crossing_event(t, *last_itL, *last_itR);
+        if (t_crossing != t) // crossing happens
+            out.appendSample(t_crossing, last_itL->valueAt(t_crossing), std::max(last_itL->derivative, last_itR->derivative));
+
+        if (tL < tR) {
+            vL = itL->value;
+            vR = last_itR->valueAt(t);
+
+            dL = itL->derivative;
+            dR = last_itR->derivative;
+
+            last_itL = itL;
+            ++itL;
+
+        } else if (tR < tL) {
+            vL = last_itL->valueAt(t);
+            vR = itR->value;
+
+            dL = last_itL->derivative;
+            dR = itR->derivative;
+
+            last_itR = itR;
+            ++itR;
+
+        } else {
+            vL = itL->value;
+            vR = itR->value;
+
+            dL = itL->derivative;
+            dR = itR->derivative;
+
+            last_itL = itL; last_itR = itR;
+            ++itL; ++itR;
+        }
+
+        if (vL < vR) {
+            out.appendSample(t, vR, dR);
+        } else if (vL > vR) {
+            out.appendSample(t, vL, dL);
+        } else { // vL == vR
+            if (dL < dR) {
+                out.appendSample(t, vL, dR);
+            } else {
+                out.appendSample(t, vL, dL);
+            }
+        }
+    }
+}

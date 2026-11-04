@@ -54,7 +54,7 @@ Signal * plateauMin(Signal *, double);
 Signal * computeBoundedGlobally(Signal *, double);
 
 enum comparator {
-        LESSTHAN, GREATERTHAN, EQUAL
+        LESSTHAN, GREATERTHAN, EQUAL, IN
     };
 
 }

@@ -122,6 +122,9 @@ void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, Bina
     }
 }
 
+double crossing_event(double t, const Sample last_L, const Sample last_R);
 
+void min_signal(Signal &out, const Signal& zL, const Signal& zR);
+void max_signal(Signal &out, const Signal& zL, const Signal& zR);
 
 #endif /* TOOLS_H_ */

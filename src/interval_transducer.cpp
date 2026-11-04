@@ -1,5 +1,6 @@
 #include <transducer.h>
 #include <signal_expr.h>
+#include <tools.h>
 #include <algorithm>
 #include <math.h>
 //#define DEBUG__
@@ -97,6 +98,21 @@ namespace STLRom {
                 childR_low.endTime = childR->end_time;
                 compute_robustness(childL_low, childR_low, comp, &z_low);
                 break;
+            case STLRom::comparator::IN:
+                childL->compute_lower_rob();
+                childL->compute_upper_rob();
+                childR->compute_lower_rob();
+                childR->compute_upper_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childL_low.endTime = childL->end_time;
+                childL_up = Signal(childL->z.upper_signal);
+                childL_up.endTime = childL->end_time;
+                childR_low = Signal(childR->z.lower_signal);
+                childR_low.endTime = childR->end_time;
+                childR_up = Signal(childR->z.upper_signal);
+                childR_up.endTime = childR->end_time;
+                min_signal(z_low, childR_up - childL_up, childL_low - childR_low);
+                break;
         }
 
         double last_data_t = get_last_data_time();
@@ -131,22 +147,43 @@ namespace STLRom {
                 childL->compute_lower_rob();
                 childR->compute_upper_rob();
                 childL_low = Signal(childL->z.lower_signal);
+                childL_low.endTime = childL->end_time;
                 childR_up = Signal(childR->z.upper_signal);
+                childR_up.endTime = childR->end_time;
                 compute_robustness(childL_low, childR_up, comp, &z_up);
                 break;
             case STLRom::comparator::GREATERTHAN:
                 childL->compute_upper_rob();
                 childR->compute_lower_rob();
                 childL_up = Signal(childL->z.upper_signal);
+                childL_up.endTime = childL->end_time;
                 childR_low = Signal(childR->z.lower_signal);
+                childR_low.endTime = childR->end_time;
                 compute_robustness(childL_up, childR_low, comp, &z_up);
                 break;
             case STLRom::comparator::EQUAL: // TODO what should we do?
                 childL->compute_upper_rob();
                 childR->compute_upper_rob();
                 childL_up = Signal(childL->z.upper_signal);
+                childL_up.endTime = childL->end_time;
                 childR_up = Signal(childR->z.upper_signal);
+                childR_up.endTime = childR->end_time;
                 compute_robustness(childL_up, childR_up, comp, &z_up);
+                break;
+            case STLRom::comparator::IN:
+                childL->compute_lower_rob();
+                childL->compute_upper_rob();
+                childR->compute_lower_rob();
+                childR->compute_upper_rob();
+                childL_low = Signal(childL->z.lower_signal);
+                childL_low.endTime = childL->end_time;
+                childL_up = Signal(childL->z.upper_signal);
+                childL_up.endTime = childL->end_time;
+                childR_low = Signal(childR->z.lower_signal);
+                childR_low.endTime = childR->end_time;
+                childR_up = Signal(childR->z.upper_signal);
+                childR_up.endTime = childR->end_time;
+                compute_upper_in_robustness(childL_low, childL_up, childR_low, childR_up, &z_up);
                 break;
         }
 
@@ -516,6 +553,14 @@ namespace STLRom {
             return TOP;
         else
             return z.upper_signal.front().value;
+    }
+
+    void stl_atom::compute_upper_in_robustness(const Signal &childL_low, const Signal &childL_up, const Signal &childR_low, const Signal &childR_up, Signal* z_up) {
+        Signal childR_hat = (childR_up + childR_low) / 2;
+        Signal rho_max = childR_hat - childR_low;
+        Signal tmp1;
+        max_signal(tmp1, childL_low-childR_hat, childR_hat-childL_up);
+        min_signal(*z_up, rho_max, rho_max - tmp1);
     }
 
 }

@@ -15,12 +15,12 @@ def add_bounds(self, sample): # sample = [t, [sig1_lb, sig1_ub], [sig2_lb, sig2_
     self.add_lower_bound([t] + [s[0] for s in sigs])
     self.add_upper_bound([t] + [s[1] for s in sigs])
 
-def plot_signal(self, sig, label=None, ax=None, draw_samples=False, draw_tube=False):
+def plot_signal(self, sig, label=None, ax=None, draw_samples=False, draw_tube=False, **kwargs):
     S = self.get_signal(sig)
     
     if S is not None and label is None: 
         label = "Signal " + str(sig) #FIXME: dummy if sig is integer
-    return plot(S, label=label, ax=ax, draw_samples=draw_samples, draw_tube=draw_tube)
+    return plot(S, label=label, ax=ax, draw_samples=draw_samples, draw_tube=draw_tube, **kwargs)
     
 def plot_signals(self, sig_names=None, same_ax=True, ax=None, draw_samples=False, draw_tube=False):
     if sig_names is None:

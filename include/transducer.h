@@ -598,6 +598,8 @@ namespace STLRom {
                 comp = comparator::LESSTHAN;
             else if (cp.compare(">") == 0)
                 comp = comparator::GREATERTHAN;
+            else if (cp.compare("in") == 0)
+                comp = comparator::IN;
             else
                 comp = comparator::EQUAL;
         }
@@ -632,6 +634,9 @@ namespace STLRom {
             case (comparator::EQUAL):
                 os << " == ";
                 break;
+            case (comparator::IN):
+                os << " in ";
+                break;
             }
 
             childR->print(os);
@@ -644,6 +649,7 @@ namespace STLRom {
 
     private:
         void compute_robustness(const Signal &left, const Signal &right, comparator comp, Signal* z);
+        void compute_upper_in_robustness(const Signal &left_low, const Signal &left_up, const Signal &right_low, const Signal &right_up, Signal* z_up);
     };
 
     std::ostream& operator<<(std::ostream& os, const transducer& T);

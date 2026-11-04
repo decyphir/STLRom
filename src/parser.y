@@ -167,7 +167,7 @@
 %type <STLRom::transducer*> constant_signal
 %type <STLRom::transducer*> stl_formula
 %type <STLRom::interval*>   interval
-%type <std::string>         op op_eq op_in
+%type <std::string>         op op_eq
 %type <std::string>         constant
 /* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
@@ -294,12 +294,11 @@ stl_atom : signal_expr op signal_expr
 op        : LT { $$ = "<"; }
           | GT { $$ = ">"; }
           | PARAM_EQ PARAM_EQ { $$ = "="; }
+          | IN { $$ = "in"; }
 
 op_eq     : 
             LE { $$ = ">"; } // a <= b <=> !(a > b)
           | GE { $$ = "<"; } // a >= b <=> !(a < b)
-
-op_in     : IN { $$ = "in"; } // a in b <=> !(a < b or a > b)
 
 interval : LINT constant COMMA constant RINT
          {
@@ -321,26 +320,6 @@ stl_formula :
              signal_expr op_eq signal_expr
              {
                 auto atom = new stl_atom($1, $2, $3);
-                atom->trace_data_ptr = &driver.data.data_vector;
-                atom->signal_map = driver.data.signal_map;
-
-                $$ = new not_transducer(atom);
-                $$->trace_data_ptr = &driver.data.data_vector;
-                $$->signal_map = driver.data.signal_map;
-             }
-             |
-             signal_expr op_in signal_expr
-             {
-                auto lhs = $1->clone();
-                auto rhs = $3->clone();
-                auto atom_lt = new stl_atom($1, "<", $3);
-                atom_lt->trace_data_ptr = &driver.data.data_vector;
-                atom_lt->signal_map = driver.data.signal_map;
-                auto atom_gt = new stl_atom(lhs, ">", rhs);
-                atom_gt->trace_data_ptr = &driver.data.data_vector;
-                atom_gt->signal_map = driver.data.signal_map;
-
-                auto atom = new or_transducer(atom_lt, atom_gt);
                 atom->trace_data_ptr = &driver.data.data_vector;
                 atom->signal_map = driver.data.signal_map;
 

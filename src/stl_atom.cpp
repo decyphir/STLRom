@@ -267,7 +267,18 @@ namespace STLRom {
 
         childL->compute_robustness();
         childR->compute_robustness();
-        compute_robustness(childL->z, childR->z, comp, &z);
+
+        if (comp == comparator::IN) {
+            childR->compute_lower_rob();
+            childR->compute_upper_rob();
+            Signal childR_low = Signal(childR->z.lower_signal);
+            childR_low.endTime = childR->end_time;
+            Signal childR_up = Signal(childR->z.upper_signal);
+            childR_up.endTime = childR->end_time;
+            min_signal(z, childL->z - childR_low, childR_up - childL->z);
+        } else {
+            compute_robustness(childL->z, childR->z, comp, &z);
+        }
 
         Signal z_space;
         switch (Signal::semantics) {
