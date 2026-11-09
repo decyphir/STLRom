@@ -172,20 +172,22 @@ namespace STLRom {
             push_front(Sample(t_start, v, d));          
         }
         else {
-            //trim or extend front of signal
-            Sample first;
-            while(front().time < t_start) 
+            //trim or extend front of signal: before the data, hold the first value
+            Sample first(t_start, front().value, 0.);
+            while(!empty() && front().time < t_start) 
             {    
                 first = front();
                 pop_front();        
             }
             
-            if (fabs(front().time - t_start) > ZERO_POS) {
+            // All samples were before t_start: the last one still covers it
+            if (empty() || fabs(front().time - t_start) > ZERO_POS) {
                 Sample new_front = Sample(t_start, first.valueAt(t_start), first.derivative);
                 push_front(new_front);
             }
             //trim or extend end of signal
-            while(t_end<back().time) pop_back();
+            // Keep one sample: it can sit just after t_end through rounding
+            while(size() > 1 && t_end<back().time) pop_back();
         }
         beginTime = t_start;
         endTime = t_end;

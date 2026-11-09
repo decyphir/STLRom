@@ -9,18 +9,11 @@ namespace STLRom {
 
     void unary_transducer::init_horizon() {
         child->set_horizon(start_time, end_time);
-        child->init_horizon();
-        // // start_time = child->start_time;
-        // end_time = child->end_time;
     }
 
     void binary_transducer::init_horizon() {
         childL->set_horizon(start_time, end_time);
         childR->set_horizon(start_time, end_time);
-        // childL->init_horizon();
-        // childR->init_horizon();
-        // start_time = fmax(childL->start_time, childR->start_time);
-        // end_time = fmin(childL->end_time, childR->end_time);
     }
 
     void timed_unary_transducer::init_horizon() {
@@ -32,10 +25,6 @@ namespace STLRom {
 
         // update start_time and end_time of child
         child->set_horizon(start_time+a,end_time+b);
-
-        // start_time = child->start_time - a;
-        // end_time = child->end_time - b;
-        // child->init_horizon();
 
     }
 
@@ -49,9 +38,6 @@ namespace STLRom {
         // update start_time and end_time of child
         // TODO: what happens when start_time-b is negative?
         child->set_horizon(start_time-b, end_time-a);
-        // child->init_horizon();
-        // start_time = child->start_time + b;
-        // end_time = child->end_time + a;
 
     }
 
@@ -66,8 +52,6 @@ namespace STLRom {
         childR->set_horizon(start_time+a, end_time+b);
         // childL->init_horizon();
         // childR->init_horizon();
-        // start_time = fmax(childL->start_time, childR->start_time-a);
-        // end_time = fmin(childL->end_time-b, childR->end_time-b);
     }
 
     void past_timed_binary_transducer::init_horizon() {
@@ -81,8 +65,62 @@ namespace STLRom {
         childR->set_horizon(start_time-b, end_time-a);
         // childL->init_horizon();
         // childR->init_horizon();
-        // start_time = fmax(childL->start_time+b, childR->start_time+b);
-        // end_time = fmin(childL->end_time, childR->end_time+a);
+    }
+
+    /* valid interval */
+    void transducer::valid_interval(double &s, double &e) {
+        s = -std::numeric_limits<double>::infinity();
+        e = std::numeric_limits<double>::infinity();
+    }
+
+    void unary_transducer::valid_interval(double &s, double &e) {
+        child->valid_interval(s, e);
+    }
+
+    void binary_transducer::valid_interval(double &s, double &e) {
+        double sR, eR;
+        childL->valid_interval(s, e);
+        childR->valid_interval(sR, eR);
+        s = fmax(s, sR);
+        e = fmin(e, eR);
+    }
+
+    void timed_unary_transducer::valid_interval(double &s, double &e) {
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+        child->valid_interval(s, e);
+        s -= a;
+        e -= b;
+    }
+
+    void past_timed_unary_transducer::valid_interval(double &s, double &e) {
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+        child->valid_interval(s, e);
+        s += b;
+        e += a;
+    }
+
+    void timed_binary_transducer::valid_interval(double &s, double &e) {
+        double a,b,sR,eR;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+        childL->valid_interval(s, e);
+        childR->valid_interval(sR, eR);
+        s = fmax(s, sR-a);
+        e = fmin(e-b, eR-b);
+    }
+
+    void past_timed_binary_transducer::valid_interval(double &s, double &e) {
+        double a,b,sR,eR;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+        childL->valid_interval(s, e);
+        childR->valid_interval(sR, eR);
+        s = fmax(s+b, sR+b);
+        e = fmin(e, eR+a);
     }
 
     /* set param */
@@ -289,6 +327,8 @@ namespace STLRom {
 	    valid_end   = child->valid_end + a;
 
         Signal child_z = child->z; // is this a copy?
+        // reversal uses begin+end: child z must span exactly its horizon
+        child_z.resize(child->start_time, child->end_time);
         child_z.reverse();
         child_z.shift(b+a);
         z.compute_timed_eventually(child_z, a, b);
@@ -322,6 +362,8 @@ namespace STLRom {
 	    valid_end   = child->valid_end + a;
 
         Signal child_z = child->z; // is this a copy?
+        // reversal uses begin+end: child z must span exactly its horizon
+        child_z.resize(child->start_time, child->end_time);
         child_z.reverse();
         child_z.shift(b+a);
         z.compute_timed_globally(child_z, a, b);
@@ -516,7 +558,7 @@ namespace STLRom {
         valid_end   = fmin(childL->valid_end, childR->valid_end);
 
         z.compute_timed_until(childL->z, childR->z, a, b);
-        z.resize(0.,z.endTime,0.);
+        z.resize(start_time, max(start_time, min(z.endTime, end_time)));
         return z.front().value;
     }
 
@@ -551,16 +593,25 @@ namespace STLRom {
 
         Signal childL_z = childL->z;
         Signal childR_z = childR->z;
+        childL_z.resize(childL->start_time, childL->end_time);
+        childR_z.resize(childR->start_time, childR->end_time);
+
+        // since(t) = until(T-t) on signals reversed about one common time T.
+        // Children have different horizons, so each reverse() about its own
+        // midpoint has to be realigned to T.
+        double T = childL_z.beginTime + childL_z.endTime;
+        double T_R = childR_z.beginTime + childR_z.endTime;
 
         childL_z.reverse();
         childR_z.reverse();
-        
+        childR_z.shift(T - T_R);
+
         z.compute_timed_until(childL_z, childR_z, a, b);
 
+        double T_z = z.beginTime + z.endTime;
         z.reverse();
-
-        z.shift(a);
-        z.resize(start_time, end_time,0.);
+        z.shift(T - T_z);
+        z.resize(start_time, end_time);
 
         return z.front().value;
     }

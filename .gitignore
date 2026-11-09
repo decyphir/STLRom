@@ -13,3 +13,4 @@ src/stack.hh
 *.ipynb_checkpoints
 .virtual_documents
 *.log
+dev_checks/

@@ -65,6 +65,9 @@ namespace STLRom {
         // Initializes horizons
         virtual void init_horizon();
 
+        // Interval of times at which this formula can be computed from the data alone
+        virtual void valid_interval(double &s, double &e);
+
         inline void set_horizon(double s, double e) {
             start_time = s;
             end_time = e;
@@ -146,6 +149,7 @@ namespace STLRom {
         };
 
         void init_horizon();
+        void valid_interval(double &s, double &e);
         void set_param(const string&, double); 
         void reset();
 
@@ -191,6 +195,7 @@ namespace STLRom {
         };
 
         void init_horizon();
+        void valid_interval(double &s, double &e);
         void set_param(const string&, double); 
         void reset();
         
@@ -242,6 +247,7 @@ namespace STLRom {
         };
 
         void init_horizon();
+        void valid_interval(double &s, double &e);
         void set_param(const string&, double); 
         
         virtual double get_end_complete();
@@ -273,6 +279,7 @@ namespace STLRom {
         };
 
         void init_horizon();
+        void valid_interval(double &s, double &e);
         void set_param(const string&, double); 
 
         virtual ~past_timed_unary_transducer() {
@@ -302,6 +309,7 @@ namespace STLRom {
         };
 
         void init_horizon();
+        void valid_interval(double &s, double &e);
         void set_param(const string&, double); 
         
         // TODO
@@ -334,6 +342,7 @@ namespace STLRom {
         };
 
         void init_horizon();
+        void valid_interval(double &s, double &e);
         void set_param(const string&, double); 
         
         // TODO
@@ -711,11 +720,11 @@ namespace STLRom {
 
     };
 
-    class since_transducer: public timed_binary_transducer {
+    class since_transducer: public past_timed_binary_transducer {
 
     public:
         explicit since_transducer(transducer *_childL, interval *_I, transducer *_childR) :
-			transducer(), binary_transducer(_childL, _childR), timed_binary_transducer(_childL, _I, _childR) {
+			transducer(), binary_transducer(_childL, _childR), past_timed_binary_transducer(_childL, _I, _childR) {
         }
 
         virtual since_transducer* clone() const {

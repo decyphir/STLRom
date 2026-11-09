@@ -136,16 +136,22 @@ namespace STLRom
 			formula->set_trace_data_ptr(data->data_vector); // TODO: convert to STLData
 			formula->set_param_map_ptr(param_map);
 			Signal::semantics=semantics;
-			formula->reset();				
-			formula->set_horizon(t_start, t_end);
+			formula->reset();
+			// Only compute where the data backs the whole formula
+			double s, e;
+			formula->valid_interval(s, e);
+			s = fmax(s, t_start);
+			e = fmin(e, t_end);
+			bool backed = s <= e;
+			// Nothing backed: rob still reports the value on the request, z stays empty
+			if (backed) formula->set_horizon(s, e);
+			else formula->set_horizon(t_start, t_end);
 			rob = formula->compute_robustness();
     		up_to_date = true;
+			if (backed) formula->z.resize(s, e);
+			else formula->z = Signal();
 		}
-		
-		double r_s = fmax(formula->valid_start, t_start);
-		double r_e = fmin(formula->valid_end, t_end);
 
-        // formula->z.resize(r_s, r_e);
 		return formula->z;
     }	
 
@@ -180,13 +186,15 @@ namespace STLRom
             lower_rob = formula->compute_lower_rob();
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
+			double s, e;
+			formula->valid_interval(s, e);
+			s = fmax(s, t_start);
+			e = fmin(e, t_end);
+			if (s > e) formula->z = Signal();
+			else formula->z.resize(s, e);
 		}
-		
-		double r_s = fmax(formula->valid_start, t_start);
-		double r_e = fmin(formula->valid_end, t_end);
 
-        formula->z.resize(r_s, r_e);
-		
+
         return {formula->z, formula->z_low, formula->z_up};
     }
 	

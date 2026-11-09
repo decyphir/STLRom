@@ -48,17 +48,17 @@ namespace STLRom {
         auto itR = childR->z.begin();
 
         // Skip elements outside the overlap in the beginning
-        while (itL != childL->z.end() && itL->time < z.beginTime) ++itL;
-        while (itR != childR->z.end() && itR->time < z.beginTime) ++itR;
+        // Track the last skipped sample: it may be the only one covering the overlap
+        auto last_itL = itL;
+        auto last_itR = itR;
+        while (itL != childL->z.end() && itL->time < z.beginTime) { last_itL = itL; ++itL; }
+        while (itR != childR->z.end() && itR->time < z.beginTime) { last_itR = itR; ++itR; }
 
         // Iterate over both simultaneously
         bool first_pass = true;
         double t_prev, v_prev_neq, d_prev_neq;
 
         double tL = -std::numeric_limits<double>::infinity(), tR = -std::numeric_limits<double>::infinity();
-
-        auto last_itL = itL;
-        auto last_itR = itR;
 
         while(tL < endTime || tR < endTime) {
             tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
@@ -185,6 +185,10 @@ namespace STLRom {
 
                 for (int i = 0; i < crossing_count; i++) {
                     auto e = events[i];
+
+                    // Rounded data or a jump can put the computed crossing at or
+                    // after t; the sample at t already gives the correct state.
+                    if (e.t >= t) continue;
 
                     if (e.isPlus) { // +epsilon crossing
                         if (comp == comparator::EQUAL) {

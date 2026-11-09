@@ -32,12 +32,12 @@ namespace STLRom
             variable = var;
         };
 
-        void init_horizon(){
-            // short i = signal_map[variable];
-            // double beginTime = trace_data_ptr->at(i).beginTime;
-            // double endTime = trace_data_ptr->at(i).endTime;
-            // start_time = fmax(start_time, beginTime);
-            // end_time = fmin(end_time, endTime);
+        void init_horizon(){};
+
+        void valid_interval(double &s, double &e){
+            const Signal &data = trace_data_ptr->at(signal_map[variable]);
+            s = data.beginTime;
+            e = data.endTime;
         };
 
         virtual signal_transducer *clone() const
