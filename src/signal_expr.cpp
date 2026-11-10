@@ -42,7 +42,11 @@ double abs_transducer::compute_robustness() {
 			t_cross = t - fabs(v)/abs_d;
 		else
 			t_cross = std::numeric_limits<double>::infinity();
-		
+
+		if (t_cross <= t + ZERO_POS) {
+			abs_d = fabs(d);
+			t_cross = std::numeric_limits<double>::infinity();
+		}		
 			z.appendSample(t, fabs(v), abs_d);
 	}
 
