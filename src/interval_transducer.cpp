@@ -268,19 +268,20 @@ namespace STLRom {
 //         z_low.appendSample(start_time, BOTTOM); 
 //          return BOTTOM;
 //      }
-    
-        Signal child_z_low = child->z_low; // is this a copy?
+        Signal child_z_low = child->z_low;
+
+        child_z_low.resize(child->start_time, child->end_time);
         child_z_low.reverse();
-        child_z_low.shift(b);
+        child_z_low.shift(b+a);
 
         z_low.compute_timed_eventually(child_z_low, a, b);        
         
-        double et =min(z_low.endTime,end_time);
-        z_low.resize(start_time,max(start_time,et), BOTTOM);
+        double et = min(z_low.endTime, end_time);
+        z_low.resize(start_time, max(start_time, et));
         z_low.reverse();
 
-        if (z_low.empty()) // why not, but can this really happen ?
-            z_low.appendSample(start_time, BOTTOM); 
+        if (z_low.empty())
+            z_low.appendSample(start_time, BOTTOM);
 
 #ifdef DEBUG__
         cout << "OUT: z_low:"<< z_low << endl;
@@ -309,19 +310,20 @@ namespace STLRom {
 //            return TOP;
 //        }
 
-        Signal child_z_up = child->z_up; // is this a copy?
+        Signal child_z_up = child->z_up;
+        child_z_up.resize(child->start_time, child->end_time);
         child_z_up.reverse();
-        child_z_up.shift(b);
+        child_z_up.shift(b+a);
 
         z_up.compute_timed_eventually(child_z_up, a, b);
 
-        // Here we remove values computed with partial data 
-        double et =min(z_up.endTime-b+a,end_time);
-        z_up.resize(start_time,et, 0.);
+        
+        double et = min(z_up.endTime, end_time);
+        z_up.resize(start_time, max(start_time, et));
         z_up.reverse();
 
-        if (z_up.empty()) 
-            z_up.appendSample(start_time, TOP); 
+        if (z_up.empty())
+            z_up.appendSample(start_time, TOP);
 
 #ifdef DEBUG__
         cout << "OUT: z_up:"<< z_up << endl;
@@ -424,20 +426,21 @@ namespace STLRom {
 //            return BOTTOM;
 //        }
 
-        Signal child_z_low = child->z_low; // is this a copy?
+        Signal child_z_low = child->z_low;
+        child_z_low.resize(child->start_time, child->end_time);
         child_z_low.reverse();
-        child_z_low.shift(b);
+        child_z_low.shift(b+a);
 
         z_low.compute_timed_globally(child_z_low, a, b);
 
-        // Here we remove values computed with partial data 
-        double et =min(z_low.endTime-b+a,end_time);
-        z_low.resize(start_time,et, 0.);
+        
+        double et = min(z_low.endTime, end_time);
+        z_low.resize(start_time, max(start_time, et));
         z_low.reverse();
 
 	
         if (z_low.empty()) 
-            z_low.appendSample(start_time,BOTTOM);        
+            z_low.appendSample(start_time, BOTTOM);        
 
 #ifdef DEBUG__
         printf( "OUT: z_low:");
@@ -458,9 +461,6 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
-        Signal child_z_up = child->z_up; // is this a copy?
-        child_z_up.reverse();
-        child_z_up.shift(b);
 
         child->compute_upper_rob();
 //        if (child->z_up.endTime < a) {
@@ -469,13 +469,17 @@ namespace STLRom {
 //        }
 
         //    cout << "child->z_up:" << child->z_up << endl;
+        Signal child_z_up = child->z_up;
+        child_z_up.resize(child->start_time, child->end_time);
+        child_z_up.reverse();
+        child_z_up.shift(b+a);
         z_up.compute_timed_globally(child_z_up, a, b);
-        double et =min(z_up.endTime,end_time);
-        z_up.resize(start_time,max(start_time,et), 0.);
+        double et = min(z_up.endTime, end_time);
+        z_up.resize(start_time, max(start_time, et));
         z_up.reverse();
 
-        if (z_up.empty()) 
-            z_up.appendSample(start_time, TOP); 
+        if (z_up.empty())
+            z_up.appendSample(start_time, TOP);
 
 #ifdef DEBUG__
         cout << "OUT: z_up:"<< z_up << endl;
@@ -493,18 +497,18 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
         
-        if (childL->compute_lower_rob()==BOTTOM) return BOTTOM;
-        if (childR->compute_lower_rob()==BOTTOM) return BOTTOM;
-
-        z_low.compute_timed_until(childL->z_low,childR->z_low, a, b);
-        double et =min(z_low.endTime,end_time);
-        z_low.resize(start_time,max(start_time,et),0.);
-        
-        
-        if (z_low.empty())
-            return BOTTOM;
-        else
-            return z_low.front().value;
+        if (childL->compute_lower_rob()==BOTTOM || childR->compute_lower_rob()==BOTTOM)
+            z_low.clear();
+        else {
+            z_low.compute_timed_until(childL->z_low,childR->z_low, a, b);
+            double et =min(z_low.endTime,end_time);
+            z_low.resize(start_time,max(start_time,et),0.);
+        }
+        if (z_low.empty()) {
+            z_low.appendSample(start_time, BOTTOM);
+            z_low.endTime = end_time;
+        }
+        return z_low.front().value;
 
     }
 
@@ -514,17 +518,18 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
-        if (childL->compute_upper_rob()==TOP) return TOP;
-        if (childR->compute_upper_rob()==TOP) return TOP;
-
-        z_up.compute_timed_until(childL->z_up,childR->z_up, a, b);
-        double et =min(z_up.endTime-b,end_time);
-        z_up.resize(start_time,max(start_time,et),0.);
-
-        if (z_up.empty())
-            return TOP;
-        else
-            return z_up.front().value;
+        if (childL->compute_upper_rob()==TOP || childR->compute_upper_rob()==TOP)
+            z_up.clear();
+        else {
+            z_up.compute_timed_until(childL->z_up,childR->z_up, a, b);
+            double et =min(z_up.endTime-b,end_time);
+            z_up.resize(start_time,max(start_time,et),0.);
+        }
+        if (z_up.empty()) {
+            z_up.appendSample(start_time, TOP);
+            z_up.endTime = end_time;
+        }
+        return z_up.front().value;
     }
 
 }
