@@ -1,4 +1,6 @@
+#include <cmath>
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include "tools.h"
 #include "signal.h"
@@ -67,6 +69,21 @@ namespace STLRom
 		{
 			formula->set_trace_data_ptr(data->data_vector);
 			formula->set_param_map_ptr(param_map);
+			
+			double s, e;
+			formula->valid_interval(s, e);
+			if (s > e + ZERO_POS)
+			{
+				throw std::invalid_argument(formula->get_formula_string() +
+					" is not backed by the data at any time (the data is too short for its time windows)");
+			}
+			if (t0 < s - ZERO_POS || t0 > e + ZERO_POS)
+			{
+				std::ostringstream msg;
+				msg << formula->get_formula_string() << " is only defined on [" << s << ", " << e
+				    << "]; t = " << t0 << " is outside";
+				throw std::invalid_argument(msg.str());
+			}
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -140,16 +157,19 @@ namespace STLRom
 			// Only compute where the data backs the whole formula
 			double s, e;
 			formula->valid_interval(s, e);
-			s = fmax(s, t_start);
-			e = fmin(e, t_end);
-			bool backed = s <= e;
-			// Nothing backed: rob still reports the value on the request, z stays empty
-			if (backed) formula->set_horizon(s, e);
-			else formula->set_horizon(t_start, t_end);
+			double from = fmax(s, t_start), to = fmin(e, t_end);
+			if (from > to + ZERO_POS)
+			{
+				// nothing is backed by the data, rob is undefined
+				rob = std::numeric_limits<double>::quiet_NaN();
+				up_to_date = true;
+				return Signal();
+			}
+			to = fmax(to, from); // the request missed the valid times only by rounding: use the valid edge
+			formula->set_horizon(from, to);
 			rob = formula->compute_robustness();
     		up_to_date = true;
-			if (backed) formula->z.resize(s, e);
-			else formula->z = Signal();
+			formula->z.resize(from, to);
 		}
 
 		return formula->z;
@@ -188,10 +208,9 @@ namespace STLRom
 			up_to_date = true;
 			double s, e;
 			formula->valid_interval(s, e);
-			s = fmax(s, t_start);
-			e = fmin(e, t_end);
-			if (s > e) formula->z = Signal();
-			else formula->z.resize(s, e);
+			double from = fmax(s, t_start), to = fmin(e, t_end);
+			if (from > to + ZERO_POS) formula->z = Signal();
+			else formula->z.resize(from, fmax(to, from));
 		}
 
 

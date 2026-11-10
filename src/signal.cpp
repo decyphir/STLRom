@@ -138,6 +138,9 @@ namespace STLRom {
 #endif
     }
 
+    // resizes signal to t_start and t_end
+    // t_start < beginTime : first value is held with derivative 0
+    // t_end > endTime : last value is held with derivative 0
     void Signal::resize(double t_start, double t_end) {
 #ifdef DEBUG___
         printf(">>>Signal::resize:                          IN.\n" );
@@ -159,17 +162,15 @@ namespace STLRom {
                  
         // if t_start after endTime
         if (t_start>=endTime) {
-            double v = back().valueAt(t_start);
-            double d = back().derivative;
+            double v = back().valueAt(endTime);
             clear();
-            push_front(Sample(t_start, v, d));            
+            push_front(Sample(t_start, v, 0.));
         } 
         // if t_end before beginTime
         else if (t_end<beginTime) {
-            double v = front().valueAt(t_start);
-            double d = front().derivative;
+            double v = front().value;
             clear();
-            push_front(Sample(t_start, v, d));          
+            push_front(Sample(t_start, v, 0.));
         }
         else {
             //trim or extend front of signal: before the data, hold the first value
@@ -185,9 +186,18 @@ namespace STLRom {
                 Sample new_front = Sample(t_start, first.valueAt(t_start), first.derivative);
                 push_front(new_front);
             }
+            // within rounding of t_start: move it there, so no sample sits outside [begin, end]
+            else front().time = t_start;
             //trim or extend end of signal
             // Keep one sample: it can sit just after t_end through rounding
             while(size() > 1 && t_end<back().time) pop_back();
+
+            if (t_end > endTime + ZERO_POS) {
+                if (back().time < endTime - ZERO_POS)
+                    push_back(Sample(endTime, back().valueAt(endTime), 0.));
+                else
+                    back().derivative = 0.;
+            }
         }
         beginTime = t_start;
         endTime = t_end;
