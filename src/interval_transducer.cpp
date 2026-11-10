@@ -24,15 +24,22 @@ namespace STLRom {
         cout << "z :" << z << endl;
     #endif
 
-        z_low = z;
-        double last_data_t =  get_last_data_time();
-        
-        if (end_time>last_data_t) 
-        {   
-            z_low.resize(start_time, last_data_t, BOTTOM);
-            z_low.appendSample(last_data_t+Signal::Eps, BOTTOM, 0., false);
-            z_low.endTime = end_time;
+
+        double from = fmax(valid_start, start_time), to = fmin(valid_end, end_time);
+        z_low.clear();
+        if (from > to)
+            z_low.appendSample(start_time, BOTTOM);
+        else {
+            Signal known = z;
+            known.resize(from, to);
+            if (start_time < from)
+                z_low.appendSample(start_time, BOTTOM);
+            for (const Sample &s : known)
+                z_low.appendSample(s.time, s.value, s.derivative);
+            if (to < end_time)
+                z_low.appendSample(to + Signal::Eps, BOTTOM);
         }
+        z_low.endTime = end_time;
         
     #ifdef DEBUG__
         cout << "z_low:" << z_low << endl;
@@ -55,15 +62,22 @@ namespace STLRom {
         // if for some reason, z was not computed before
         if (z.empty()) // is it the best test ?
             compute_robustness();
-        z_up = z;
-        double last_data_t =  get_last_data_time();
-        
-        if (end_time>last_data_t) 
-        {   
-            z_up.resize(start_time, last_data_t, TOP);
-            z_up.appendSample(last_data_t+Signal::Eps, TOP, 0., false);
-            z_up.endTime = end_time;
+
+        double from = fmax(valid_start, start_time), to = fmin(valid_end, end_time);
+        z_up.clear();
+        if (from > to)
+            z_up.appendSample(start_time, TOP);
+        else {
+            Signal known = z;
+            known.resize(from, to);
+            if (start_time < from)
+                z_up.appendSample(start_time, TOP);
+            for (const Sample &s : known)
+                z_up.appendSample(s.time, s.value, s.derivative);
+            if (to < end_time)
+                z_up.appendSample(to + Signal::Eps, TOP);
         }
+        z_up.endTime = end_time;
 
     #ifdef DEBUG__
         printf( "<  transducer:compute_upper_rob              OUT.\n");
