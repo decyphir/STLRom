@@ -70,8 +70,8 @@ namespace STLRom
 			formula->set_trace_data_ptr(data->data_vector);
 			formula->set_param_map_ptr(param_map);
 			
-			double s, e;
-			formula->valid_interval(s, e);
+			formula->init_valid_interval();
+			double s = formula->valid_start, e = formula->valid_end;
 			if (s > e + ZERO_POS)
 			{
 				throw std::invalid_argument(formula->get_formula_string() +
@@ -110,6 +110,7 @@ namespace STLRom
 		{
 			formula->set_trace_data_ptr(data->data_vector);
 			formula->set_param_map_ptr(param_map);
+			formula->init_valid_interval(); // stores each node's valid times, for the bounds
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -155,8 +156,8 @@ namespace STLRom
 			Signal::semantics=semantics;
 			formula->reset();
 			// Only compute where the data backs the whole formula
-			double s, e;
-			formula->valid_interval(s, e);
+			formula->init_valid_interval();
+			double s = formula->valid_start, e = formula->valid_end;
 			double from = fmax(s, t_start), to = fmin(e, t_end);
 			if (from > to + ZERO_POS)
 			{
@@ -199,6 +200,8 @@ namespace STLRom
 			// Ensure formula reads the right data
 			formula->set_trace_data_ptr(data->data_vector); // TODO : convert to STLData
 			formula->set_param_map_ptr(param_map);
+			formula->init_valid_interval(); // stores each node's valid times, for the bounds
+			double s = formula->valid_start, e = formula->valid_end;
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
@@ -206,8 +209,6 @@ namespace STLRom
             lower_rob = formula->compute_lower_rob();
             upper_rob = formula->compute_upper_rob();
 			up_to_date = true;
-			double s, e;
-			formula->valid_interval(s, e);
 			double from = fmax(s, t_start), to = fmin(e, t_end);
 			if (from > to + ZERO_POS) formula->z = Signal();
 			else formula->z.resize(from, fmax(to, from));

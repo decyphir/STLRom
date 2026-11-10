@@ -1,6 +1,7 @@
 #ifndef __TRANSDUCER_H
 #define __TRANSDUCER_H
 #include <map>
+#include <limits>
 #include <stdlib.h>
 #include <vector>
 #include <iterator>
@@ -44,8 +45,10 @@ namespace STLRom {
         // interval of time for which the transducer needs to provide values
         double start_time, end_time;
 
-        // interval of time for which the provided values are valid
-        double valid_start, valid_end;
+        // interval of time backed by the data, set by init_valid_interval()
+        // (-inf, +inf) by default, for constant transducers
+        double valid_start = -std::numeric_limits<double>::infinity();
+        double valid_end = std::numeric_limits<double>::infinity();
 
         // z is estimated robustness signal, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
@@ -66,7 +69,7 @@ namespace STLRom {
         virtual void init_horizon();
 
         // Interval of times at which this formula can be computed from the data alone
-        virtual void valid_interval(double &s, double &e);
+        virtual void init_valid_interval();
 
         inline void set_horizon(double s, double e) {
             start_time = s;
@@ -149,7 +152,7 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void valid_interval(double &s, double &e);
+        void init_valid_interval();
         void set_param(const string&, double); 
         void reset();
 
@@ -195,7 +198,7 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void valid_interval(double &s, double &e);
+        void init_valid_interval();
         void set_param(const string&, double); 
         void reset();
         
@@ -247,7 +250,7 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void valid_interval(double &s, double &e);
+        void init_valid_interval();
         void set_param(const string&, double); 
         
         virtual double get_end_complete();
@@ -279,7 +282,7 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void valid_interval(double &s, double &e);
+        void init_valid_interval();
         void set_param(const string&, double); 
 
         virtual ~past_timed_unary_transducer() {
@@ -309,7 +312,7 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void valid_interval(double &s, double &e);
+        void init_valid_interval();
         void set_param(const string&, double); 
         
         // TODO
@@ -342,7 +345,7 @@ namespace STLRom {
         };
 
         void init_horizon();
-        void valid_interval(double &s, double &e);
+        void init_valid_interval();
         void set_param(const string&, double); 
         
         // TODO

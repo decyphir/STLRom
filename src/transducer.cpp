@@ -67,60 +67,61 @@ namespace STLRom {
         // childR->init_horizon();
     }
 
-    /* valid interval */
-    void transducer::valid_interval(double &s, double &e) {
-        s = -std::numeric_limits<double>::infinity();
-        e = std::numeric_limits<double>::infinity();
+    /* valid interval: each node stores the times the data backs in valid_start/valid_end */
+    void transducer::init_valid_interval() {
+        valid_start = -std::numeric_limits<double>::infinity();
+        valid_end = std::numeric_limits<double>::infinity();
     }
 
-    void unary_transducer::valid_interval(double &s, double &e) {
-        child->valid_interval(s, e);
+    void unary_transducer::init_valid_interval() {
+        child->init_valid_interval();
+        valid_start = child->valid_start;
+        valid_end = child->valid_end;
     }
 
-    void binary_transducer::valid_interval(double &s, double &e) {
-        double sR, eR;
-        childL->valid_interval(s, e);
-        childR->valid_interval(sR, eR);
-        s = fmax(s, sR);
-        e = fmin(e, eR);
+    void binary_transducer::init_valid_interval() {
+        childL->init_valid_interval();
+        childR->init_valid_interval();
+        valid_start = fmax(childL->valid_start, childR->valid_start);
+        valid_end = fmin(childL->valid_end, childR->valid_end);
     }
 
-    void timed_unary_transducer::valid_interval(double &s, double &e) {
+    void timed_unary_transducer::init_valid_interval() {
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
-        child->valid_interval(s, e);
-        s -= a;
-        e -= b;
+        child->init_valid_interval();
+        valid_start = child->valid_start - a;
+        valid_end = child->valid_end - b;
     }
 
-    void past_timed_unary_transducer::valid_interval(double &s, double &e) {
+    void past_timed_unary_transducer::init_valid_interval() {
         double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
-        child->valid_interval(s, e);
-        s += b;
-        e += a;
+        child->init_valid_interval();
+        valid_start = child->valid_start + b;
+        valid_end = child->valid_end + a;
     }
 
-    void timed_binary_transducer::valid_interval(double &s, double &e) {
-        double a,b,sR,eR;
+    void timed_binary_transducer::init_valid_interval() {
+        double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
-        childL->valid_interval(s, e);
-        childR->valid_interval(sR, eR);
-        s = fmax(s, sR-a);
-        e = fmin(e-b, eR-b);
+        childL->init_valid_interval();
+        childR->init_valid_interval();
+        valid_start = fmax(childL->valid_start, childR->valid_start - a);
+        valid_end = fmin(childL->valid_end - b, childR->valid_end - b);
     }
 
-    void past_timed_binary_transducer::valid_interval(double &s, double &e) {
-        double a,b,sR,eR;
+    void past_timed_binary_transducer::init_valid_interval() {
+        double a,b;
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
-        childL->valid_interval(s, e);
-        childR->valid_interval(sR, eR);
-        s = fmax(s+b, sR+b);
-        e = fmin(e, eR+a);
+        childL->init_valid_interval();
+        childR->init_valid_interval();
+        valid_start = fmax(childL->valid_start + b, childR->valid_start + b);
+        valid_end = fmin(childL->valid_end, childR->valid_end + a);
     }
 
     /* set param */
@@ -238,9 +239,6 @@ namespace STLRom {
         //	cout << "Computing robustness of NOT"
         child->compute_robustness();
 
-        valid_start = child->valid_start;
-	    valid_end   = child->valid_end;
-
         z.compute_not(child->z);
         return z.front().value;
     }
@@ -270,9 +268,6 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
 
         child->compute_robustness();        
-
-        valid_start = child->valid_start - a;
-	    valid_end   = child->valid_end - b;
 
         z.compute_timed_eventually(child->z, a, b);
         double et = min(z.endTime,end_time);
@@ -323,9 +318,6 @@ namespace STLRom {
 
         child->compute_robustness();
 
-        valid_start = child->valid_start + b;
-	    valid_end   = child->valid_end + a;
-
         Signal child_z = child->z; // is this a copy?
         // reversal uses begin+end: child z must span exactly its horizon
         child_z.resize(child->start_time, child->end_time);
@@ -358,9 +350,6 @@ namespace STLRom {
 
         child->compute_robustness();
 
-        valid_start = child->valid_start + b;
-	    valid_end   = child->valid_end + a;
-
         Signal child_z = child->z; // is this a copy?
         // reversal uses begin+end: child z must span exactly its horizon
         child_z.resize(child->start_time, child->end_time);
@@ -389,9 +378,6 @@ namespace STLRom {
         if (!get_param(I->end_str,b)) b = I->end;
         
         child->compute_robustness();
-
-        valid_start = child->valid_start - a;
-	    valid_end   = child->valid_end - b;
 
         z.compute_timed_globally(child->z, a, b);
         double et =min(z.endTime,end_time);
@@ -436,9 +422,6 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
-        valid_start = fmax(childL->valid_start, childR->valid_start);
-        valid_end   = fmin(childL->valid_end, childR->valid_end);
-
         Signal z1= childL->z;
         Signal z2= childR->z;
 
@@ -477,9 +460,6 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
-        valid_start = fmax(childL->valid_start, childR->valid_start);
-        valid_end   = fmin(childL->valid_end, childR->valid_end);
-
         Signal z1= childL->z;
         Signal z2= childR->z;
 
@@ -517,9 +497,6 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
-        valid_start = fmax(childL->valid_start, childR->valid_start);
-        valid_end   = fmin(childL->valid_end, childR->valid_end);
-
         Signal z1= childL->z;
         Signal z2= childR->z;
         double et = max(z1.endTime, z2.endTime);
@@ -554,9 +531,6 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
-        valid_start = fmax(childL->valid_start, childR->valid_start);
-        valid_end   = fmin(childL->valid_end, childR->valid_end);
-
         z.compute_timed_until(childL->z, childR->z, a, b);
         z.resize(start_time, max(start_time, min(z.endTime, end_time)));
         return z.front().value;
@@ -588,9 +562,6 @@ namespace STLRom {
         childL->compute_robustness();
         childR->compute_robustness();
 
-        valid_start = fmax(childL->valid_start, childR->valid_start);
-        valid_end   = fmin(childL->valid_end, childR->valid_end);
-
         Signal childL_z = childL->z;
         Signal childR_z = childR->z;
         childL_z.resize(childL->start_time, childL->end_time);
@@ -619,9 +590,6 @@ namespace STLRom {
 
     double past_transducer::compute_robustness() {
         child-> compute_robustness();
-
-        valid_start = child->valid_start;
-	    valid_end   = child->valid_end;
 
         double T = child->z.beginTime + child->z.endTime;
         

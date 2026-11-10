@@ -34,10 +34,10 @@ namespace STLRom
 
         void init_horizon(){};
 
-        void valid_interval(double &s, double &e){
+        void init_valid_interval(){
             const Signal &data = trace_data_ptr->at(signal_map[variable]);
-            s = data.beginTime;
-            e = data.endTime;
+            valid_start = data.beginTime;
+            valid_end = data.endTime;
         };
 
         virtual signal_transducer *clone() const
