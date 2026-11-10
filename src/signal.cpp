@@ -307,7 +307,9 @@ namespace STLRom {
 
         if (size() > 1) {
             for (size_t idx = 0; idx + 1 < size(); ++idx) {
-                (*this)[idx].derivative = -(*this)[idx + 1].derivative;
+                Sample &next = (*this)[idx + 1];
+                (*this)[idx].value = next.value + next.derivative * (next.time - (*this)[idx].time);
+                (*this)[idx].derivative = -next.derivative;
             }
         }
         back().derivative = -back().derivative;
