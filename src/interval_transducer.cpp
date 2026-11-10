@@ -99,6 +99,7 @@ namespace STLRom {
                 compute_robustness(childL_low, childR_low, comp, &z_low);
                 break;
             case STLRom::comparator::IN:
+                // x IN [a,b] <=> not ( x < a OR x > b )
                 childL->compute_lower_rob();
                 childL->compute_upper_rob();
                 childR->compute_lower_rob();
@@ -111,7 +112,12 @@ namespace STLRom {
                 childR_low.endTime = childR->end_time;
                 childR_up = Signal(childR->z.upper_signal);
                 childR_up.endTime = childR->end_time;
-                min_signal(z_low, childR_up - childL_up, childL_low - childR_low);
+
+                Signal z_lt, z_gt, z_or;
+                compute_robustness(childL_low, childR_low, comparator::LESSTHAN, &z_lt);
+                compute_robustness(childL_up, childR_up, comparator::GREATERTHAN, &z_gt);
+                z_or.compute_or(z_lt, z_gt);            
+                z_low.compute_not(z_or);
                 break;
         }
 
@@ -171,6 +177,7 @@ namespace STLRom {
                 compute_robustness(childL_up, childR_up, comp, &z_up);
                 break;
             case STLRom::comparator::IN:
+                // x IN [a,b] <=> not ( x < a OR x > b )
                 childL->compute_lower_rob();
                 childL->compute_upper_rob();
                 childR->compute_lower_rob();
@@ -183,7 +190,12 @@ namespace STLRom {
                 childR_low.endTime = childR->end_time;
                 childR_up = Signal(childR->z.upper_signal);
                 childR_up.endTime = childR->end_time;
-                compute_upper_in_robustness(childL_low, childL_up, childR_low, childR_up, &z_up);
+
+                Signal childR_hat = (childR_up + childR_low) / 2;
+                Signal rho_max = childR_hat - childR_low;
+                Signal tmp1;
+                max_signal(tmp1, childL_low-childR_hat, childR_hat-childL_up);
+                min_signal(z_up, rho_max, rho_max - tmp1);
                 break;
         }
 
@@ -553,14 +565,6 @@ namespace STLRom {
             return TOP;
         else
             return z.upper_signal.front().value;
-    }
-
-    void stl_atom::compute_upper_in_robustness(const Signal &childL_low, const Signal &childL_up, const Signal &childR_low, const Signal &childR_up, Signal* z_up) {
-        Signal childR_hat = (childR_up + childR_low) / 2;
-        Signal rho_max = childR_hat - childR_low;
-        Signal tmp1;
-        max_signal(tmp1, childL_low-childR_hat, childR_hat-childL_up);
-        min_signal(*z_up, rho_max, rho_max - tmp1);
     }
 
 }

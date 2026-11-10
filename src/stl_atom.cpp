@@ -269,13 +269,19 @@ namespace STLRom {
         childR->compute_robustness();
 
         if (comp == comparator::IN) {
+            // x IN [a,b] <=> not ( x < a OR x > b )
             childR->compute_lower_rob();
             childR->compute_upper_rob();
-            Signal childR_low = Signal(childR->z.lower_signal);
+            Signal childR_low = Signal(childR->z.lower_signal); // a
             childR_low.endTime = childR->end_time;
-            Signal childR_up = Signal(childR->z.upper_signal);
+            Signal childR_up = Signal(childR->z.upper_signal); // b
             childR_up.endTime = childR->end_time;
-            min_signal(z, childL->z - childR_low, childR_up - childL->z);
+
+            Signal z_lt, z_gt, z_or;
+            compute_robustness(childL->z, childR_low, comparator::LESSTHAN, &z_lt);
+            compute_robustness(childL->z, childR_up, comparator::GREATERTHAN, &z_gt);
+            z_or.compute_or(z_lt, z_gt);            
+            z.compute_not(z_or);
         } else {
             compute_robustness(childL->z, childR->z, comp, &z);
         }
