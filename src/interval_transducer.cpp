@@ -511,13 +511,11 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
         
-        if (childL->compute_lower_rob()==BOTTOM || childR->compute_lower_rob()==BOTTOM)
-            z_low.clear();
-        else {
-            z_low.compute_timed_until(childL->z_low,childR->z_low, a, b);
-            double et =min(z_low.endTime,end_time);
-            z_low.resize(start_time,max(start_time,et),0.);
-        }
+        childL->compute_lower_rob();
+        childR->compute_lower_rob();
+        z_low.compute_timed_until(childL->z_low,childR->z_low, a, b);
+        double et =min(z_low.endTime,end_time);
+        z_low.resize(start_time,max(start_time,et),0.);
         if (z_low.empty()) {
             z_low.appendSample(start_time, BOTTOM);
             z_low.endTime = end_time;
@@ -532,13 +530,11 @@ namespace STLRom {
         if (!get_param(I->begin_str,a)) a = I->begin;
         if (!get_param(I->end_str,b)) b = I->end;
 
-        if (childL->compute_upper_rob()==TOP || childR->compute_upper_rob()==TOP)
-            z_up.clear();
-        else {
-            z_up.compute_timed_until(childL->z_up,childR->z_up, a, b);
-            double et =min(z_up.endTime-b,end_time);
-            z_up.resize(start_time,max(start_time,et),0.);
-        }
+        childL->compute_upper_rob();
+        childR->compute_upper_rob();
+        z_up.compute_timed_until(childL->z_up,childR->z_up, a, b);
+        double et =min(z_up.endTime,end_time);
+        z_up.resize(start_time,max(start_time,et),0.);
         if (z_up.empty()) {
             z_up.appendSample(start_time, TOP);
             z_up.endTime = end_time;
