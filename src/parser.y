@@ -302,11 +302,29 @@ op_eq     :
 
 interval : LINT constant COMMA constant RINT
          {
-             $$ = new interval($2, $4);
+            string a, b;
+            if (driver.worker.param_map.find($2) != driver.worker.param_map.end())
+                a = to_string(driver.worker.param_map[$2]);
+            else
+                a = $2;
+            if (driver.worker.param_map.find($4) != driver.worker.param_map.end())
+                b = to_string(driver.worker.param_map[$4]);
+            else
+                b = $4;
+             $$ = new interval(a, b);
          }
          | LINT constant constant RINT
          {
-             $$ = new interval($2, $3);
+            string a, b;
+            if (driver.worker.param_map.find($2) != driver.worker.param_map.end())
+                a = to_string(driver.worker.param_map[$2]);
+            else
+                a = $2;
+            if (driver.worker.param_map.find($3) != driver.worker.param_map.end())
+                b = to_string(driver.worker.param_map[$3]);
+            else
+                b = $3;
+             $$ = new interval(a, b);
          }
          | LINT PARAM_ID RINT
          {
