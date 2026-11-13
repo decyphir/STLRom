@@ -227,6 +227,36 @@ namespace STLRom
         };
     };
 
+    /* time transducer t */
+    class time_transducer : public transducer
+    {
+    public:
+        time_transducer(){};
+
+        void init_horizon(){};
+
+        virtual time_transducer *clone() const
+        {
+            time_transducer *T = new time_transducer();
+            T->trace_data_ptr = trace_data_ptr;
+            return T;
+        }
+
+        virtual ~time_transducer(){};
+
+        virtual double compute_robustness();
+
+        void print(ostream &os) const
+        {
+            os << "t";
+        };
+
+        void print() const
+        {
+            print(cout);
+        };
+    };
+
     /* Unary operators on signals */
 
     class abs_transducer : public unary_transducer

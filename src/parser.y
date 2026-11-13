@@ -338,6 +338,14 @@ signal_atom : signal
             $$ = $1;
         }
         ;
+        | TIME
+        {
+            $$ = new time_transducer();
+            $$->trace_data_ptr = &driver.data.data_vector;
+            $$->param_map = driver.worker.param_map;
+            $$->signal_map = driver.data.signal_map;
+        }
+        ;
         | LPAREN signal_expr RPAREN
         {
 	       $$ = $2;

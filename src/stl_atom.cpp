@@ -57,6 +57,94 @@ namespace STLRom {
 
         double tL = -std::numeric_limits<double>::infinity(), tR = -std::numeric_limits<double>::infinity();
 
+        // epsilon crossings on the piece from the previous sample (t_prev) to time t
+        auto check_crossings = [&](double t, double v_neq) {
+            {
+
+                // array to track +/- epsilon crossings
+                Crossing events[2];
+                int crossing_count = 0;
+          
+                // check for +epsilon crossing
+                bool plus_descending_cross = v_prev_neq > Signal::Eps && d_prev_neq < 0 && v_neq < Signal::Eps;
+                bool plus_ascending_cross = v_prev_neq < Signal::Eps && d_prev_neq > 0 && v_neq > Signal::Eps;
+                bool plus_epsilon_cross = plus_ascending_cross || plus_descending_cross;
+                double t_plus_epsilon_cross;
+                if (plus_epsilon_cross) {
+                    t_plus_epsilon_cross = t_prev + (Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is +eps
+                    events[crossing_count++] = {t_plus_epsilon_cross, true, plus_ascending_cross};
+                }
+
+                // check for -epsilon crossing
+                bool minus_descending_cross = v_prev_neq > -Signal::Eps && d_prev_neq < 0 && v_neq < -Signal::Eps;
+                bool minus_ascending_cross = v_prev_neq < -Signal::Eps && d_prev_neq > 0 && v_neq > -Signal::Eps;
+                bool minus_epsilon_cross = minus_ascending_cross || minus_descending_cross;
+                double t_minus_epsilon_cross;
+                if (minus_epsilon_cross) {
+                    t_minus_epsilon_cross = t_prev + (-Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is -eps
+                    events[crossing_count++] = {t_minus_epsilon_cross, false, minus_ascending_cross};
+                }
+
+                
+
+                // sort events by time
+                if (crossing_count == 2 && events[0].t > events[1].t) {
+                    std::swap(events[0], events[1]);
+                }
+
+                for (int i = 0; i < crossing_count; i++) {
+                    auto e = events[i];
+
+                    // Rounded data or a jump can put the computed crossing at or
+                    // after t; the sample at t already gives the correct state.
+                    if (e.t >= t) continue;
+
+                    if (e.isPlus) { // +epsilon crossing
+                        if (comp == comparator::EQUAL) {
+                            if (e.isAscending) { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                            } else { // entering epsilon region
+                                z.appendSample(e.t, Signal::Eps, 0.);
+                            }
+                        } else if (comp == comparator::GREATERTHAN) { 
+                            if (e.isAscending) { // leaving epsilon region
+                                z.appendSample(e.t, Signal::Eps, d_prev_neq);
+                            } else { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            }
+                        } else if (comp == comparator::LESSTHAN) { 
+                            if (e.isAscending) { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, -d_prev_neq);
+                            } else { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            }
+                        }
+                    } else { // -epsilon crossing
+                        if (comp == comparator::EQUAL) { 
+                            if (e.isAscending) { // entering epsilon region
+                                z.appendSample(e.t, Signal::Eps, 0.);
+                            } else { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                            }
+                        } else if (comp == comparator::GREATERTHAN) { 
+                            if (e.isAscending) { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            } else { // leaving epsilon region
+                                z.appendSample(e.t, -Signal::Eps, d_prev_neq);
+                            }
+                        } else if (comp == comparator::LESSTHAN) { 
+                            if (e.isAscending) { // entering epsilon region
+                                z.appendSample(e.t, -Signal::Eps, 0.);
+                            } else { // leaving epsilon region
+                                z.appendSample(e.t, Signal::Eps, -d_prev_neq);
+                            }
+                        }
+                    } 
+                }
+            }
+
+        };
+
         while(tL < endTime || tR < endTime) {
             tL = (itL != childL->z.end()) ? itL->time : std::numeric_limits<double>::infinity();
             tR = (itR != childR->z.end()) ? itR->time : std::numeric_limits<double>::infinity();
@@ -147,89 +235,7 @@ namespace STLRom {
                 break;
             }
 
-            if (!first_pass) {
-
-                // array to track +/- epsilon crossings
-                Crossing events[2];
-                int crossing_count = 0;
-          
-                // check for +epsilon crossing
-                bool plus_descending_cross = v_prev_neq > Signal::Eps && d_prev_neq < 0 && v_neq < Signal::Eps;
-                bool plus_ascending_cross = v_prev_neq < Signal::Eps && d_prev_neq > 0 && v_neq > Signal::Eps;
-                bool plus_epsilon_cross = plus_ascending_cross || plus_descending_cross;
-                double t_plus_epsilon_cross;
-                if (plus_epsilon_cross) {
-                    t_plus_epsilon_cross = t_prev + (Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is +eps
-                    events[crossing_count++] = {t_plus_epsilon_cross, true, plus_ascending_cross};
-                }
-
-                // check for -epsilon crossing
-                bool minus_descending_cross = v_prev_neq > -Signal::Eps && d_prev_neq < 0 && v_neq < -Signal::Eps;
-                bool minus_ascending_cross = v_prev_neq < -Signal::Eps && d_prev_neq > 0 && v_neq > -Signal::Eps;
-                bool minus_epsilon_cross = minus_ascending_cross || minus_descending_cross;
-                double t_minus_epsilon_cross;
-                if (minus_epsilon_cross) {
-                    t_minus_epsilon_cross = t_prev + (-Signal::Eps-v_prev_neq) / d_prev_neq; // t at which v is -eps
-                    events[crossing_count++] = {t_minus_epsilon_cross, false, minus_ascending_cross};
-                }
-
-                
-
-                // sort events by time
-                if (crossing_count == 2 && events[0].t > events[1].t) {
-                    std::swap(events[0], events[1]);
-                }
-
-                for (int i = 0; i < crossing_count; i++) {
-                    auto e = events[i];
-
-                    // Rounded data or a jump can put the computed crossing at or
-                    // after t; the sample at t already gives the correct state.
-                    if (e.t >= t) continue;
-
-                    if (e.isPlus) { // +epsilon crossing
-                        if (comp == comparator::EQUAL) {
-                            if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
-                            } else { // entering epsilon region
-                                z.appendSample(e.t, Signal::Eps, 0.);
-                            }
-                        } else if (comp == comparator::GREATERTHAN) { 
-                            if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, d_prev_neq);
-                            } else { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
-                            }
-                        } else if (comp == comparator::LESSTHAN) { 
-                            if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -d_prev_neq);
-                            } else { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
-                            }
-                        }
-                    } else { // -epsilon crossing
-                        if (comp == comparator::EQUAL) { 
-                            if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, Signal::Eps, 0.);
-                            } else { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
-                            }
-                        } else if (comp == comparator::GREATERTHAN) { 
-                            if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
-                            } else { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, d_prev_neq);
-                            }
-                        } else if (comp == comparator::LESSTHAN) { 
-                            if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
-                            } else { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, -d_prev_neq);
-                            }
-                        }
-                    } 
-                }
-            }
+            if (!first_pass) check_crossings(t, v_neq);
 
             z.appendSample(t, vt, dt);
 
@@ -246,6 +252,10 @@ namespace STLRom {
 
             first_pass = false;
         }
+
+        // the last piece, from the last sample to endTime, can also cross the epsilon band
+        if (!first_pass && t_prev < endTime)
+            check_crossings(endTime, v_prev_neq + d_prev_neq*(endTime - t_prev));
 
         //z.endTime = endTime;        
         z.endTime = end_time; // I know, can be confusing. 
@@ -320,6 +330,13 @@ namespace STLRom {
         return value;
     }
 
+
+    double time_transducer::compute_robustness() {
+        z.clear();
+        z.appendSample(start_time, start_time, 1.);
+        z.endTime = end_time;
+        return start_time;
+    }
 
     void stl_atom::fill_robustness_map(robustness_map_t &rob_map, int depth) {
         childL->fill_robustness_map(rob_map, depth+1);
