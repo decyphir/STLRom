@@ -9,6 +9,15 @@
 namespace STLRom
 {
 
+	// dt of a request: max time step inside nonlinear functions
+	// +inf means data points only
+	static void set_request_dt(double dt)
+	{
+		if (!(dt > 0.))
+			throw std::invalid_argument("dt must be positive (+inf for data points only)");
+		Signal::dt = dt;
+	}
+
 	void STLMonitor::add_sample(vector<double> s)
 	{
 		data->add_sample(s);
@@ -54,8 +63,14 @@ namespace STLRom
 		}
 	}
 
-	double STLMonitor::get_rob(double t0 = 0.)
+	double STLMonitor::get_rob(double t0)
 	{
+		return get_rob(t0, std::numeric_limits<double>::infinity());
+	}
+
+	double STLMonitor::get_rob(double t0, double dt)
+	{
+		set_request_dt(dt);
 		start_time = t0;
 		end_time = t0;
 		if (formula)
@@ -90,8 +105,14 @@ namespace STLRom
 		return get_rob(0.);
 	}
 
-	vector<double> STLMonitor::get_online_rob(double t0 = 0.)
+	vector<double> STLMonitor::get_online_rob(double t0)
 	{
+		return get_online_rob(t0, std::numeric_limits<double>::infinity());
+	}
+
+	vector<double> STLMonitor::get_online_rob(double t0, double dt)
+	{
+		set_request_dt(dt);
 		vector<double> out_rob;
 		if(formula)
 		{
@@ -131,7 +152,13 @@ namespace STLRom
 		return get_rob_signal(t,t);
     }
 	Signal STLMonitor::get_rob_signal(double t_start, double t_end)
+	{
+		return get_rob_signal(t_start, t_end, std::numeric_limits<double>::infinity());
+	}
+
+	Signal STLMonitor::get_rob_signal(double t_start, double t_end, double dt)
     {
+		set_request_dt(dt);
 		start_time = t_start;
 		end_time  = t_end;
 		if (formula)
@@ -172,7 +199,13 @@ namespace STLRom
 		return get_online_rob_signal(t,t);
     }
 	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end)
+	{
+		return get_online_rob_signal(t_start, t_end, std::numeric_limits<double>::infinity());
+	}
+
+	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end, double dt)
     {
+		set_request_dt(dt);
 		start_time = t_start;
 		end_time  = t_end;
 		if (formula)

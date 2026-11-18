@@ -148,9 +148,11 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_rob_signal)		
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_rob_signal)		
 		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_rob_signal)		
+		.def("get_rob_signal",(Signal (STLRom::STLMonitor::*)(double,double,double)) &STLRom::STLMonitor::get_rob_signal)
 		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)()) &STLRom::STLMonitor::get_online_rob_signal)		
 		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double)) &STLRom::STLMonitor::get_online_rob_signal)		
 		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double,double)) &STLRom::STLMonitor::get_online_rob_signal)
+		.def("get_online_rob_signal",(vector<Signal> (STLRom::STLMonitor::*)(double,double,double)) &STLRom::STLMonitor::get_online_rob_signal)
 		.def("get_robustness_map",
 		[](STLRom::STLMonitor& self) {
 			const auto rob_map = self.get_robustness_map();
@@ -259,17 +261,19 @@ PYBIND11_MODULE(_stlrom, m) {
 		.def("set_semantics",&STLRom::STLDriver::set_semantics)
 		.def("get_semantics",&STLRom::STLDriver::get_semantics)
 		.def("get_rob",
-		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
-             return self.get_rob(phi_in, t0); 
+		[](STLRom::STLDriver& self,  const string &phi_in, double t0, double dt) {
+             return self.get_rob(phi_in, t0, dt); 
          },
 	     py::arg("phi_in") = "phi",
-         py::arg("t0") = 0.)
+         py::arg("t0") = 0.,
+         py::arg("dt") = std::numeric_limits<double>::infinity())
 		.def("get_online_rob",
-		[](STLRom::STLDriver& self,  const string &phi_in, double t0) {
-             return self.get_online_rob(phi_in, t0); 
+		[](STLRom::STLDriver& self,  const string &phi_in, double t0, double dt) {
+             return self.get_online_rob(phi_in, t0, dt); 
          },
 	     py::arg("phi_in") = "phi",
-         py::arg("t0") = 0.)
+         py::arg("t0") = 0.,
+         py::arg("dt") = std::numeric_limits<double>::infinity())
 		.def("get_rob_signal",
 			(Signal (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::get_rob_signal,
 			py::arg("phi_in"))
@@ -282,6 +286,12 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))
+		.def("get_rob_signal",
+			(Signal (STLRom::STLDriver::*)(const std::string &, double, double, double)) &STLRom::STLDriver::get_rob_signal,
+			py::arg("phi_in"),
+			py::arg("t_start"),
+			py::arg("t_end"),
+			py::arg("dt"))
 		.def("get_online_rob_signal",
 			(vector<Signal> (STLRom::STLDriver::*)(const std::string &)) &STLRom::STLDriver::get_online_rob_signal,
 			py::arg("phi_in"))
@@ -294,6 +304,12 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("phi_in"),
 			py::arg("t_start"),
 			py::arg("t_end"))
+		.def("get_online_rob_signal",
+			(vector<Signal> (STLRom::STLDriver::*)(const std::string &, double, double, double)) &STLRom::STLDriver::get_online_rob_signal,
+			py::arg("phi_in"),
+			py::arg("t_start"),
+			py::arg("t_end"),
+			py::arg("dt"))
 		.def("get_robustness_map",
 		[](STLRom::STLDriver& self, const string &phi_in) {
 			const auto rob_map = self.get_robustness_map(phi_in);

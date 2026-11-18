@@ -216,16 +216,20 @@ public:
     /** monitor a single formula requires data is not empty */
     double get_rob(const string &phi_in);
     double get_rob(const string &phi_in, double);
+    double get_rob(const string &phi_in, double, double dt);
 
     vector<double> get_online_rob(const string &phi_in);
     vector<double> get_online_rob(const string &phi_in, double);
+    vector<double> get_online_rob(const string &phi_in, double, double dt);
 
     Signal get_rob_signal(const string &phi_in);
     Signal get_rob_signal(const string &phi_in, double);
     Signal get_rob_signal(const string &phi_in, double, double);
+    Signal get_rob_signal(const string &phi_in, double, double, double dt);
     vector<Signal> get_online_rob_signal(const string &phi_in);
     vector<Signal> get_online_rob_signal(const string &phi_in, double);
     vector<Signal> get_online_rob_signal(const string &phi_in, double, double);
+    vector<Signal> get_online_rob_signal(const string &phi_in, double, double, double dt);
 
     robustness_map_t get_robustness_map(const string &phi_in);
     robustness_map_t get_online_robustness_map(const string &phi_in);

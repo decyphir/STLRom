@@ -294,7 +294,12 @@ void STLDriver::set_param(const string &param, double n)
     worker.set_param(param, n);
 }
 
-double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
+double STLDriver::get_rob(const string &phi_in, double t0)
+{
+    return get_rob(phi_in, t0, std::numeric_limits<double>::infinity());
+}
+
+double STLDriver::get_rob(const string &phi_in, double t0, double dt)
 {
     if (formula_map.find(phi_in) == formula_map.end())
     {
@@ -304,7 +309,7 @@ double STLDriver::get_rob(const string &phi_in, double t0 = 0.)
     transducer *phi = formula_map[phi_in];
     
     worker.set_formula(phi);
-    return worker.get_rob(t0);        
+    return worker.get_rob(t0, dt);        
 }
 
 double STLDriver::get_rob(const string &phi_in)
@@ -313,7 +318,12 @@ double STLDriver::get_rob(const string &phi_in)
 }
 
 
-vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
+vector<double> STLDriver::get_online_rob(const string &phi_in, double t0)
+{
+    return get_online_rob(phi_in, t0, std::numeric_limits<double>::infinity());
+}
+
+vector<double> STLDriver::get_online_rob(const string &phi_in, double t0, double dt)
 {
     if (formula_map.find(phi_in) == formula_map.end())
     {
@@ -323,10 +333,15 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0 = 0.)
     }
     transducer *phi = formula_map[phi_in];
     worker.set_formula(phi);
-    return worker.get_online_rob(t0);
+    return worker.get_online_rob(t0, dt);
 }
 
 Signal STLDriver::get_rob_signal(const string &phi_in, double t_start, double t_end)
+{
+    return get_rob_signal(phi_in, t_start, t_end, std::numeric_limits<double>::infinity());
+}
+
+Signal STLDriver::get_rob_signal(const string &phi_in, double t_start, double t_end, double dt)
 {
 
     if (formula_map.find(phi_in) == formula_map.end())
@@ -337,7 +352,7 @@ Signal STLDriver::get_rob_signal(const string &phi_in, double t_start, double t_
     transducer *phi = formula_map[phi_in];
     
     worker.set_formula(phi);
-    return worker.get_rob_signal(t_start, t_end);
+    return worker.get_rob_signal(t_start, t_end, dt);
 }
 
 Signal STLDriver::get_rob_signal(const string &phi_in)
@@ -352,6 +367,11 @@ Signal STLDriver::get_rob_signal(const string &phi_in, double t)
 
 vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_start, double t_end)
 {
+    return get_online_rob_signal(phi_in, t_start, t_end, std::numeric_limits<double>::infinity());
+}
+
+vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_start, double t_end, double dt)
+{
     vector<Signal> out_rob;
 
     if (formula_map.find(phi_in) == formula_map.end())
@@ -362,7 +382,7 @@ vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_s
     transducer *phi = formula_map[phi_in];
 
     worker.set_formula(phi);
-    return worker.get_online_rob_signal(t_start, t_end);
+    return worker.get_online_rob_signal(t_start, t_end, dt);
 }
 
 

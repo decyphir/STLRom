@@ -11,6 +11,7 @@ namespace STLRom {
 
     double Signal::BigM = 10000.;
     double Signal::Eps = 1e-10;
+    double Signal::dt = std::numeric_limits<double>::infinity();
 
     /* 
      * class Signal member functions
@@ -50,6 +51,29 @@ namespace STLRom {
     void Signal::addLastSample() {
         if (endTime> back().time) 
             push_back(Sample(endTime, back().valueAt(endTime),0.));
+    }
+
+    // refines a signal to a grid of step time steps
+    // used for nonlinear operations on dt to get a better result
+    void Signal::refine(double step) {
+        if (!(step > 0.) || std::isinf(step) || empty())
+            return;
+        std::deque<Sample> out;
+        for (auto it = begin(); it != end(); ++it) {
+            out.push_back(*it);
+            double t_next = (std::next(it) != end()) ? std::next(it)->time : endTime;
+            double k = std::floor(it->time / step) + 1.;
+            while (k * step <= it->time + ZERO_POS)
+                k += 1.;
+
+            double g = k * step;
+            while (g < t_next - ZERO_POS) {
+                out.push_back(Sample(g, it->valueAt(g), it->derivative));
+                k += 1.;
+                g = k * step;
+            }
+        }
+        std::deque<Sample>::swap(out);
     }
     
     void Signal::appendSample(double t, double v) {

@@ -282,17 +282,21 @@ namespace STLRom
 
         double get_rob();
         double get_rob(double);
+        double get_rob(double, double dt);
 
         vector<double> get_online_rob();
         vector<double> get_online_rob(double);
+        vector<double> get_online_rob(double, double dt);
 
         Signal get_rob_signal();
         Signal get_rob_signal(double);
         Signal get_rob_signal(double, double);
+        Signal get_rob_signal(double, double, double dt);
 
         vector<Signal> get_online_rob_signal();
         vector<Signal> get_online_rob_signal(double);
         vector<Signal> get_online_rob_signal(double, double);
+        vector<Signal> get_online_rob_signal(double, double, double dt);
 
         robustness_map_t get_robustness_map();
         robustness_map_t get_online_robustness_map();

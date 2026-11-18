@@ -83,6 +83,10 @@ public:
 	
 	static Semantics semantics;
 
+	// max time step inside nonlinear functions (mult), set by the monitor per request
+	// +inf means data points only (old behavior)
+	static double dt;
+
 	inline static void set_semantics(const std::string& sem) {
 		if (sem == "SPACE") {
 			semantics = Semantics::SPACE;
@@ -171,6 +175,7 @@ public:
 	void shift(double); //shifts the signal of delta_t time units
 	void reverse(); //reverses data points in a signal
     void addLastSample(); // add a sample at endTime. 
+    void refine(double step); // add points at multiples of step inside a signal (does nothing when step=+inf)
 	void to_sat();
 
 	void read_from_file(const string& filename);
