@@ -36,6 +36,12 @@ namespace STLRom
 
         void init_valid_interval(){
             const Signal &data = trace_data_ptr->at(signal_map[variable]);
+            if (data.empty()) {
+                // no samples: backed at no time
+                valid_start = std::numeric_limits<double>::infinity();
+                valid_end = -std::numeric_limits<double>::infinity();
+                return;
+            }
             valid_start = data.beginTime;
             valid_end = data.endTime;
         };

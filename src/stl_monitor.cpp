@@ -56,13 +56,6 @@ namespace STLRom
 
 	double STLMonitor::get_rob(double t0 = 0.)
 	{
-			
-		if (data->is_empty())
-		{
-			cout << "Empty data" << endl;
-			return 0.;
-		}
-
 		start_time = t0;
 		end_time = t0;
 		if (formula)
@@ -75,7 +68,7 @@ namespace STLRom
 			if (s > e + ZERO_POS)
 			{
 				throw std::invalid_argument(formula->get_formula_string() +
-					" is not backed by the data at any time (the data is too short for its time windows)");
+					" is not backed by the data at any time (no data, or the data is too short for its time windows)");
 			}
 			if (t0 < s - ZERO_POS || t0 > e + ZERO_POS)
 			{
@@ -100,17 +93,15 @@ namespace STLRom
 	vector<double> STLMonitor::get_online_rob(double t0 = 0.)
 	{
 		vector<double> out_rob;
-		if (data->is_empty())
-		{
-			cout << "Empty data" << endl;
-			return out_rob;
-		}
-
 		if(formula)
 		{
 			formula->set_trace_data_ptr(data->data_vector);
 			formula->set_param_map_ptr(param_map);
 			formula->init_valid_interval(); // stores each node's valid times, for the bounds
+			// valid_start is +inf only when the formula reads a signal with no samples:
+			// compute nothing, rob is unknown, bounds are the widest
+			if (formula->valid_start == std::numeric_limits<double>::infinity())
+				return {std::numeric_limits<double>::quiet_NaN(), BOTTOM, TOP};
 			Signal::semantics = semantics;
 			formula->reset();
 			formula->set_horizon(t0, t0);
@@ -141,11 +132,6 @@ namespace STLRom
     }
 	Signal STLMonitor::get_rob_signal(double t_start, double t_end)
     {
-		if (data->is_empty())
-		{
-			cout << "Empty data" << endl;
-			return Signal();
-		}
 		start_time = t_start;
 		end_time  = t_end;
 		if (formula)
@@ -187,12 +173,6 @@ namespace STLRom
     }
 	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end)
     {
-		if (data->is_empty())
-		{
-			cout << "Empty data" << endl;
-			vector<Signal> out_rob;
-			return out_rob;
-		}
 		start_time = t_start;
 		end_time  = t_end;
 		if (formula)
@@ -202,6 +182,21 @@ namespace STLRom
 			formula->set_param_map_ptr(param_map);
 			formula->init_valid_interval(); // stores each node's valid times, for the bounds
 			double s = formula->valid_start, e = formula->valid_end;
+			// s is +inf only when the formula reads a signal with no samples:
+			// compute nothing, rob is unknown, bounds are the widest over the request
+			if (s == std::numeric_limits<double>::infinity())
+			{
+				rob = std::numeric_limits<double>::quiet_NaN();
+				lower_rob = BOTTOM;
+				upper_rob = TOP;
+				up_to_date = true;
+				Signal z_low, z_up;
+				z_low.appendSample(t_start, BOTTOM, 0.);
+				z_low.endTime = t_end;
+				z_up.appendSample(t_start, TOP, 0.);
+				z_up.endTime = t_end;
+				return {Signal(), z_low, z_up};
+			}
 			Signal::semantics=semantics;
 			formula->reset();				
 			formula->set_horizon(t_start, t_end);
