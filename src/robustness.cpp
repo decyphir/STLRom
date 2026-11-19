@@ -56,7 +56,8 @@ void Signal::compute_boolean(const Signal &y) {
 		}
 	}
 	simplify();
-	if (!empty() && back().time == endTime) {
+	// drop a sample at endTime, unless it is the only one (point request [t, t])
+	if (size() > 1 && back().time == endTime) {
 		pop_back();
 	}
 }
@@ -96,7 +97,7 @@ void Signal::compute_right_time_rob(const Signal &y) {
 		double next_time;
 		auto next_i = std::next(i);
 		
-		if (next_i == y.end())
+		if (next_i == y_bool.end())
 			next_time = endTime;
 		else 
 			next_time = next_i->time;
