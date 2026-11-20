@@ -1,4 +1,35 @@
-def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
+"""Plotting helpers for Signals and robustness maps (need matplotlib)."""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
+if TYPE_CHECKING:
+    import matplotlib.axes
+    from ._stlrom import Signal
+
+__all__ = ["plot", "plot_rob_map", "plot_rob_map_widget", "RobustnessMap"]
+
+#: {depth: {subformula: {"z": Signal, "z_low": Signal, "z_up": Signal}}}
+RobustnessMap = Dict[int, Dict[str, Dict[str, "Signal"]]]
+
+
+def plot(self: Signal, label: Optional[str] = None, ax: Optional[matplotlib.axes.Axes] = None,
+         title: str = 'Signal Plot', **kwargs: Any) -> matplotlib.axes.Axes:
+    """Plot the signal (available as ``Signal.plot``).
+
+    Args:
+        label: legend label; defaults to "Signal <n>".
+        ax: axes to draw on; a new figure is created if None.
+        title: axes title.
+        **kwargs: ``draw_samples`` (bool, mark the samples, default False),
+            ``plot_sat`` (bool, also plot the Boolean satisfaction on a second axis, default False),
+            ``legend`` (bool, default True), ``draw_canvas`` (bool, default True),
+            ``plot_rob`` (bool, draw the signal itself, default True);
+            anything else is passed to ``matplotlib.axes.Axes.plot``.
+
+    Returns:
+        The axes drawn on.
+    """
     import matplotlib.pyplot as plt
 
     draw_canvas = kwargs.pop('draw_canvas', True)
@@ -91,7 +122,24 @@ def plot(self, label=None, ax=None, title='Signal Plot', **kwargs):
 
 
 
-def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_figure=False, title='Robustness Map'):
+def plot_rob_map(rob_map: RobustnessMap, max_depth: Optional[int] = None, to_plot: str = "robustness",
+                 ax: Optional[matplotlib.axes.Axes] = None, same_figure: bool = False, title: str = 'Robustness Map') -> matplotlib.axes.Axes:
+    """Plot the subformula signals of a robustness map.
+
+    Args:
+        rob_map: result of ``get_robustness_map`` or ``get_online_robustness_map``.
+        max_depth: only plot subformulas up to this depth (root is 0).
+        to_plot: "robustness", "lower" or "upper".
+        ax: axes for the root formula; a new figure is created if None.
+        same_figure: draw every subformula on the same axes instead of one figure each.
+        title: axes title.
+
+    Returns:
+        The last axes drawn on.
+
+    Raises:
+        ValueError: if ``to_plot`` is not one of the three names.
+    """
     keys = sorted(rob_map)
     if max_depth is not None:
         max_depth = min(max_depth, keys[-1])
@@ -122,7 +170,11 @@ def plot_rob_map(rob_map, max_depth=None, to_plot="robustness", ax=None, same_fi
 
 
 
-def plot_rob_map_widget(rob_map, title='Robustness Map'):
+def plot_rob_map_widget(rob_map: RobustnessMap, title: str = 'Robustness Map') -> None:
+    """Interactive robustness-map plot for Jupyter: choose depths and robustness/lower/upper.
+
+    Needs ipywidgets (``pip install stlrom[dev]``).
+    """
     import ipywidgets as widgets
     import matplotlib.pyplot as plt
 

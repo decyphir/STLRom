@@ -28,6 +28,29 @@
 
 #include "stl_driver.h"
 #include "transducer.h"
+#include <stdexcept>
+
+namespace {
+// Returns the formula called phi_in; throws std::invalid_argument (ValueError in Python) if there is none.
+STLRom::transducer *find_formula(const std::map<std::string, STLRom::transducer *> &formula_map,
+                                 const std::string &phi_in)
+{
+    auto it = formula_map.find(phi_in);
+    if (it != formula_map.end() && it->second != nullptr)
+        return it->second;
+
+    std::string msg = "Formula '" + phi_in + "' is not defined.";
+    if (formula_map.empty())
+        msg += " No formula has been parsed yet.";
+    else
+    {
+        msg += " Defined formulas:";
+        for (const auto &f : formula_map)
+            msg += " " + f.first;
+    }
+    throw std::invalid_argument(msg);
+}
+}
 #include "parser.hpp" // this is needed for symbol_type
 
 #include <sstream>
@@ -301,12 +324,7 @@ double STLDriver::get_rob(const string &phi_in, double t0)
 
 double STLDriver::get_rob(const string &phi_in, double t0, double dt)
 {
-    if (formula_map.find(phi_in) == formula_map.end())
-    {
-        cout << "Formula " << phi_in << " not found in formula_map." << endl;
-        return 0.;
-    }
-    transducer *phi = formula_map[phi_in];
+    transducer *phi = find_formula(formula_map, phi_in);
     
     worker.set_formula(phi);
     return worker.get_rob(t0, dt);        
@@ -325,13 +343,7 @@ vector<double> STLDriver::get_online_rob(const string &phi_in, double t0)
 
 vector<double> STLDriver::get_online_rob(const string &phi_in, double t0, double dt)
 {
-    if (formula_map.find(phi_in) == formula_map.end())
-    {
-        cout << "Formula " << phi_in << " not found in formula_map." << endl;
-        vector<double> out_rob;
-        return out_rob;
-    }
-    transducer *phi = formula_map[phi_in];
+    transducer *phi = find_formula(formula_map, phi_in);
     worker.set_formula(phi);
     return worker.get_online_rob(t0, dt);
 }
@@ -344,12 +356,7 @@ Signal STLDriver::get_rob_signal(const string &phi_in, double t_start, double t_
 Signal STLDriver::get_rob_signal(const string &phi_in, double t_start, double t_end, double dt)
 {
 
-    if (formula_map.find(phi_in) == formula_map.end())
-    {
-        cout << "Formula " << phi_in << " not found in formula_map." << endl;
-        return Signal();
-    }
-    transducer *phi = formula_map[phi_in];
+    transducer *phi = find_formula(formula_map, phi_in);
     
     worker.set_formula(phi);
     return worker.get_rob_signal(t_start, t_end, dt);
@@ -372,15 +379,7 @@ vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_s
 
 vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_start, double t_end, double dt)
 {
-    vector<Signal> out_rob;
-
-    if (formula_map.find(phi_in) == formula_map.end())
-    {
-        cout << "Formula " << phi_in << " not found in formula_map." << endl;
-        return out_rob;
-    }
-    transducer *phi = formula_map[phi_in];
-
+    transducer *phi = find_formula(formula_map, phi_in);
     worker.set_formula(phi);
     return worker.get_online_rob_signal(t_start, t_end, dt);
 }
@@ -390,27 +389,16 @@ vector<Signal> STLDriver::get_online_rob_signal(const string &phi_in, double t_s
 robustness_map_t STLRom::STLDriver::get_robustness_map(const string &phi_in)
 {
     robustness_map_t rob_map;
-    if (formula_map.find(phi_in) == formula_map.end())
-    {
-        cout << "Formula " << phi_in << " not found in formula_map." << endl;
-    } else {
-        transducer *phi = formula_map[phi_in];
-        phi->fill_robustness_map(rob_map, 0);
-    }
+    transducer *phi = find_formula(formula_map, phi_in);
+    phi->fill_robustness_map(rob_map, 0);
     return rob_map;
 }
 
 robustness_map_t STLRom::STLDriver::get_online_robustness_map(const string &phi_in)
 {
     robustness_map_t rob_map;
-    if (formula_map.find(phi_in) == formula_map.end())
-    {
-        cout << "Formula " << phi_in << " not found in formula_map." << endl;
-    } else {
-        transducer *phi = formula_map[phi_in];
-
-        phi->fill_online_robustness_map(rob_map, 0);
-    }
+    transducer *phi = find_formula(formula_map, phi_in);
+    phi->fill_online_robustness_map(rob_map, 0);
     return rob_map;
 }
 
@@ -432,36 +420,25 @@ vector<double> STLDriver::get_online_rob(const string &phi_in)
 STLMonitor STLDriver::get_monitor(const string &id) const
 {
     STLMonitor phi;
-    auto it = formula_map.find(id); // FYI was map<string,transducer*>::const_iterator it;
-
-    if (it != formula_map.end() && it->second != nullptr)
+    transducer *formula = find_formula(formula_map, id);
+    try
     {
-        if (it->second != nullptr)
-        {
-            try
-            {
-                phi.semantics = worker.semantics;
-                phi.owned_data = STLData(data);
-                phi.data = &phi.owned_data;
-                phi.formula = (it->second)->clone();
-                phi.param_map = worker.param_map;
-                phi.start_time = 0.;
-                phi.end_time = 0.;
-                phi.rob = 0.;
-                phi.lower_rob = -Signal::BigM;
-                phi.upper_rob = Signal::BigM;
-            }
-            catch (const std::exception &e)
-            {
-                std::cerr << "Error while cloning or setting up the formula: " << e.what() << std::endl;
-                // Handle the error appropriately, possibly by returning an empty or default-initialized STLMonitor
-                return STLMonitor();
-            }
-        }
+        phi.semantics = worker.semantics;
+        phi.owned_data = STLData(data);
+        phi.data = &phi.owned_data;
+        phi.formula = formula->clone();
+        phi.param_map = worker.param_map;
+        phi.start_time = 0.;
+        phi.end_time = 0.;
+        phi.rob = 0.;
+        phi.lower_rob = -Signal::BigM;
+        phi.upper_rob = Signal::BigM;
     }
-    else
+    catch (const std::exception &e)
     {
-        cout << "WARNING: Formula " << id << " undefined." << endl;
+        std::cerr << "Error while cloning or setting up the formula: " << e.what() << std::endl;
+        // Handle the error appropriately, possibly by returning an empty or default-initialized STLMonitor
+        return STLMonitor();
     }
 
     return phi;

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 #include "tools.h"
 #include "signal.h"
 #include "stl_monitor.h"
@@ -16,6 +17,13 @@ namespace STLRom
 		if (!(dt > 0.))
 			throw std::invalid_argument("dt must be positive (+inf for data points only)");
 		Signal::dt = dt;
+	}
+
+	// a monitor made with STLMonitor() has no formula: get one from STLDriver::get_monitor
+	static void require_formula(const transducer *formula)
+	{
+		if (!formula)
+			throw std::runtime_error("This monitor has no formula; create monitors with STLDriver.get_monitor(name)");
 	}
 
 	void STLMonitor::add_sample(vector<double> s)
@@ -70,6 +78,7 @@ namespace STLRom
 
 	double STLMonitor::get_rob(double t0, double dt)
 	{
+		require_formula(formula);
 		set_request_dt(dt);
 		start_time = t0;
 		end_time = t0;
@@ -112,6 +121,7 @@ namespace STLRom
 
 	vector<double> STLMonitor::get_online_rob(double t0, double dt)
 	{
+		require_formula(formula);
 		set_request_dt(dt);
 		vector<double> out_rob;
 		if(formula)
@@ -158,6 +168,7 @@ namespace STLRom
 
 	Signal STLMonitor::get_rob_signal(double t_start, double t_end, double dt)
     {
+		require_formula(formula);
 		set_request_dt(dt);
 		start_time = t_start;
 		end_time  = t_end;
@@ -205,6 +216,7 @@ namespace STLRom
 
 	vector<Signal> STLMonitor::get_online_rob_signal(double t_start, double t_end, double dt)
     {
+		require_formula(formula);
 		set_request_dt(dt);
 		start_time = t_start;
 		end_time  = t_end;
