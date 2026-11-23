@@ -1,8 +1,6 @@
 # Changelog
 
-User-visible changes to STLRom. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Add new entries under **Unreleased**.
-
-Entries before Unreleased were reconstructed from the git history when this file was started (November 2026), so they are summaries.
+User-visible changes to STLRom. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
@@ -16,7 +14,7 @@ Changes on the `formula_signal` branch, which split from `main` before 0.4.0 was
 - `t` as a value in expressions, e.g. `x[t] > 2*t`.
 - An optional `dt` argument on `get_rob`, `get_rob_signal`, `get_online_rob` and `get_online_rob_signal`. It is the largest time step used inside products of signals; the default `inf` keeps the old behaviour.
 - `STLMonitor.get_rob(t0=0.0, dt=inf)` and `STLMonitor.get_online_rob(t0=0.0, dt=inf)` in Python.
-- Docstrings, argument names and types for the whole Python API. The package now ships a type stub (`_stlrom.pyi`) and a `py.typed` marker, so IDEs show signatures, docstrings and completions.
+- Docstrings and argument names for the whole Python API, shown by `help()` and in Jupyter.
 
 ### Changed
 - `get_rob` raises `ValueError` at times where the data does not cover the formula's time windows. It used to return a value anyway. Outside the data, signals now hold their end values.

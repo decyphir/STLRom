@@ -2,9 +2,7 @@
 
 Everything is imported from the top-level package: `import stlrom`. The classes are C++ classes exposed through pybind11, plus a few pure-Python helpers.
 
-Every function has a docstring and typed arguments:
-- `help(stlrom.STLDriver.get_rob)` shows them at runtime, and Jupyter does too.
-- IDEs (VS Code/Pylance, PyCharm) read them from the type stub `stlrom/_stlrom.pyi`, which is installed with the package.
+Every function has a docstring: `help(stlrom.STLDriver.get_rob)` shows it, with the argument names and defaults. Jupyter shows it too.
 
 Times and values are floats. A `Signal` is piecewise-linear: a list of samples, each with a time, a value and a slope (see [`Signal`](#signal)).
 

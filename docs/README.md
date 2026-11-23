@@ -10,21 +10,23 @@ The online bounds follow the interval robustness of Deshmukh et al., *Robust onl
 
 | File | What it covers |
 |---|---|
-| this file | install, quickstart, concepts, contributing |
+| this file | install, quickstart, concepts |
 | [stl_language.md](stl_language.md) | the formula language: every keyword, operator and rule |
 | [api.md](api.md) | the Python classes and functions |
 | [CHANGELOG.md](CHANGELOG.md) | what changed in each release |
-| [tutorial notebook](../test/notebook_test.ipynb) | a guided tour with plots ([Colab version](https://colab.research.google.com/drive/1RUkK4bsXKHawvb10N11oO3u-7CdiQBXT?usp=sharing)) |
+| [tutorial notebooks](#tutorial-notebooks) | guided tours, one short and one longer with plots |
 
 ## Install
 
-STLRom is compiled when you install it, on Linux and macOS. You need:
+STLRom is compiled when you install it. It has been tested on Linux (Ubuntu) and macOS. You need:
 
 - a C++ compiler and CMake 3.15 or later
 - recent **Bison** and **Flex**:
   - macOS: `brew install bison flex`
   - Ubuntu: `sudo apt install bison flex`
-- for the Python package, the Python headers (Ubuntu: `sudo apt install python-dev-is-python3`)
+- for the Python package, the Python headers (Ubuntu 24.04: `sudo apt install python-dev-is-python3`)
+
+Homebrew is not strictly required on macOS: any install of Bison and Flex works, as long as CMake can find it (you may have to adjust `CMakeLists.txt`).
 
 ### Python, from PyPI
 
@@ -34,17 +36,25 @@ pip install stlrom
 
 ### Python, from a clone
 
-Run this from the repository root:
+We recommend [uv](https://docs.astral.sh/uv/getting-started/installation/). From the repository root, either:
 
 ```bash
-pip install -e .
+uv venv
+source .venv/bin/activate
+uv pip install -e .
 ```
 
-Or with [uv](https://docs.astral.sh/uv/):
+or, in one step:
 
 ```bash
 uv sync                      # creates .venv and builds stlrom into it
 source .venv/bin/activate
+```
+
+With plain pip, from the repository root:
+
+```bash
+pip install -e .
 ```
 
 ### C++ only
@@ -56,6 +66,25 @@ make
 ```
 
 This builds the shared library `stlromlib` and a command-line parser called `STLRomParser` (see [Command-line parser](#command-line-parser)).
+
+### Running the tests
+
+After building with CMake as above, from the `build` folder:
+
+```bash
+make test-cpp      # C++ tests
+make test-python   # Python tests (needs the Python package installed and its virtual environment active)
+make test          # both
+```
+
+## Tutorial notebooks
+
+These notebooks are good places to start (they need at least `ipykernel`):
+
+- [test/tutorial_notebook1.ipynb](../test/tutorial_notebook1.ipynb) is a quick tutorial.
+- [test/tutorial_notebook2.ipynb](../test/tutorial_notebook2.ipynb) is longer and has plots.
+
+The `test` folder also contains many other example programs, scripts and notebooks, which may be useful if you don't mind the mess.
 
 ## Quickstart (Python)
 
@@ -188,65 +217,6 @@ The two time semantics only give correct values with `get_rob_signal` over the w
 ```
 
 Options: `-f/--file <file>` reads from a file instead of standard input, `-v/--verbose` explains each definition, `-d/--debug` traces the scanner and parser, and `-h/--help` prints usage.
-
-## Contributing
-
-### Build and test
-
-From a clone with the Python package installed (see [Install](#install)) and its virtual environment active:
-
-```bash
-mkdir build && cd build
-cmake ..
-make
-make test          # all tests; or make test-cpp / make test-python
-```
-
-The test suite is the list registered in [test/CMakeLists.txt](../test/CMakeLists.txt): 6 C++ programs and 10 Python scripts. The other scripts and the notebooks in `test/` are exploratory and are not run by `make test`.
-
-Set `STLROM_DEBUG=ON` when installing the Python package, or `-DDEBUG=ON` with CMake, to compile in the debug tracing.
-
-### How the code is organised
-
-| Path | Contents |
-|---|---|
-| `src/scanner.l`, `src/parser.y` | the Flex scanner and Bison grammar for the formula language. Generated `parser.cpp`, `scanner.cpp` and `include/parser.hpp` are produced at build time and are not committed |
-| `include/stl_driver.h`, `src/stl_driver.cpp` | `STLDriver`: parses specifications, holds the formulas and the data |
-| `include/stl_monitor.h`, `src/stl_monitor.cpp` | `STLMonitor`: computes robustness of one formula over a time range |
-| `include/stl_data.h` | `STLData`: the declared signals and their samples |
-| `include/signal.h`, `src/signal.cpp`, `src/robustness.cpp` | `Signal` (a deque of samples) and the operations on signals: min, max, sliding-window max, until, time robustness |
-| `include/transducer.h`, `include/signal_expr.h`, `src/*transducer*.cpp`, `src/stl_atom.cpp`, `src/signal_expr.cpp` | one class per operator |
-| `src/pybind11/main.cpp` | the Python bindings |
-| `src/stlrom/*.py` | pure-Python additions: plotting and test-signal generators |
-
-A parsed formula is a **tree of transducers**, one node per operator. Each node has:
-- a horizon `[start_time, end_time]`: the times it must compute, pushed down from its parent
-- a result `z` (a `Signal`)
-- in online mode, bounds `z_low` and `z_up`
-
-Computing a formula means setting the horizon at the root and evaluating the tree bottom-up. The past operators (`hist`, `once`, `since`) reverse time and reuse the future algorithms.
-
-### Docstrings and the type stub
-
-Docstrings live next to the code:
-- C++ classes: in [src/pybind11/main.cpp](../src/pybind11/main.cpp), as the last argument of each `.def`. Give every argument a `py::arg("name")`.
-- Python helpers: in [src/stlrom/](../src/stlrom/), with type hints.
-
-IDEs can't look inside the compiled module, so they read [src/stlrom/_stlrom.pyi](../src/stlrom/_stlrom.pyi) instead. That file is generated: **regenerate it whenever you change the bindings or a helper's signature**. With the changed package installed in the active environment, run this from the repository root:
-
-```bash
-pip install pybind11-stubgen   # once
-pybind11-stubgen stlrom._stlrom -o src
-```
-
-It should print no `ERROR` lines. Two common causes of errors:
-- A class used in a signature is registered *after* the code that uses it. Register it earlier in `main.cpp`.
-- A helper's type annotation names something the generator can't import. Use full module paths, e.g. `matplotlib.axes.Axes`.
-
-### When you change something users can see
-
-- Add a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
-- If you changed the language, update [stl_language.md](stl_language.md). If you changed the Python API, update [api.md](api.md), the docstrings and the stub.
 
 ## License
 
