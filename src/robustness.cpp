@@ -103,14 +103,15 @@ void Signal::compute_right_time_rob(const Signal &y) {
 		else 
 			next_time = next_i->time;
 
+		// +-ZERO_POS keeps the sign where the piece ends (at endTime, the last piece
+		// would otherwise reach 0), as compute_left_time_rob does where a piece starts
 		if (v>0.) {
-			push_back(Sample(i->time, next_time - i->time, -1.));			
+			push_back(Sample(i->time, next_time - i->time + ZERO_POS, -1.));			
 		}
 		else {
-			push_back(Sample(i->time, i->time-next_time , 1.));
+			push_back(Sample(i->time, i->time - next_time + ZERO_NEG, 1.));
 		}		
 	}
-	// TODO check whether we need do something for the last element...
 }
 
 void Signal::compute_not(const Signal &y) {
