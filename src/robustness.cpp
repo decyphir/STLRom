@@ -44,7 +44,8 @@ void Signal::compute_boolean(const Signal &y) {
 			// }		
 		}
 		else {
-			push_back(Sample(i->time, 0. , 0.));
+			// false is -Eps rather than 0, so that not() of it is positive
+			push_back(Sample(i->time, -Eps , 0.));
 			// cout << "pushing 0 at " << i->time << endl;
 			// if ((v<0.)&&(d>0.)) {
 			// 	double t_zero_cross = i->time-v/d;

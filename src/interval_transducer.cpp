@@ -189,6 +189,23 @@ namespace STLRom {
         return z_low.front().value;
     }
 
+    // SEMANTICS operators: the child's bounds, unchanged
+    double semantics_transducer::compute_lower_rob() {
+        child->compute_lower_rob();
+        z_low = child->z_low;
+        if (z_low.empty())
+            return BOTTOM;
+        return z_low.front().value;
+    }
+
+    double semantics_transducer::compute_upper_rob() {
+        child->compute_upper_rob();
+        z_up = child->z_up;
+        if (z_up.empty())
+            return TOP;
+        return z_up.front().value;
+    }
+
     // EVENTUALLY
     double ev_transducer::compute_lower_rob() {
         // lower robustness for a max operator. Partial information gives a lower bound for max, so we keep it. 

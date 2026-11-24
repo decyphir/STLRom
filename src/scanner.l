@@ -125,6 +125,10 @@
 
 "t"       { return STLRom::Parser::make_TIME(yylloc); }
 "abs"     { return STLRom::Parser::make_ABS(yylloc); }
+"sat"     { return STLRom::Parser::make_SAT(yylloc); }
+"ltr"     { return STLRom::Parser::make_LTR(yylloc); }
+"rtr"     { return STLRom::Parser::make_RTR(yylloc); }
+"rho"     { return STLRom::Parser::make_RHO(yylloc); }
 "param"   { return STLRom::Parser::make_PARAM_DECL(yylloc); }
 "test"    { return STLRom::Parser::make_TEST(yylloc); }
 "signal"  { return STLRom::Parser::make_SIGNAL_DECL(yylloc); }

@@ -255,6 +255,37 @@ namespace STLRom {
         rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
     }
 
+    // SEMANTICS operators (sat, ltr, rtr, rho): the node passes its child's results
+    // through, the semantics acts in the atoms
+
+    void propagate_semantics(transducer *t, Semantics sem) {
+        if (t == nullptr || t->has_local_semantics)
+            return;
+        t->has_local_semantics = true;
+        t->local_semantics = sem;
+        propagate_semantics(t->get_child(), sem);
+        propagate_semantics(t->get_childL(), sem);
+        propagate_semantics(t->get_childR(), sem);
+    }
+
+    double semantics_transducer::compute_robustness() {
+        child->compute_robustness();
+        z = child->z;
+        if (z.empty())
+            return std::numeric_limits<double>::quiet_NaN();
+        return z.front().value;
+    }
+
+    void semantics_transducer::fill_robustness_map(robustness_map_t &rob_map, int depth) {
+        child->fill_robustness_map(rob_map, depth+1);
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, nullptr, nullptr};
+    }
+
+    void semantics_transducer::fill_online_robustness_map(robustness_map_t &rob_map, int depth) {
+        child->fill_online_robustness_map(rob_map, depth+1);
+        rob_map[this->get_formula_string()] = robustness_info{depth, &z, &z_up, &z_low};
+    }
+
     double ev_transducer::compute_robustness() {
 
         #ifdef DEBUG__

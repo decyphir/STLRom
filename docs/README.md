@@ -191,7 +191,7 @@ Values come back as a single number (`get_rob`) or as a `Signal` over a time ran
 | `SPACE` (default) | how far the signal values are from violating the formula |
 | `LEFT_TIME` | how long the atom has kept its truth value, looking back |
 | `RIGHT_TIME` | how long the atom will keep its truth value, looking forward |
-| `BOOLEAN` | 1 if true, 0 if false |
+| `BOOLEAN` | 1 if true, -Eps if false (`Signal.set_Eps`, default 1e-10), so that `not` gives the right sign |
 
 The two time semantics only give correct values with `get_rob_signal` over the whole data range. `get_rob(phi, t)` cuts the computation to the single instant `t` and returns about 0. See [Known limitations](#known-limitations).
 

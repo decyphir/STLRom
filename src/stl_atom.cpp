@@ -6,6 +6,7 @@
 #include <map>
 #include "tools.h"
 #include <exception>
+#include <cmath>
 #include "signal_expr.h"
 #ifdef IS_PC
 #include <minmax.h>
@@ -27,7 +28,22 @@ namespace STLRom {
         if (!s_to_d(p, value))  param = p;
 
     }
-       
+
+    // extend horizon to all valid data horizon when semantics is LTR or RTR
+    void stl_atom::init_horizon() {
+        double ext_start = start_time;
+        double ext_end = end_time;
+        Semantics sem = effective_semantics();
+        if (sem == Semantics::LEFT_TIME || sem == Semantics::RIGHT_TIME) {
+            if (std::isfinite(valid_start) && valid_start < start_time)
+                ext_start = valid_start;
+            if (std::isfinite(valid_end) && valid_end > end_time)
+                ext_end = valid_end;
+        }
+        childL->set_horizon(ext_start, ext_end);
+        childR->set_horizon(ext_start, ext_end);
+    }
+
     double stl_atom::compute_robustness() {
 #ifdef DEBUG__
         printf(">> stl_atom::compute_robustness:              IN.\n");
@@ -258,20 +274,24 @@ namespace STLRom {
             check_crossings(endTime, v_prev_neq + d_prev_neq*(endTime - t_prev));
 
         //z.endTime = endTime;        
-        z.endTime = end_time; // I know, can be confusing. 
+        z.endTime = childL->end_time; // end_time, unless LEFT_TIME or RIGHT_TIME extended it
         
         Signal z_space;
-        switch (Signal::semantics) {
+        switch (effective_semantics()) {
 			case Semantics::SPACE:
                 z.simplify();
 	        	return z.front().value;    
 			case Semantics::LEFT_TIME:
                 z_space = z;
                 z.compute_left_time_rob(z_space);
+                if (childL->start_time < start_time || childL->end_time > end_time)
+                    z.resize(start_time, end_time);
                 return z.front().value;
             case Semantics::RIGHT_TIME:
                 z_space = z;
                 z.compute_right_time_rob(z_space);
+                if (childL->start_time < start_time || childL->end_time > end_time)
+                    z.resize(start_time, end_time);
                 return z.front().value;
             case Semantics::BOOLEAN:
                 z_space = z;

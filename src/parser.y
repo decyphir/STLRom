@@ -131,6 +131,10 @@
 %token                 MINUS           "-"
 %token                 MULT            "*"
 %token                 ABS             "abs"
+%token                 SAT             "sat"
+%token                 LTR             "ltr"
+%token                 RTR             "rtr"
+%token                 RHO             "rho"
 %token                 PARAM_DECL      "param_decl"
 %token                 SIGNAL_DECL     "signal_decl"
 %token                 TEST            "test"
@@ -474,6 +478,34 @@ stl_formula :
              | stl_atom
              {
                  $$ = $1;
+             }
+             | SAT LPAREN stl_formula RPAREN
+             {
+                 $$ = new semantics_transducer($3, Semantics::BOOLEAN);
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
+             }
+             | LTR LPAREN stl_formula RPAREN
+             {
+                 $$ = new semantics_transducer($3, Semantics::LEFT_TIME);
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
+             }
+             | RTR LPAREN stl_formula RPAREN
+             {
+                 $$ = new semantics_transducer($3, Semantics::RIGHT_TIME);
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
+             }
+             | RHO LPAREN stl_formula RPAREN
+             {
+                 $$ = new semantics_transducer($3, Semantics::SPACE);
+                 $$->trace_data_ptr = &driver.data.data_vector;
+                 $$->param_map = driver.worker.param_map;
+                 $$->signal_map = driver.data.signal_map;
              }
              | INV LPAREN stl_formula RPAREN %prec INV
             {

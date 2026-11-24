@@ -50,6 +50,11 @@ namespace STLRom {
         double valid_start = -std::numeric_limits<double>::infinity();
         double valid_end = std::numeric_limits<double>::infinity();
 
+        // semantics set by sat/ltr/rtr/rho above this node (only atoms use it);
+        // unset: atoms use the global Signal::semantics
+        bool has_local_semantics = false;
+        Semantics local_semantics = Semantics::SPACE;
+
         // z is estimated robustness signal, z_up upper bound, z_low lower bound
         Signal z, z_up, z_low;
 
@@ -804,6 +809,13 @@ namespace STLRom {
         ~stl_atom() {
         };
 
+        // the local semantics if set, else the global one
+        Semantics effective_semantics() const {
+            return has_local_semantics ? local_semantics : Signal::semantics;
+        }
+
+        void init_horizon();
+
         double compute_robustness();
 
         void fill_robustness_map(robustness_map_t &rob_map, int depth);
@@ -871,6 +883,56 @@ namespace STLRom {
             }
             ;
 
+    };
+
+    /* Semantics operators: sat, ltr, rtr, rho */
+
+    // sets sem on every node below t that has no local semantics yet
+    void propagate_semantics(transducer *t, Semantics sem);
+
+    // sat(phi), ltr(phi), rtr(phi), rho(phi): phi with its atoms in the BOOLEAN,
+    // LEFT_TIME, RIGHT_TIME or SPACE semantics, whatever the global one.
+    // The node itself passes its child's results through unchanged.
+    class semantics_transducer: public unary_transducer {
+
+        public:
+
+            Semantics sem;
+
+            semantics_transducer(transducer *_child, Semantics _sem):
+                transducer(), unary_transducer(_child), sem(_sem) {
+                has_local_semantics = true;
+                local_semantics = sem;
+                propagate_semantics(child, sem);
+            };
+
+            virtual semantics_transducer* clone() const {
+                return new semantics_transducer(child->clone(), sem);
+            }
+
+            virtual ~semantics_transducer() {};
+
+            double compute_robustness();
+            double compute_lower_rob();
+            double compute_upper_rob();
+
+            void fill_robustness_map(robustness_map_t &rob_map, int depth);
+            void fill_online_robustness_map(robustness_map_t &rob_map, int depth);
+
+            void print() const{
+                print(cout);
+            };
+
+            void print(ostream &os) const {
+                switch (sem) {
+                case Semantics::BOOLEAN: os << "sat("; break;
+                case Semantics::LEFT_TIME: os << "ltr("; break;
+                case Semantics::RIGHT_TIME: os << "rtr("; break;
+                case Semantics::SPACE: os << "rho("; break;
+                }
+                child->print(os);
+                os << ")";
+            };
     };
 
     std::ostream& operator<<(std::ostream& os, const transducer& T);
