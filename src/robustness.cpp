@@ -389,12 +389,15 @@ void Signal::compute_timed_until(const Signal& x , const Signal& y, double a, do
 	}
 
 
-	if(b > std::min(y1.endTime, y2.endTime))
+	// every window [t+a, t+b] reaches past the end of the data, from the first output time
+	// (y1.beginTime) on: the untimed until is then exact. Compare b with that length, not
+	// with the end time itself (which only works for signals starting at 0)
+	if(b > std::min(y1.endTime, y2.endTime) - y1.beginTime)
 	{
 		if (a==0)
 			yunt = computeUntil(&y1,&y2);
 		else
-			if (a > y1.endTime) {
+			if (a > y1.endTime - y1.beginTime) {
 				yunt = computeGlobally(&y1);
 			}
 			else
@@ -1219,7 +1222,7 @@ void computePartialEventually(Signal* z, Signal::const_reverse_iterator & i, dou
 	} else if (z_max >= i->valueAt(s)) {
 		z->push_front(Sample(s, z_max, 0));
 	} else {
-		z->push_front(Sample(s + (z_max - i->value) / i->derivative, z_max, 0)); //time at which y reaches value next_z
+		z->push_front(Sample(i->time + (z_max - i->value) / i->derivative, z_max, 0)); //time at which y reaches value next_z (i may start before s)
 		z->push_front(Sample(s, i->valueAt(s), i->derivative));
 	}
 
@@ -1313,8 +1316,10 @@ Signal * plateauMax(Signal * x, double a) {
 
 	//INIT: read values in [0, a)
 	i = y.begin();
-
-	while (i->time < x->beginTime + a) {
+	// a sample within rounding of beginTime + a is the window's end (a single-time request
+	// gives a signal exactly a long, and beginTime + a can round just past its last sample)
+	const double t_window = x->beginTime + a;
+	while (i != y.end() && i->time < t_window - ZERO_POS) {
 		while (!M.empty() && i->value >= M.back().value) {
 			M.pop_back();
 		}
@@ -1326,10 +1331,7 @@ Signal * plateauMax(Signal * x, double a) {
 	cout << "M:" << M << endl;
 	#endif
 	
-	if (fabs(i->time - (x->beginTime + a)) < ZERO_POS)
-		new_candidate = true;
-	else
-		new_candidate = false;
+	new_candidate = (i != y.end() && fabs(i->time - t_window) < ZERO_POS);
 
 	end_candidate = false;
 	t = x->beginTime;
@@ -1483,7 +1485,10 @@ Signal * plateauMin(Signal * x, double a) {
 
 	//INIT: read values in [0, a)
 	i = y.begin();
-	while (i->time < x->beginTime + a) {
+	// a sample within rounding of beginTime + a is the window's end (a single-time request
+	// gives a signal exactly a long, and beginTime + a can round just past its last sample)
+	const double t_window = x->beginTime + a;
+	while (i != y.end() && i->time < t_window - ZERO_POS) {
 		while (!M.empty() && i->value <= M.back().value) {
 			M.pop_back();
 		}
@@ -1491,10 +1496,7 @@ Signal * plateauMin(Signal * x, double a) {
 		i++;
 	}
 
-	if (fabs(i->time - (x->beginTime + a)) < ZERO_POS)
-		new_candidate = true;
-	else
-		new_candidate = false;
+	new_candidate = (i != y.end() && fabs(i->time - t_window) < ZERO_POS);
 
 	end_candidate = false;
 	t = x->beginTime;
