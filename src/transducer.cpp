@@ -585,16 +585,22 @@ namespace STLRom {
 
     double since_transducer::compute_robustness() {
 
-        double a,b;
-        if (!get_param(I->begin_str,a)) a = I->begin;
-        if (!get_param(I->end_str,b)) b = I->end;
-
         // update robustness of children
         childL->compute_robustness();
         childR->compute_robustness();
 
-        Signal childL_z = childL->z;
-        Signal childR_z = childR->z;
+        compute_since(z, childL->z, childR->z);
+        return z.front().value;
+    }
+
+    void since_transducer::compute_since(Signal &out, const Signal &zL, const Signal &zR) {
+
+        double a,b;
+        if (!get_param(I->begin_str,a)) a = I->begin;
+        if (!get_param(I->end_str,b)) b = I->end;
+
+        Signal childL_z = zL;
+        Signal childR_z = zR;
         childL_z.resize(childL->start_time, childL->end_time);
         childR_z.resize(childR->start_time, childR->end_time);
 
@@ -608,14 +614,12 @@ namespace STLRom {
         childR_z.reverse();
         childR_z.shift(T - T_R);
 
-        z.compute_timed_until(childL_z, childR_z, a, b);
+        out.compute_timed_until(childL_z, childR_z, a, b);
 
-        double T_z = z.beginTime + z.endTime;
-        z.reverse();
-        z.shift(T - T_z);
-        z.resize(start_time, end_time);
-
-        return z.front().value;
+        double T_z = out.beginTime + out.endTime;
+        out.reverse();
+        out.shift(T - T_z);
+        out.resize(start_time, end_time);
     }
 
 

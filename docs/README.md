@@ -196,7 +196,7 @@ Values come back as a single number (`get_rob`) or as a `Signal` over a time ran
 The two time semantics only give correct values with `get_rob_signal` over the whole data range. `get_rob(phi, t)` cuts the computation to the single instant `t` and returns about 0. See [Known limitations](#known-limitations).
 
 **Global settings**, shared by the whole process:
-- `stlrom.Signal.set_BigM(v)`, default 10000: the value that stands for +∞ in robustness and bounds.
+- `stlrom.Signal.set_BigM(v)`, default 10000: the value that stands for +∞ in robustness and bounds. Robustness values must stay well below it; raise it for large data.
 - `stlrom.Signal.set_Eps(v)`, default 1e-10: the margin used when a signal crosses an atom's threshold.
 
 **`dt`.** Products of signals (`x[t] * y[t]`) are not linear between samples. Passing `dt` to `get_rob`, `get_rob_signal`, `get_online_rob` or `get_online_rob_signal` adds evaluation points at least every `dt` time units inside products. The error shrinks like `dt²`. The default, `inf`, uses the data points only.

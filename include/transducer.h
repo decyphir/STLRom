@@ -746,8 +746,11 @@ namespace STLRom {
         }
 
         double compute_robustness();
-        // double compute_lower_rob();
-        // double compute_upper_rob();
+        double compute_lower_rob();
+        double compute_upper_rob();
+
+        // since of two child signals (their z, z_low or z_up), written into out
+        void compute_since(Signal &out, const Signal &zL, const Signal &zR);
 
         // void fill_robustness_map(robustness_map_t &rob_map, int depth);
 

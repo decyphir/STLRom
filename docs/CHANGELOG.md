@@ -28,6 +28,7 @@ Changes on the `formula_signal` branch, which split from `main` before 0.4.0 was
 - Double unary minus is simplified away. Sequences such as `+-` without parentheses are rejected.
 
 ### Fixed
+- Online bounds of `since` were `-BigM`/`+BigM` wherever its window started before the data; they are now computed from the known part, as for `hist` and `once`.
 - Online bounds of `hist`, `once` and `until`. `until` returned nothing when asked for robustness before its data arrived.
 - An atom crossing its threshold between the last sample and the end of the signal was missed.
 - `abs` now handles a zero crossing, including one that falls on the next sample.

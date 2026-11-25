@@ -559,4 +559,27 @@ namespace STLRom {
         return z_up.front().value;
     }
 
+    // bounds: since of the children's bounds (since only goes up when its children do), as for until
+    double since_transducer::compute_lower_rob() {
+        childL->compute_lower_rob();
+        childR->compute_lower_rob();
+        compute_since(z_low, childL->z_low, childR->z_low);
+        if (z_low.empty()) {
+            z_low.appendSample(start_time, BOTTOM);
+            z_low.endTime = end_time;
+        }
+        return z_low.front().value;
+    }
+
+    double since_transducer::compute_upper_rob() {
+        childL->compute_upper_rob();
+        childR->compute_upper_rob();
+        compute_since(z_up, childL->z_up, childR->z_up);
+        if (z_up.empty()) {
+            z_up.appendSample(start_time, TOP);
+            z_up.endTime = end_time;
+        }
+        return z_up.front().value;
+    }
+
 }

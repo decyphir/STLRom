@@ -144,7 +144,7 @@ s.value_at(1.)        # 2.0
 
 | Method | Default | Description |
 |---|---|---|
-| `Signal.set_BigM(v)`, `Signal.get_BigM()` | 10000 | The value standing for +∞ in robustness and online bounds. `get_BigM()` returns it **rounded down to an integer**. |
+| `Signal.set_BigM(v)`, `Signal.get_BigM()` | 10000 | The value standing for +∞ in robustness and online bounds. Robustness values must stay well below it; raise it for large data. `get_BigM()` returns it **rounded down to an integer**. |
 | `Signal.set_Eps(v)`, `Signal.get_Eps()` | 1e-10 | The margin used where a signal crosses an atom's threshold, and the robustness of a satisfied `==`. |
 | `Signal.set_semantics(name)`, `Signal.get_semantics()` | `"SPACE"` | The global semantics. Drivers and monitors set it from their own setting at each computation, so use `driver.set_semantics` instead. |
 
