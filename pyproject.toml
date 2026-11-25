@@ -23,8 +23,17 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ipykernel",
-    "ipywidgets"
+    "ipywidgets",
+    "pytest",
+    "pytest-xdist"
 ]
+
+[tool.pytest.ini_options]
+# `pytest` from the repository root runs only the new suite (test/suite/).
+# -n auto: one worker process per CPU; a test that crashes the process (segfault)
+# is reported as failed and the run goes on.
+testpaths = ["test/suite"]
+addopts = "-n auto -p no:cacheprovider"
 
 [tool.scikit-build]
 minimum-version = "build-system.requires"
