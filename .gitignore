@@ -14,3 +14,4 @@ src/stack.hh
 .virtual_documents
 *.log
 dev_checks/
+__pycache__/
