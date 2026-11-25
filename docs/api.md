@@ -42,7 +42,7 @@ driver.add_sample([0, 1.0])
 |---|---|
 | `add_sample([t, v1, v2, ...], interp=True)` | Append one sample for every signal, in declaration order. With `interp=True`, the sample is joined to the previous one by a straight line. With `interp=False`, the previous value is held until this sample (piecewise-constant). Raises `ValueError` if the length is not 1 + the number of signals. **A sample at or before the last time is silently ignored.** |
 | `set_signals([sig1, sig2, ...])` | Replace all data with a list of `Signal`s, one per declared signal, in declaration order. Raises `ValueError` if the count is wrong. |
-| `load_csv([path1, path2, ...])` | Load one CSV file per declared signal, in declaration order. Each row is `t,value` or `t,value,slope`. |
+| `load_csv([path1, path2, ...])` | Load one CSV file per declared signal, in declaration order. Each row is `t,value,slope` (the slope of the piece that starts at `t`) or `t,value`. **A row without a slope has slope 0**: its value is held until the next row (piecewise-constant). For straight lines between the rows, give the slopes, as `write_csv` does. |
 | `write_csv(directory)` | Write one `<signal name>.csv` per signal into an existing directory, with rows `t,value,slope`. |
 | `get_signal(name_or_index) -> Signal` | A copy of one signal's data. |
 | `get_signal_idx(name) -> int`, `get_signame_from_idx(i) -> str` | Convert between a signal's name and its position. |
@@ -128,15 +128,15 @@ s.value_at(1.)        # 2.0
 | `append_constant_sample(t, v)` | Append, with the previous value held until `t`. |
 | `append_sample(t, v)`, `append_sample(t, v, slope)` | Append with an explicit slope (default 0), and no interpolation. |
 | `append_sample(t, v, slope, interp)` | With `interp=True`, the previous sample's slope is replaced so the two are joined by a line. |
-| `value_at(t) -> float` | The value at `t`. Before the first sample it extrapolates the first piece. An empty signal prints a message and returns 0. |
+| `value_at(t) -> float` | The value at `t`. At a sample's time it is that sample's value, so at a jump it is the new value. Outside the signal it holds the end values, as `resize` does (the first value before the first sample, the value at `end_time` after `end_time`), and prints a warning. An empty signal prints a message and returns 0. |
 | `get_samples_list() -> list[Sample]` | The samples. |
 | `begin_time`, `end_time` | The time range the signal covers. `end_time` can be later than the last sample. |
 | `empty() -> bool` | `True` if there are no samples. |
 | `resize(t0, t1)` | Restrict or extend to `[t0, t1]`. |
 | `shift(dt)` | Move in time by `dt`. |
 | `reverse()` | Reverse in time. |
-| `read_from_file(path)`, `write_to_file(path)` | CSV with rows `t,value[,slope]`. |
-| `compute_not(s)`, `compute_and(a, b)`, `compute_or(a, b)`, `compute_boolean(s)`, `compute_left_time_rob(s)`, `compute_right_time_rob(s)` | Replace this signal with the result of the operation on the arguments. These are the building blocks of the robustness computation. |
+| `read_from_file(path)`, `write_to_file(path)` | CSV with rows `t,value[,slope]`. A missing slope is 0, as for `load_csv`. |
+| `compute_not(s)`, `compute_and(a, b)`, `compute_or(a, b)`, `compute_boolean(s)`, `compute_left_time_rob(s)`, `compute_right_time_rob(s)` | Replace this signal with the result of the operation on the arguments. These are the building blocks of the robustness computation. `compute_boolean` and the two time robustness functions read the sign of each sample: they do not find a sign change inside a piece. In a formula, the atom adds a sample at each crossing first; when calling them directly, make sure the signal has a sample wherever its sign changes. |
 | `copy()` | An independent copy. |
 | `plot(...)` | See [Plotting](#plotting). |
 
@@ -150,7 +150,7 @@ s.value_at(1.)        # 2.0
 
 ### Sample and Point
 
-`Sample(t, v, slope)` has the attributes `time`, `value` and `derivative`, plus `value_at(t)` (the value of its line at `t`). `Point(t, v)` has `time` and `value`.
+`Sample(t, v, slope)` has the attributes `time`, `value` and `derivative`, plus `value_at(t)` (the value of its line at `t`, at any time: it extrapolates). `Point(t, v)` has `time` and `value`.
 
 ---
 

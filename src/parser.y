@@ -177,7 +177,7 @@
 %type <STLRom::interval*>   interval
 %type <std::string>            op op_eq
 %type <std::string>            constant
-%type <double>              shift_expr
+%type <std::string>         shift_expr
 /* %type <bool>           boolean */
 /* %type <std::map<string,double>*>  local_param_assignements local_param_assignement_list local_param_assignement */
 
@@ -212,23 +212,16 @@ constant_signal : CONSTANT
            $$->signal_map = driver.data.signal_map;
         };
 
+// the shift as written: "c" or "-c", c a number or a parameter (read later, so set_param works)
 shift_expr : 
-        { $$ = 0; }
+        { $$ = ""; }
         | PLUS constant
         {
-            double val;
-            if (!s_to_d($2, val)) {
-                val = driver.worker.get_param($2);
-            }
-            $$ = val;
+            $$ = $2;
         }
         | MINUS constant
         {
-            double val;
-            if (!s_to_d($2, val)) {
-                val = driver.worker.get_param($2);
-            }
-            $$ = -val;
+            $$ = "-" + $2;
         };
 
 signal: SIGNAL_ID LINT TIME shift_expr RINT
@@ -239,7 +232,7 @@ signal: SIGNAL_ID LINT TIME shift_expr RINT
             ref->param_map = driver.worker.param_map;
             ref->signal_map = driver.data.signal_map;
 
-            if ($4 == 0) {
+            if ($4.empty()) {
                 $$ = ref;
             } else {
                 $$ = new shifted_transducer(ref, $1, $4);
@@ -285,7 +278,7 @@ formula_signal: PHI_ID LINT TIME shift_expr RINT
                 base->param_map = driver.worker.param_map;
                 base->signal_map = driver.data.signal_map;
 
-                if ($4 == 0) {
+                if ($4.empty()) {
                     $$ = base;
                 } else {
                     $$ = new shifted_transducer(base, $1, $4);
@@ -314,7 +307,7 @@ formula_signal: PHI_ID LINT TIME shift_expr RINT
                 base->trace_data_ptr = &driver.data.data_vector;
                 base->param_map = driver.worker.param_map;
                 base->signal_map = driver.data.signal_map;
-                if ($4 == 0) {
+                if ($4.empty()) {
                     $$ = base;
                 } else {
                     $$ = new shifted_transducer(base, $1, $4);

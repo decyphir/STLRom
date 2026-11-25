@@ -133,15 +133,37 @@ namespace STLRom
 
         public:
             string _name;
-            double _shift;
+            string _shift; // as written: "c" or "-c", c a number or a parameter
 
-            explicit shifted_transducer(transducer *_child, string name, double shift):
+            // I holds the shift like ev_[0,c] holds its bounds: a number, or a parameter name
+            explicit shifted_transducer(transducer *_child, string name, string shift):
                 transducer(), unary_transducer(_child), timed_unary_transducer(new interval(shift, shift), _child), _name(name), _shift(shift) {
             };
 
             virtual shifted_transducer* clone() const {
                 transducer * child_clone= child->clone();
                 return new shifted_transducer(child_clone, _name, _shift);
+            }
+
+            // the current shift: a parameter is read each time, so set_param works
+            double shift() {
+                if (I->begin_str.empty())
+                    return I->begin;
+                bool minus = (I->begin_str[0] == '-');
+                double c;
+                get_param(minus ? I->begin_str.substr(1) : I->begin_str, c);
+                return minus ? -c : c;
+            }
+
+            // as in timed_unary_transducer, but with the sign of the shift
+            void init_horizon() {
+                child->set_horizon(start_time + shift(), end_time + shift());
+            }
+
+            void init_valid_interval() {
+                child->init_valid_interval();
+                valid_start = child->valid_start - shift();
+                valid_end = child->valid_end - shift();
             }
 
             virtual ~shifted_transducer() {};
@@ -155,7 +177,7 @@ namespace STLRom
             void print(ostream &os) const {
                 os << _name;
                 os << "[t";
-                if (_shift >= 0) os << "+";
+                if (_shift[0] != '-') os << "+";
                 os << _shift;
                 os << "]";
             }

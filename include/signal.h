@@ -147,28 +147,28 @@ public:
 	void appendLinearSample(double t, double v);
 	void appendLinearSample(double t, double v, double d);
 	
+	// Value at time t.
+	// Outside the data it holds the end values, as resize does, and prints a warning.
 	inline double valueAt(double t) const {
-		if (!empty()) {
-			auto it = std::lower_bound(
-        		begin(), 
-        		end(), 
-        		t, 
-        		[](const Sample& s, double val) { 
-	    	        return s.time < val;     
-				}
-			);
-			if (it != begin()) {
-	        	auto last_valid = std::prev(it); 	    	
-				return last_valid->valueAt(t);  
-			} else  {
-				return it->valueAt(t);
-			}	               					    
-		} else {
+		if (empty()) {
 			std::cout << "EMPTY Signal, returning 0." << std::endl;
-		 	return 0.;
+			return 0.;
 		}
-	}		
-	
+		if (t < front().time - ZERO_POS) {
+			std::cout << "Warning: value_at(" << t << ") is before the signal, returning the first value." << std::endl;
+			return front().value;
+		}
+		if (t > endTime + ZERO_POS) {
+			std::cout << "Warning: value_at(" << t << ") is after the signal, returning the last value." << std::endl;
+			return back().valueAt(endTime);
+		}
+		auto it = std::upper_bound(begin(), end(), t,
+			[](double val, const Sample& s) { return val < s.time; });
+		if (it == begin())
+			return front().value;
+		return std::prev(it)->valueAt(t);
+	}
+
 	void simplify(); //remove sampling points where (y,dy) is continuous.
 	void resize(double, double); //restricts/extends the signal to [s,t) with interpolation where not defined
 	void resize(double, double, double); //restricts/extends the signal to [s,t) with default value v where not defined

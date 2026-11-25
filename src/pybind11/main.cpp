@@ -152,7 +152,8 @@ PYBIND11_MODULE(_stlrom, m) {
 			py::arg("t"), py::arg("v"), py::arg("slope"),
 			"Append a sample joined to the previous one by a straight line; `slope` is the slope after t.")
 		.def("value_at", &STLRom::Signal::valueAt, py::arg("t"),
-			"Value at time t. Before the first sample, the first piece is extended backwards.\n"
+			"Value at time t. At a sample's time it is that sample's value (at a jump, the new value).\n"
+			"Outside the data it holds the end values, as resize does, and prints a warning.\n"
 			"An empty signal prints a message and returns 0.")
 		.def("read_from_file", &STLRom::Signal::read_from_file, py::arg("filename"),
 			"Replace the samples with those of a CSV file with rows 't,value' or 't,value,slope'.\n\n"

@@ -27,7 +27,7 @@ A specification is a sequence of statements. Line breaks and spaces have no mean
 |---|---|---|
 | Signal declaration | `signal x, y, z` | **Must be the first statement, and there can be only one.** The order of the names is the order of the values in `add_sample([t, x, y, z])`. |
 | Parameter declaration | `param a = 1, b = -2.5` | Values must be plain numbers, optionally negative. Can appear several times; declaring a parameter again changes its value. A parameter must be declared before a formula uses it. |
-| Formula definition | `name := <formula>` | Defines a formula you can monitor by name and reuse in later formulas. Defining the same name again replaces it. |
+| Formula definition | `name := <formula>` | Defines a formula you can monitor by name and reuse in later formulas. A name can be defined only once: define a new name instead (see [Reusing definitions](#reusing-definitions)). |
 | Function definition | `name := <expression>` | An expression with no comparison, for example `f := 2*x[t] + 1`. Use it in later formulas as `f[t]`. |
 
 Names start with a letter and continue with letters, digits or `_`. Some single letters and words are reserved and cannot be used as names (see [Reserved words](#reserved-words)). Among them are `t`, `F`, `G`, `U`, `H`, `O` and `S`.

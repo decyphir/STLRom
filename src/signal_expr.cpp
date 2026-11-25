@@ -33,6 +33,7 @@ double formula_signal_transducer::compute_robustness() {
 }
 
 double shifted_transducer::compute_robustness() {
+	double s = shift();
 	child->compute_robustness();
 
 	auto iter = child->z.begin();
@@ -42,9 +43,10 @@ double shifted_transducer::compute_robustness() {
 		double t= (*iter).time;
 		double v = (*iter).value;
 		double d = (*iter).derivative;
-		z.appendSample(t-_shift, v, d);
+		z.appendSample(t-s, v, d);
 	}
-	
+	z.endTime = child->z.endTime - s;
+
 	z.resize(start_time, end_time);
 
 	return z.front().value;

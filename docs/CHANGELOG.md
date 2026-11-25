@@ -24,6 +24,7 @@ Changes on the `formula_signal` branch, which split from `main` before 0.4.0 was
 - The computing methods of a monitor with no formula (`STLMonitor()`) raise `RuntimeError` instead of crashing.
 - `add_sample(sample, interp=True)` and `parse_file(filename, verbose=False)` now take keyword arguments.
 - `stlrom.np` (numpy, exported by accident) is no longer part of the package namespace.
+- `Signal.value_at` holds the end values outside the signal, as `resize` does, and prints a warning there. It used to extend the first piece backwards. At a sample's time it now returns that sample's value: at a jump, the new value instead of the old one.
 - Double unary minus is simplified away. Sequences such as `+-` without parentheses are rejected.
 
 ### Fixed
@@ -35,6 +36,8 @@ Changes on the `formula_signal` branch, which split from `main` before 0.4.0 was
 - `BOOLEAN` semantics.
 - CSV output now keeps 15 significant digits.
 - `transducer.get_child()`, `get_childL()` and `get_childR()` return references owned by the parent. Python used to take ownership of nodes the formula tree still owned.
+- `x[t-c]` and `x[t+c]` on a range (`get_rob_signal`) lost their last piece when the range ended before the data did.
+- `set_param` now changes a shift given by a parameter (`x[t+c]`). The shift used to keep the parameter's value at parse time.
 
 ## [0.4.0] - 2026-09-18
 
