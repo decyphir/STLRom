@@ -73,6 +73,17 @@ namespace STLRom {
 
         double tL = -std::numeric_limits<double>::infinity(), tR = -std::numeric_limits<double>::infinity();
 
+        // Two crossing times can round to the same time (large times, steep
+        // slopes): overwrite the last sample instead of losing the new one.
+        auto add_point = [&](double t, double v, double d) {
+            if (z.size() > 0 && t == z.endTime) { // point lies at the end of signal
+                z.back().value = v;
+                z.back().derivative = d;
+            } else {
+                z.appendSample(t, v, d);
+            }
+        };
+
         // epsilon crossings on the piece from the previous sample (t_prev) to time t
         auto check_crossings = [&](double t, double v_neq) {
             {
@@ -118,41 +129,41 @@ namespace STLRom {
                     if (e.isPlus) { // +epsilon crossing
                         if (comp == comparator::EQUAL) {
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                                add_point(e.t, -Signal::Eps, -fabs(d_prev_neq));
                             } else { // entering epsilon region
-                                z.appendSample(e.t, Signal::Eps, 0.);
+                                add_point(e.t, Signal::Eps, 0.);
                             }
                         } else if (comp == comparator::GREATERTHAN) { 
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, d_prev_neq);
+                                add_point(e.t, Signal::Eps, d_prev_neq);
                             } else { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                add_point(e.t, -Signal::Eps, 0.);
                             }
                         } else if (comp == comparator::LESSTHAN) { 
                             if (e.isAscending) { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -d_prev_neq);
+                                add_point(e.t, -Signal::Eps, -d_prev_neq);
                             } else { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                add_point(e.t, -Signal::Eps, 0.);
                             }
                         }
                     } else { // -epsilon crossing
                         if (comp == comparator::EQUAL) { 
                             if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, Signal::Eps, 0.);
+                                add_point(e.t, Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, -fabs(d_prev_neq));
+                                add_point(e.t, -Signal::Eps, -fabs(d_prev_neq));
                             }
                         } else if (comp == comparator::GREATERTHAN) { 
                             if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                add_point(e.t, -Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, -Signal::Eps, d_prev_neq);
+                                add_point(e.t, -Signal::Eps, d_prev_neq);
                             }
                         } else if (comp == comparator::LESSTHAN) { 
                             if (e.isAscending) { // entering epsilon region
-                                z.appendSample(e.t, -Signal::Eps, 0.);
+                                add_point(e.t, -Signal::Eps, 0.);
                             } else { // leaving epsilon region
-                                z.appendSample(e.t, Signal::Eps, -d_prev_neq);
+                                add_point(e.t, Signal::Eps, -d_prev_neq);
                             }
                         }
                     } 
