@@ -176,6 +176,7 @@ public:
 	void reverse(); //reverses data points in a signal
     void addLastSample(); // add a sample at endTime. 
     void refine(double step); // add points at multiples of step inside a signal (does nothing when step=+inf)
+    bool is_piecewise_constant() const; // true if every sample has zero derivative
 	void to_sat();
 
 	void read_from_file(const string& filename);

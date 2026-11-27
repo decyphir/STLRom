@@ -75,7 +75,15 @@ namespace STLRom {
         }
         std::deque<Sample>::swap(out);
     }
-    
+
+    // true if every sample has zero derivative
+    bool Signal::is_piecewise_constant() const {
+        for (const auto& s : *this)
+            if (s.derivative != 0.)
+                return false;
+        return true;
+    }
+
     void Signal::appendSample(double t, double v) {
         appendSample(t,v,0.,false);
     }

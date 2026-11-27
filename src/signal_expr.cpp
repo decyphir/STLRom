@@ -167,8 +167,10 @@ double mult_transducer::compute_robustness() {
 	// nonlinear: evaluate at most Signal::dt apart
 	Signal zL = childL->z;
 	Signal zR = childR->z;
-	zL.refine(Signal::dt);
-	zR.refine(Signal::dt);
+	if (!zL.is_piecewise_constant() && !zR.is_piecewise_constant()) {
+		zL.refine(Signal::dt);
+		zR.refine(Signal::dt);
+	}
 
 	merge_signals_with_op(z, zL, zR, [](double a, double b){return a * b;}, [](double vL, double vR, double dL, double dR){return dL*vR + dR*vL;}, false);
 	// auto iterL = childL->z.begin();
