@@ -2,7 +2,7 @@
 
 A catalogue of the tests in `test/suite/`, file by file, for review. For how to run them and how they are built, see [README.md](README.md).
 
-The suite has **182 test functions**, which run as **823 tests**: a test with a table of cases (`@pytest.mark.parametrize`) runs once per row. The **Source of the expected value** column says where each expected value comes from:
+The suite has **184 test functions**, which run as **834 tests**: a test with a table of cases (`@pytest.mark.parametrize`) runs once per row. The **Source of the expected value** column says where each expected value comes from:
 
 - **hand**: worked out by hand. The working is in a comment or in the `how` column of the test's table.
 - **reference**: computed by the brute-force reference in `reference.py`.
@@ -20,7 +20,7 @@ Unless a test says otherwise, `x` and `y` are the declared signals, data points 
 | [test_temporal.py](#test_temporalpy) | 12 | 75 | `ev alw until once hist since` |
 | [test_coverage.py](#test_coveragepy) | 13 | 61 | where a formula is defined |
 | [test_online.py](#test_onlinepy) | 15 | 141 | online robustness and bounds |
-| [test_semantics.py](#test_semanticspy) | 15 | 61 | BOOLEAN, LEFT_TIME, RIGHT_TIME, `sat/ltr/rtr/rho` |
+| [test_semantics.py](#test_semanticspy) | 17 | 72 | BOOLEAN, LEFT_TIME, RIGHT_TIME, `sat/ltr/rtr/rho` |
 | [test_driver_monitor.py](#test_driver_monitorpy) | 16 | 20 | drivers, monitors, copies, maps |
 | [test_helpers.py](#test_helperspy) | 10 | 10 | signal generators, plotting |
 | [test_against_reference.py](#test_against_referencepy) | 3 | 160 | stlrom vs the reference |
@@ -220,6 +220,8 @@ What an atom measures. Worked example: x through (0,−1) (1,1) (3,1) (4,−1) (
 | `test_time_semantics_worked_example` (4 cases) | Left and right time robustness at 4 times, by `set_semantics` and by `ltr(...)`/`rtr(...)`. For example, at t = 1: true since 0.5 → 0.5, true until 3.5 → 2.5. Durations stop at the edges of the data | hand |
 | `test_time_semantics_on_a_range` | The same values read from a range request | hand |
 | `test_time_semantics_then_temporal_operator` | `ev_[0,1] ltr(...)` and `alw_[0,1] rtr(...)` at t = 1 give 1.5 | hand |
+| `test_time_semantics_no_sign_change_is_empty` (6 cases) | An atom that never changes sign (`x > -2` always true, `x > 2` always false), by `ltr`/`rtr` or by `set_semantics`: rob is NaN, the range signal is empty | docs |
+| `test_time_semantics_no_sign_change_propagates` (5 cases) | The empty result goes through `not`, `ev`, `alw`; in `and`/`or`, one atom without a sign change empties the whole result | docs |
 | `test_boolean_semantics` | 1 where true, −Eps where false | docs |
 | `test_boolean_not_gives_the_right_sign` | `not` of false is positive (why false is −Eps and not 0) | docs |
 | `test_boolean_with_temporal_operators` | `ev` and `alw` of booleans | hand |

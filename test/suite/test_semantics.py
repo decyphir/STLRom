@@ -6,6 +6,7 @@ Semantics: what an atom's robustness measures.
 - LEFT_TIME / RIGHT_TIME (Donze-Maler time robustness): +-(how long the atom
   has held / will hold its truth value), the sign telling which value. The
   durations stop at the edges of the data.
+  With no sign change in the data, the result is empty (rob NaN).
 The semantics is set for the whole driver (set_semantics) or for a subformula
 with sat(...), ltr(...), rtr(...), rho(...). The innermost one wins.
 
@@ -66,6 +67,36 @@ def test_time_semantics_then_temporal_operator():
     assert driver("ev_[0,1] ltr(x[t] > 0)").get_rob("phi", 1) == pytest.approx(1.5, abs=1e-6)
     # alw_[0,1] of the right time robustness at t = 1: min over [1, 2] of (3.5 - s) = 1.5
     assert driver("alw_[0,1] rtr(x[t] > 0)").get_rob("phi", 1) == pytest.approx(1.5, abs=1e-6)
+
+
+# With no sign change in the data, the time robustness is undefined: empty signal, rob NaN.
+# On T, x > -2 is always true and x > 2 is always false.
+
+@pytest.mark.parametrize("formula, semantics", [
+    ("ltr(x[t] > -2)", "SPACE"),
+    ("rtr(x[t] > -2)", "SPACE"),
+    ("ltr(x[t] > 2)", "SPACE"),
+    ("rtr(x[t] > 2)", "SPACE"),
+    ("x[t] > -2", "LEFT_TIME"),
+    ("x[t] > 2", "RIGHT_TIME"),
+])
+def test_time_semantics_no_sign_change_is_empty(formula, semantics):
+    d = driver(formula, semantics)
+    assert math.isnan(d.get_rob("phi", 2))
+    assert d.get_rob_signal("phi", 0, 6).empty()
+
+
+@pytest.mark.parametrize("formula", [
+    "ltr(not x[t] > -2)",
+    "ltr(ev_[0,1] x[t] > -2)",
+    "rtr(alw_[0,1] x[t] > 2)",
+    "rtr(x[t] > 0 and x[t] > -2)",  # one atom without a sign change empties the whole and
+    "ltr(x[t] > 0 or x[t] > 2)",
+])
+def test_time_semantics_no_sign_change_propagates(formula):
+    d = driver(formula)
+    assert math.isnan(d.get_rob("phi", 2))
+    assert d.get_rob_signal("phi", 0, 5).empty()
 
 
 def test_boolean_semantics():
