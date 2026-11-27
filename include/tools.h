@@ -58,6 +58,7 @@ bool write_trace(const std::string& filename, const trace_data& signals);
 template <typename BinaryOp, typename QuartOp>
 void merge_signals_with_op(Signal &out, const Signal &zL, const Signal &zR, BinaryOp op_v, QuartOp op_d, bool detect_intersections)
 {
+    if (zL.empty() || zR.empty()) { out.clear(); return; } // an empty input (e.g. ltr/rtr with no sign change) gives empty
 // #ifdef DEBUG__
 //             printf(">>>Signal::merge:                            IN.\n");
 //         cout << "IN zL:" << zL << endl;

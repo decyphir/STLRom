@@ -72,6 +72,7 @@ void Signal::compute_left_time_rob(const Signal &y) {
 
 	Signal y_bool; 
 	y_bool.compute_boolean(y);
+	if (y_bool.size() <= 1) return; // no sign change: empty
 	
 	for (auto i = y_bool.begin(); i != y_bool.end(); i++) {
 		double v = i->value;
@@ -91,6 +92,7 @@ void Signal::compute_right_time_rob(const Signal &y) {
 	
 	Signal y_bool; 
 	y_bool.compute_boolean(y);
+	if (y_bool.size() <= 1) return; // no sign change: empty
 	
 	for (auto i = y_bool.begin(); i != y_bool.end(); i++) {
 	//for (auto i = y_bool.begin(); i != y_bool.end(); i++) {

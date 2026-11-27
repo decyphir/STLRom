@@ -284,12 +284,14 @@ namespace STLRom {
 			case Semantics::LEFT_TIME:
                 z_space = z;
                 z.compute_left_time_rob(z_space);
+                if (z.empty()) return std::numeric_limits<double>::quiet_NaN();
                 if (childL->start_time < start_time || childL->end_time > end_time)
                     z.resize(start_time, end_time);
                 return z.front().value;
             case Semantics::RIGHT_TIME:
                 z_space = z;
                 z.compute_right_time_rob(z_space);
+                if (z.empty()) return std::numeric_limits<double>::quiet_NaN();
                 if (childL->start_time < start_time || childL->end_time > end_time)
                     z.resize(start_time, end_time);
                 return z.front().value;
