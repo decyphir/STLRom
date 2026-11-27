@@ -2,7 +2,7 @@
 
 A catalogue of the tests in `test/suite/`, file by file, for review. For how to run them and how they are built, see [README.md](README.md).
 
-The suite has **184 test functions**, which run as **834 tests**: a test with a table of cases (`@pytest.mark.parametrize`) runs once per row. The **Source of the expected value** column says where each expected value comes from:
+The suite has **185 test functions**, which run as **836 tests**: a test with a table of cases (`@pytest.mark.parametrize`) runs once per row. The **Source of the expected value** column says where each expected value comes from:
 
 - **hand**: worked out by hand. The working is in a comment or in the `how` column of the test's table.
 - **reference**: computed by the brute-force reference in `reference.py`.
@@ -16,7 +16,7 @@ Unless a test says otherwise, `x` and `y` are the declared signals, data points 
 | [test_parser.py](#test_parserpy) | 23 | 69 | the formula language |
 | [test_signal.py](#test_signalpy) | 32 | 35 | the `Signal` class |
 | [test_data.py](#test_datapy) | 17 | 17 | getting data in and out |
-| [test_atoms_and_expressions.py](#test_atoms_and_expressionspy) | 15 | 44 | expressions, atoms, `not and or =>` |
+| [test_atoms_and_expressions.py](#test_atoms_and_expressionspy) | 16 | 46 | expressions, atoms, `not and or =>` |
 | [test_temporal.py](#test_temporalpy) | 12 | 75 | `ev alw until once hist since` |
 | [test_coverage.py](#test_coveragepy) | 13 | 61 | where a formula is defined |
 | [test_online.py](#test_onlinepy) | 15 | 141 | online robustness and bounds |
@@ -143,6 +143,7 @@ Expressions, atoms and boolean operators. Data: x = 1, 3, 0 and y = 0, 1, 1 at t
 | `test_atom_robustness` (7 cases) | `> < >= <=` with constants and between signals | hand |
 | `test_equality_atom` | `x == 2`: +Eps where x = 2, −\|x − 2\| elsewhere | docs |
 | `test_atom_sign_change_inside_the_last_piece` | A sign change between the last two samples is found (a past bug) | hand |
+| `test_atom_crossing_at_large_times` (2 cases) | Same data at t0 = 0 and t0 = 1e6: `x < 0` rising through 0 keeps rising (0.4 at t0 + 2.7), and `ev_[0,2]` over it is 0.4, 0.8, 1 at t0 + 0.7, 0.9, 1. Near 1e6 the −Eps and +Eps crossings round to the same time; the +Eps one used to be dropped (a past bug) | hand |
 | `test_atom_at_exactly_zero_is_eps_sized` | A robustness of exactly 0 comes back as ±Eps, never 0 | docs |
 | `test_boolean` (8 cases) | `not`, `not not`, `and`, `or`, `=>` both ways, and De Morgan | hand |
 | `test_and_or_over_a_range_cross_correctly` | `and`/`or` over a range follow min/max at 6 times, including where the two lines cross | hand |

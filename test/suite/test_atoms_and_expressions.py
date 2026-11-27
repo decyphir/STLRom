@@ -164,6 +164,20 @@ def test_atom_sign_change_inside_the_last_piece():
     assert z.value_at(2) == pytest.approx(-1)
 
 
+@pytest.mark.parametrize("t0", [0, 1e6])
+def test_atom_crossing_at_large_times(t0):
+    # x < 0 goes -1 -> 1 on [t0+2, t0+3]; its -Eps and +Eps crossings are 1e-10
+    # apart, less than one double step near 1e6.  The +Eps one used to be
+    # dropped, leaving the atom flat after t0+2.5 (a past bug)
+    samples = [(t0 + t, x) for t, x in [(0, 0), (1, 1), (2, 1), (3, -1)]]
+    d = make_driver("signal x\nmu := x[t] < 0\nphi := ev_[0, 2] mu", samples)
+    z = d.get_rob_signal("mu", t0, t0 + 3)
+    assert z.value_at(t0 + 2.7) == pytest.approx(0.4, abs=1e-9)
+    z = d.get_rob_signal("phi", t0, t0 + 1)
+    for t in [0.7, 0.9, 1]:  # max(2t - 1, -t)
+        assert z.value_at(t0 + t) == pytest.approx(2 * t - 1, abs=1e-9), t
+
+
 def test_atom_at_exactly_zero_is_eps_sized():
     # robustness 0 is never returned: it is +-Eps
     r = rob("x[t] > 2", 0.5)
