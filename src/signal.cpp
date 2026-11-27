@@ -137,6 +137,7 @@ namespace STLRom {
         cout << "IN: " << *this << endl;
 #endif
 
+        if (empty()) return;
         double first_time = front().time;
         push_back(front());
         pop_front();
